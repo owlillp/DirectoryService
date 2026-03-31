@@ -9,8 +9,8 @@ public record LocationAddress
         string country,
         string city,
         string street,
-        string postalCode,
-        string buildingNumber,
+        int postalCode,
+        int buildingNumber,
         string? apartment = null)
     {
         Country = country;
@@ -27,9 +27,9 @@ public record LocationAddress
 
     public string Street { get; }
 
-    public string PostalCode { get; }
+    public int PostalCode { get; }
 
-    public string BuildingNumber { get; }
+    public int BuildingNumber { get; }
 
     public string? Apartment { get; }
 
@@ -37,8 +37,8 @@ public record LocationAddress
         string country,
         string city,
         string street,
-        string postalCode,
-        string buildingNumber,
+        int postalCode,
+        int buildingNumber,
         string? apartment = null)
     {
         if (string.IsNullOrWhiteSpace(country))
@@ -56,14 +56,14 @@ public record LocationAddress
             return Error.Validation("location.street.validation.error", "street cannot be empty");
         }
 
-        if (string.IsNullOrWhiteSpace(postalCode))
+        if (postalCode < 0)
         {
-            return Error.Validation("location.postalcode.validation.error", "postal code cannot be empty");
+            return Error.Validation("location.postalcode.validation.error", "postal code cannot be less zero");
         }
 
-        if (string.IsNullOrWhiteSpace(buildingNumber))
+        if (buildingNumber < 0)
         {
-            return Error.Validation("location.building.number.validation.error", "building number cannot be empty");
+            return Error.Validation("location.building.number.validation.error", "building number cannot be less zero");
         }
 
         return new LocationAddress(

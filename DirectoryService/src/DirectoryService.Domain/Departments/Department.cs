@@ -54,37 +54,24 @@ public sealed class Department
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
 
     public static Result<Department, Error> Create(
-        string name,
-        string identifier,
+        DepartmentName name,
+        DepartmentIdentifier identifier,
+        DepartmentPath path,
         Guid? parentId,
-        string path,
         short depth,
         Guid? id = null)
     {
-        var nameResult = DepartmentName.Create(name);
-        if (nameResult.IsFailure)
+        if (depth < 0)
         {
-            return nameResult.Error;
-        }
-
-        var identifierResult = DepartmentIdentifier.Create(identifier);
-        if (identifierResult.IsFailure)
-        {
-            return identifierResult.Error;
-        }
-
-        var pathResult = DepartmentPath.Create(path);
-        if (pathResult.IsFailure)
-        {
-            return pathResult.Error;
+            return Error.Validation("department.depth.validation.error", "depth cannot be less zero");
         }
 
         return new Department(
             id ?? Guid.NewGuid(),
-            nameResult.Value,
-            identifierResult.Value,
+            name,
+            identifier,
             parentId,
-            pathResult.Value,
+            path,
             depth);
     }
 }

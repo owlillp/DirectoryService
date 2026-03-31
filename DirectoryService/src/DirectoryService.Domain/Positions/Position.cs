@@ -1,6 +1,4 @@
-using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
-using DirectoryService.Domain.Shared;
 
 namespace DirectoryService.Domain.Positions;
 
@@ -34,32 +32,8 @@ public class Position
 
     public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
-    public static Result<Position, Error> Create(
-        string name,
-        string? description,
-        Guid? id = null)
+    public static Position Create(PositionName name, PositionDescription? description, Guid? id = null)
     {
-        var nameResult = PositionName.Create(name);
-        if (nameResult.IsFailure)
-        {
-            return nameResult.Error;
-        }
-
-        PositionDescription? positionDescription = null;
-        if (!string.IsNullOrWhiteSpace(description))
-        {
-            var descriptionResult = PositionDescription.Create(description);
-            if (descriptionResult.IsFailure)
-            {
-                return descriptionResult.Error;
-            }
-
-            positionDescription = descriptionResult.Value;
-        }
-
-        return new Position(
-            id ?? Guid.NewGuid(),
-            nameResult.Value,
-            positionDescription);
+        return new Position(id ?? Guid.NewGuid(), name, description);
     }
 }

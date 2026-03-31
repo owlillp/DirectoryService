@@ -1,6 +1,4 @@
-using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
-using DirectoryService.Domain.Shared;
 
 namespace DirectoryService.Domain.Locations;
 
@@ -41,46 +39,16 @@ public sealed class Location
 
     public IReadOnlyList<DepartmentLocation> Departments => _departments;
 
-    public static Result<Location, Error> Create(
-        string name,
-        string country,
-        string city,
-        string street,
-        string buildingNumber,
-        string? apartment,
-        string postalCode,
-        string timezone,
-        Guid? id = null
-    )
+    public static Location Create(
+        LocationName name,
+        LocationAddress address,
+        LocationTimezone timezone,
+        Guid? id = null)
     {
-        var nameResult = LocationName.Create(name);
-        if (nameResult.IsFailure)
-        {
-            return nameResult.Error;
-        }
-
-        var addressResult = LocationAddress.Create(
-            country,
-            city,
-            street,
-            postalCode,
-            buildingNumber,
-            apartment);
-        if (addressResult.IsFailure)
-        {
-            return addressResult.Error;
-        }
-
-        var timezoneResult = LocationTimezone.Create(timezone);
-        if (timezoneResult.IsFailure)
-        {
-            return timezoneResult.Error;
-        }
-
         return new Location(
             id ?? Guid.NewGuid(),
-            nameResult.Value, 
-            addressResult.Value, 
-            timezoneResult.Value);
+            name,
+            address,
+            timezone);
     }
 }
