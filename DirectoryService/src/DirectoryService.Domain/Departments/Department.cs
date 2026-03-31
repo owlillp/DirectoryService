@@ -9,8 +9,8 @@ public sealed class Department
 {
     private Department() { }
 
-    private List<DepartmentPosition> _positions = [];
-    private List<DepartmentLocation> _locations = [];
+    private readonly List<DepartmentPosition> _positions = [];
+    private readonly List<DepartmentLocation> _locations = [];
 
     private Department(
         Guid id,
