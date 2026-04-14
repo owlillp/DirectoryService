@@ -1,10 +1,13 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared;
+using DirectoryService.Domain.Shared.Errors;
 
 namespace DirectoryService.Domain.Locations;
 
 public record LocationAddress
 {
+    // EF Core
+    private LocationAddress() { }
+
     private LocationAddress(
         string country,
         string city,
@@ -21,11 +24,11 @@ public record LocationAddress
         Apartment = apartment;
     }
 
-    public string Country { get; }
+    public string Country { get; } = string.Empty;
 
-    public string City { get; }
+    public string City { get; } = string.Empty;
 
-    public string Street { get; }
+    public string Street { get; } = string.Empty;
 
     public int PostalCode { get; }
 

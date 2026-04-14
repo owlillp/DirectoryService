@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Domain.Shared;
+﻿namespace DirectoryService.Domain.Shared.Errors;
 
 public record Error
 {

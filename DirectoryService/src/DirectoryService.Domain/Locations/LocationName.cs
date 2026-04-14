@@ -1,16 +1,17 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared;
+using DirectoryService.Domain.Shared.Constants;
+using DirectoryService.Domain.Shared.Errors;
 
 namespace DirectoryService.Domain.Locations;
 
 public record LocationName
 {
-    public const short MIN_LENGTH = 3;
-    public const short MAX_LENGTH = 120;
-
-    public string Value { get; }
+    // EF Core
+    private LocationName() { }
 
     private LocationName(string value) => Value = value;
+
+    public string Value { get; } = string.Empty;
 
     public static Result<LocationName, Error> Create(string value)
     {
@@ -19,9 +20,9 @@ public record LocationName
             return Error.Validation("location.name.validation.error", "value cannot be empty");
         }
 
-        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+        if (value.Length < LengthConstants.LENGTH_3 || value.Length > LengthConstants.LENGTH_120)
         {
-            return Error.Validation("location.name.validation.error", $"value must be between {MIN_LENGTH} and {MAX_LENGTH} characters long");
+            return Error.Validation("location.name.validation.error", $"value must be between {LengthConstants.LENGTH_3} and {LengthConstants.LENGTH_120} characters long");
         }
 
         return new LocationName(value);

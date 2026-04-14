@@ -1,14 +1,16 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared;
+using DirectoryService.Domain.Shared.Errors;
 using TimeZoneConverter;
 
 namespace DirectoryService.Domain.Locations;
 
 public record LocationTimezone
 {
+    private LocationTimezone() { }
+
     private LocationTimezone(string value) => Value = value;
 
-    public string Value { get; }
+    public string Value { get; } = string.Empty;
 
     public static Result<LocationTimezone, Error> Create(string value)
     {
