@@ -2,6 +2,7 @@ namespace DirectoryService.Domain.DepartmentLocations;
 
 public class DepartmentLocation
 {
+    // EF Core
     private DepartmentLocation() { }
 
     public Guid Id { get; private init; }

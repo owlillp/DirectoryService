@@ -4,9 +4,10 @@ namespace DirectoryService.Domain.Positions;
 
 public class Position
 {
-    private Position() { }
-
     private List<DepartmentPosition> _departments = [];
+
+    // EF Core
+    private Position() { }
 
     private Position(Guid id, PositionName name, PositionDescription? description)
     {

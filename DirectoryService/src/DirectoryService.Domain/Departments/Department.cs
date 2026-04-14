@@ -1,16 +1,17 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
-using DirectoryService.Domain.Shared;
+using DirectoryService.Domain.Shared.Errors;
 
 namespace DirectoryService.Domain.Departments;
 
 public sealed class Department
 {
-    private Department() { }
-
     private readonly List<DepartmentPosition> _positions = [];
     private readonly List<DepartmentLocation> _locations = [];
+
+    // EF Core
+    private Department() { }
 
     private Department(
         Guid id,

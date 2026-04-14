@@ -2,6 +2,7 @@ namespace DirectoryService.Domain.DepartmentPositions;
 
 public class DepartmentPosition
 {
+    // EF Core
     private DepartmentPosition() { }
 
     public Guid Id { get; private init; }

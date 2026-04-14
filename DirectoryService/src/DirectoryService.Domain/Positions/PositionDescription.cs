@@ -1,15 +1,17 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared;
+using DirectoryService.Domain.Shared.Constants;
+using DirectoryService.Domain.Shared.Errors;
 
 namespace DirectoryService.Domain.Positions;
 
 public record PositionDescription
 {
-    public const short MAX_LENGTH = 100;
-
-    public string Value { get; }
+    // EF Core
+    private PositionDescription() { }
 
     private PositionDescription(string value) => Value = value;
+
+    public string Value { get; } = string.Empty;
 
     public static Result<PositionDescription, Error> Create(string value)
     {
@@ -18,9 +20,9 @@ public record PositionDescription
             return Error.Validation("position.description.validation.error", "value cannot be empty");
         }
 
-        if (value.Length > MAX_LENGTH)
+        if (value.Length > LengthConstants.LENGTH_100)
         {
-            return Error.Validation("position.description.validation.error", $"value must be less {MAX_LENGTH} characters");
+            return Error.Validation("position.description.validation.error", $"value must be less {LengthConstants.LENGTH_100} characters");
         }
 
         return new PositionDescription(value);

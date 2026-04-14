@@ -4,9 +4,10 @@ namespace DirectoryService.Domain.Locations;
 
 public sealed class Location
 {
-    private Location() { }
+    private readonly List<DepartmentLocation> _departments = [];
 
-    private List<DepartmentLocation> _departments;
+    // EF Core
+    private Location() { }
 
     private Location(
         Guid id,
