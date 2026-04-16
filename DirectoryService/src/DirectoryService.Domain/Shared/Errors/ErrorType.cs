@@ -6,4 +6,5 @@ public enum ErrorType
     NOT_FOUND,
     FAILURE,
     CONFLICT,
+    TABLE,
 }

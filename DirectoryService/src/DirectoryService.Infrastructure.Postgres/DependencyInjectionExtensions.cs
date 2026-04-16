@@ -1,3 +1,5 @@
+using DirectoryService.Application.Locations;
+using DirectoryService.Infrastructure.Postgres.Locations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +26,17 @@ public static class DependencyInjectionExtensions
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
             }
+
         });
+
+        AddRepositories(services);
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepositories(IServiceCollection services)
+    {
+        services.AddScoped<ILocationsRepository, LocationsRepository>();
 
         return services;
     }
