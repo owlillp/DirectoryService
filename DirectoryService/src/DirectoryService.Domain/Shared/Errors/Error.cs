@@ -26,4 +26,7 @@ public record Error
 
     public static Error Conflict(string? code, string message, string? invalidField = null)
         => new(code ?? "value.is.conflict", message, ErrorType.CONFLICT, invalidField);
+
+    public static Error Table(string? code, string message, string? invalidField = null)
+        => new(code ?? "table.operation.failure", message, ErrorType.TABLE, invalidField);
 }
