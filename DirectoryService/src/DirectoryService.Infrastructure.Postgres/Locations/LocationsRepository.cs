@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
-using DirectoryService.Domain.Shared.Errors;
 using Microsoft.Extensions.Logging;
+using Shared.Failures;
 
 namespace DirectoryService.Infrastructure.Postgres.Locations;
 
@@ -30,7 +30,7 @@ public class LocationsRepository : ILocationsRepository
         catch (Exception e)
         {
             _logger.LogError("Failed to add location with error: {error}", e.Message);
-            return Result.Failure<Guid, Error>(Error.Table("location.add.error", e.Message));
+            return Result.Failure<Guid, Error>(GeneralErrors.Failure());
         }
     }
 }

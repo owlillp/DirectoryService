@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Constants;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Constants;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Departments;
 
@@ -17,17 +17,17 @@ public record DepartmentIdentifier
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("department.identifier.validation.error", "value cannot be empty");
+            return GeneralErrors.ValueIsRequired(nameof(DepartmentIdentifier));
         }
 
         if (value.Length < LengthConstants.LENGTH_3 || value.Length > LengthConstants.LENGTH_150)
         {
-            return Error.Validation("department.identifier.validation.error", $"value must be between {LengthConstants.LENGTH_3} and {LengthConstants.LENGTH_150} characters long");
+            return GeneralErrors.InvalidLength(nameof(DepartmentIdentifier));
         }
 
         if (!value.All(char.IsAsciiLetter))
         {
-            return Error.Validation("department.identifier.validation.error", "value must consist only of latin letters");
+            return GeneralErrors.InvalidCharacters(nameof(DepartmentIdentifier));
         }
 
         return new DepartmentIdentifier(value);

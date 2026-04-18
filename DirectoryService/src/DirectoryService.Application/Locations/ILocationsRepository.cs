@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Locations;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Failures;
 
 namespace DirectoryService.Application.Locations;
 

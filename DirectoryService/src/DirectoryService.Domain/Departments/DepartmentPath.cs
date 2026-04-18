@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Departments;
 
@@ -16,7 +16,7 @@ public record DepartmentPath
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("department.path.validation.error", "value cannot be empty");
+            return GeneralErrors.ValueIsRequired(nameof(DepartmentPath));
         }
 
         return new DepartmentPath(value);

@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Locations;
 
@@ -46,27 +46,27 @@ public record LocationAddress
     {
         if (string.IsNullOrWhiteSpace(country))
         {
-            return Error.Validation("location.address.validation.error", "country cannot be empty");
+            return GeneralErrors.FieldIsRequired(nameof(LocationAddress), nameof(Country));
         }
 
         if (string.IsNullOrWhiteSpace(city))
         {
-            return Error.Validation("location.city.validation.error", "city cannot be empty");
+            return GeneralErrors.FieldIsRequired(nameof(LocationAddress), nameof(City));
         }
 
         if (string.IsNullOrWhiteSpace(street))
         {
-            return Error.Validation("location.street.validation.error", "street cannot be empty");
+            return GeneralErrors.FieldIsRequired(nameof(LocationAddress), nameof(Street));
         }
 
         if (postalCode < 0)
         {
-            return Error.Validation("location.postalcode.validation.error", "postal code cannot be less zero");
+            return GeneralErrors.NegativeValue(nameof(LocationAddress), nameof(PostalCode));
         }
 
         if (buildingNumber < 0)
         {
-            return Error.Validation("location.building.number.validation.error", "building number cannot be less zero");
+            return GeneralErrors.NegativeValue(nameof(LocationAddress), nameof(buildingNumber));
         }
 
         return new LocationAddress(

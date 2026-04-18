@@ -1,8 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Domain.Locations;
-using DirectoryService.Domain.Shared.Errors;
 using Microsoft.Extensions.Logging;
+using Shared.Failures;
 
 namespace DirectoryService.Application.Locations.CreateLocation;
 
