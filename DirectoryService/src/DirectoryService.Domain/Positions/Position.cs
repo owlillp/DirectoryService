@@ -9,7 +9,7 @@ public class Position
     // EF Core
     private Position() { }
 
-    private Position(Guid id, PositionName name, PositionDescription? description)
+    private Position(PositionId id, PositionName name, PositionDescription? description)
     {
         Id = id;
         Name = name;
@@ -19,7 +19,7 @@ public class Position
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public Guid Id { get; private init; }
+    public PositionId Id { get; private init; }
 
     public PositionName Name { get; private set; } = null!;
 
@@ -33,8 +33,6 @@ public class Position
 
     public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
-    public static Position Create(PositionName name, PositionDescription? description, Guid? id = null)
-    {
-        return new Position(id ?? Guid.NewGuid(), name, description);
-    }
+    public static Position Create(PositionName name, PositionDescription? description, PositionId? id = null)
+        => new(id ?? new PositionId(Guid.NewGuid()), name, description);
 }

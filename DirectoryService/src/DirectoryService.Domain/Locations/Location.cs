@@ -10,7 +10,7 @@ public sealed class Location
     private Location() { }
 
     private Location(
-        Guid id,
+        LocationId id,
         LocationName name,
         LocationAddress address,
         LocationTimezone timezone)
@@ -24,7 +24,7 @@ public sealed class Location
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public Guid Id { get; private init; }
+    public LocationId Id { get; private init; }
 
     public LocationName Name { get; private set; } = null!;
 
@@ -44,10 +44,10 @@ public sealed class Location
         LocationName name,
         LocationAddress address,
         LocationTimezone timezone,
-        Guid? id = null)
+        LocationId? id = null)
     {
         return new Location(
-            id ?? Guid.NewGuid(),
+            id ?? new LocationId(Guid.NewGuid()),
             name,
             address,
             timezone);

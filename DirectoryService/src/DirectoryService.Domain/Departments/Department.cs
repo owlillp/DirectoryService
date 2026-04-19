@@ -14,31 +14,32 @@ public sealed class Department
     private Department() { }
 
     private Department(
-        Guid id,
+        DepartmentId id,
         DepartmentName name,
         DepartmentIdentifier identifier,
-        Guid? parentId,
         DepartmentPath path,
-        short depth)
+        DepartmentId? parentId,
+        short depth,
+        IEnumerable<DepartmentLocation> locations)
     {
         Id = id;
         Name = name;
         Identifier = identifier;
-        ParentId = parentId;
         Path = path;
         Depth = depth;
+        ParentId = parentId;
         IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public Guid Id { get; private init; }
+    public DepartmentId Id { get; private init; }
 
     public DepartmentName Name { get; private set; } = null!;
 
     public DepartmentIdentifier Identifier { get; private set; } = null!;
 
-    public Guid? ParentId { get; private set; }
+    public DepartmentId? ParentId { get; private set; }
 
     public DepartmentPath Path { get; private set; } = null!;
 
@@ -54,25 +55,55 @@ public sealed class Department
 
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
 
-    public static Result<Department, Error> Create(
+    public static Result<Department, Error> CreateParent(
         DepartmentName name,
         DepartmentIdentifier identifier,
-        DepartmentPath path,
-        Guid? parentId,
-        short depth,
-        Guid? id = null)
+        IEnumerable<DepartmentLocation> locations,
+        DepartmentId? id = null)
     {
-        if (depth < 0)
+        var departmentLocationsList = locations.ToList();
+
+        if (departmentLocationsList.Count == 0)
         {
-            return Error.Validation("department.depth.validation.error", "depth cannot be less zero");
+            return GeneralErrors.InvalidLength(nameof(Department), nameof(Locations));
         }
 
+        var path = DepartmentPath.CreateParent(identifier);
+
         return new Department(
-            id ?? Guid.NewGuid(),
+            id ?? new DepartmentId(Guid.NewGuid()),
             name,
             identifier,
-            parentId,
             path,
-            depth);
+            null,
+            0,
+            departmentLocationsList);
+    }
+
+    public static Result<Department, Error> CreateChild(
+        DepartmentName name,
+        DepartmentIdentifier identifier,
+        Department parent,
+        IEnumerable<DepartmentLocation> locations,
+        DepartmentId? id = null)
+    {
+        var departmentLocationsList = locations.ToList();
+
+        if (departmentLocationsList.Count == 0)
+        {
+            return GeneralErrors.InvalidLength(nameof(Department), nameof(Locations));
+        }
+
+        var path = parent.Path.CreateChild(identifier);
+        short depth = (short)(parent.Depth + 1);
+
+        return new Department(
+            id ?? new DepartmentId(Guid.NewGuid()),
+            name,
+            identifier,
+            path,
+            parent.Id,
+            depth,
+            departmentLocationsList);
     }
 }

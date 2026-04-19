@@ -1,10 +1,9 @@
-﻿using CSharpFunctionalExtensions;
-using Shared.Failures;
-
-namespace DirectoryService.Domain.Departments;
+﻿namespace DirectoryService.Domain.Departments;
 
 public record DepartmentPath
 {
+    private const char PATH_SEPARATOR = '/';
+
     // EF Core
     private DepartmentPath() { }
 
@@ -12,13 +11,9 @@ public record DepartmentPath
 
     public string Value { get; } = string.Empty;
 
-    public static Result<DepartmentPath, Error> Create(string value)
-    {
-        if(string.IsNullOrWhiteSpace(value))
-        {
-            return GeneralErrors.ValueIsRequired(nameof(DepartmentPath));
-        }
+    public static DepartmentPath CreateParent(DepartmentIdentifier identifier)
+        => new (identifier.Value);
 
-        return new DepartmentPath(value);
-    }
+    public DepartmentPath CreateChild(DepartmentIdentifier identifier)
+        => new (Value + PATH_SEPARATOR + identifier.Value);
 }

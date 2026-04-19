@@ -15,6 +15,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
         builder.Property(d => d.Id)
             .HasColumnName("id")
+            .HasConversion(di => di.Value, guid => new DepartmentId(guid))
             .IsRequired();
 
         builder.Property(d => d.Name)
@@ -32,13 +33,16 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(d => d.ParentId)
             .HasColumnName("parent_id")
             .HasMaxLength(LengthConstants.LENGTH_500)
-            .IsRequired(false);
+            .IsRequired(false)
+            .HasConversion(di => di!.Value, guid => new DepartmentId(guid));
 
-        builder.Property(d => d.Path)
-            .HasColumnName("path")
-            .HasConversion(dp => dp.Value, s => DepartmentPath.Create(s).Value)
-            .HasMaxLength(LengthConstants.LENGTH_500)
-            .IsRequired();
+        builder.ComplexProperty(d => d.Path, pb =>
+        {
+            pb.Property(p => p.Value)
+                .HasColumnName("path")
+                .HasMaxLength(LengthConstants.LENGTH_500)
+                .IsRequired();
+        });
 
         builder.Property(d => d.Depth)
             .HasColumnName("depth")

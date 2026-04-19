@@ -1,3 +1,6 @@
+using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Locations;
+
 namespace DirectoryService.Domain.DepartmentLocations;
 
 public class DepartmentLocation
@@ -5,16 +8,16 @@ public class DepartmentLocation
     // EF Core
     private DepartmentLocation() { }
 
-    public Guid Id { get; private init; }
+    public DepartmentLocationId Id { get; private init; }
 
-    public Guid DepartmentId { get; private init; }
+    public DepartmentId DepartmentId { get; private init; }
 
-    public Guid LocationId { get; private init; }
+    public LocationId LocationId { get; private init; }
 
     public DepartmentLocation(
-        Guid id,
-        Guid departmentId,
-        Guid locationId)
+        DepartmentLocationId id,
+        DepartmentId departmentId,
+        LocationId locationId)
     {
         Id = id;
         DepartmentId = departmentId;

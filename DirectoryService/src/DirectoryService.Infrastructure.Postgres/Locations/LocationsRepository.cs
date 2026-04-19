@@ -17,7 +17,7 @@ public class LocationsRepository : ILocationsRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Result<Guid, Error>> AddAsync(Location location, CancellationToken cancellationToken)
+    public async Task<Result<LocationId, Error>> AddAsync(Location location, CancellationToken cancellationToken)
     {
         try
         {
@@ -30,7 +30,7 @@ public class LocationsRepository : ILocationsRepository
         catch (Exception e)
         {
             _logger.LogError("Failed to add location with error: {error}", e.Message);
-            return Result.Failure<Guid, Error>(GeneralErrors.Failure());
+            return Result.Failure<LocationId, Error>(GeneralErrors.Failure());
         }
     }
 }

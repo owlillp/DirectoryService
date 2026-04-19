@@ -16,14 +16,17 @@ public class DepartmentPositionConfiguration : IEntityTypeConfiguration<Departme
 
         builder.Property(dp => dp.Id)
             .HasColumnName("id")
+            .HasConversion(id => id.Value, guid => new DepartmentPositionId(guid))
             .IsRequired();
 
         builder.Property(dp => dp.DepartmentId)
             .HasColumnName("department_id")
+            .HasConversion(di => di.Value, guid => new DepartmentId(guid))
             .IsRequired();
 
         builder.Property(dp => dp.PositionId)
             .HasColumnName("position_id")
+            .HasConversion(pi => pi.Value, guid => new PositionId(guid))
             .IsRequired();
 
         builder
