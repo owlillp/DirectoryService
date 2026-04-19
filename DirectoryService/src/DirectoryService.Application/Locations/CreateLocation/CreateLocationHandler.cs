@@ -19,13 +19,13 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         _locationsRepository = locationsRepository;
     }
 
-    public async Task<Result<Guid, Error>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
     {
         var dto = command.Dto;
 
         var locationNameResult = LocationName.Create(dto.Name);
         if (locationNameResult.IsFailure)
-            return Result.Failure<Guid, Error>(locationNameResult.Error);
+            return Result.Failure<Guid, Errors>(locationNameResult.Error);
 
         var locationAddressResult = LocationAddress.Create(
             dto.Country,
@@ -35,11 +35,11 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
             dto.BuildingNumber,
             dto.Apartment);
         if(locationAddressResult.IsFailure)
-            return Result.Failure<Guid, Error>(locationAddressResult.Error);
+            return Result.Failure<Guid, Errors>(locationAddressResult.Error);
 
         var locationTimeZoneResult = LocationTimezone.Create(dto.TimeZone);
         if (locationTimeZoneResult.IsFailure)
-            return Result.Failure<Guid, Error>(locationTimeZoneResult.Error);
+            return Result.Failure<Guid, Errors>(locationTimeZoneResult.Error);
 
         var location = Location.Create(
             locationNameResult.Value,
@@ -48,7 +48,7 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 
         var addResult = await _locationsRepository.AddAsync(location, cancellationToken);
         if (addResult.IsFailure)
-            return Result.Failure<Guid, Error>(addResult.Error);
+            return Result.Failure<Guid, Errors>(addResult.Error);
 
         _logger.LogInformation("Success created location with id: {locationId}", addResult.Value);
 
