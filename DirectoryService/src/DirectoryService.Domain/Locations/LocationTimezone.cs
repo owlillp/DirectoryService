@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Failures;
 using TimeZoneConverter;
 
 namespace DirectoryService.Domain.Locations;
@@ -16,12 +16,12 @@ public record LocationTimezone
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("location.timezone.validation.error", "value cannot be empty");
+            return GeneralErrors.ValueIsRequired(nameof(LocationTimezone));
         }
 
         if (!TZConvert.KnownIanaTimeZoneNames.Contains(value))
         {
-            return Error.Validation("location.timezone.validation.error", "value must be IANA timezone");
+            return GeneralErrors.InvalidIANACode(nameof(LocationTimezone));
         }
 
         return new LocationTimezone(value);

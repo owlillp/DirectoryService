@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Constants;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Constants;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Positions;
 
@@ -17,12 +17,12 @@ public record PositionName
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("position.name.validation.error", "value cannot be empty");
+            return GeneralErrors.ValueIsRequired(nameof(PositionName));
         }
 
         if (value.Length < LengthConstants.LENGTH_3 || value.Length > LengthConstants.LENGTH_100)
         {
-            return Error.Validation("position.name.validation.error", $"value must be between {LengthConstants.LENGTH_3} and {LengthConstants.LENGTH_100} characters long");
+            return GeneralErrors.InvalidLength(nameof(PositionName));
         }
 
         return new PositionName(value);

@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Constants;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Constants;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Locations;
 
@@ -17,12 +17,12 @@ public record LocationName
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("location.name.validation.error", "value cannot be empty");
+            return GeneralErrors.ValueIsRequired(nameof(LocationName));
         }
 
         if (value.Length < LengthConstants.LENGTH_3 || value.Length > LengthConstants.LENGTH_120)
         {
-            return Error.Validation("location.name.validation.error", $"value must be between {LengthConstants.LENGTH_3} and {LengthConstants.LENGTH_120} characters long");
+            return GeneralErrors.InvalidLength(nameof(LocationName));
         }
 
         return new LocationName(value);

@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
-using DirectoryService.Domain.Shared.Constants;
-using DirectoryService.Domain.Shared.Errors;
+using Shared.Constants;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Positions;
 
@@ -17,12 +17,12 @@ public record PositionDescription
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return Error.Validation("position.description.validation.error", "value cannot be empty");
+            return GeneralErrors.ValueIsRequired(nameof(PositionDescription));
         }
 
         if (value.Length > LengthConstants.LENGTH_100)
         {
-            return Error.Validation("position.description.validation.error", $"value must be less {LengthConstants.LENGTH_100} characters");
+            return GeneralErrors.InvalidLength(nameof(PositionDescription));
         }
 
         return new PositionDescription(value);
