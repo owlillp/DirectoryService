@@ -50,7 +50,7 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         if (addResult.IsFailure)
             return Result.Failure<Guid, Errors>(addResult.Error);
 
-        _logger.LogInformation("Success created location with id: {locationId}", addResult.Value);
+        _logger.LogInformation("Success created location with id: {locationId}", addResult.Value.Value);
 
         return location.Id.Value;
     }
