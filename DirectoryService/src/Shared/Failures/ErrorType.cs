@@ -21,4 +21,9 @@ public enum ErrorType
     /// Конфликт записей
     /// </summary>
     CONFLICT,
+
+    /// <summary>
+    /// Операция отменена
+    /// </summary>
+    CANCELED,
 }

@@ -1,4 +1,5 @@
 ﻿using DirectoryService.Application.Abstractions;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.Application;
@@ -14,6 +15,8 @@ public static class DependencyInjectionExtensions
                 .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
+
+        services.AddValidatorsFromAssembly(assembly);
 
         return services;
     }

@@ -32,4 +32,7 @@ public record Error
 
     public static Error Conflict(string? code, string message, string? invalidField = null)
         => new(code ?? "value.is.conflict", message, ErrorType.CONFLICT, invalidField);
+
+    public static Error Canceled(string? code, string message)
+        => new(code ?? "operation.canceled", message, ErrorType.CANCELED);
 }

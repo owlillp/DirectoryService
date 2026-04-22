@@ -11,7 +11,7 @@ public static class GeneralErrors
         return Error.NotFound("record.not.found", message);
     }
 
-    public static Error ValueIsInvalid(string? name = null,  string? reason = null, string? field = null)
+    public static Error ValueIsInvalid(string? name = null, string? reason = null, string? field = null)
     {
         string message = reason == null
             ? $"{name ?? "Value"} is invalid"
@@ -53,6 +53,25 @@ public static class GeneralErrors
     public static Error Failure(string? message = null)
     {
         message ??= "Something went wrong";
+
         return Error.Failure("server.failure", message);
+    }
+
+    public static Error Canceled(string? operationName = null)
+    {
+        string message = operationName == null
+            ? "Operation canceled"
+            : $"Operation name: {operationName} canceled";
+
+        return Error.Canceled(null, message);
+    }
+
+    public static Error Conflict(string? value = null, string? invalidField = null)
+    {
+        string message = value == null
+            ? "Any value is conflict"
+            : $"Value {value} is conflict for field: {invalidField}";
+
+        return Error.Conflict(null, message, invalidField);
     }
 }

@@ -13,6 +13,10 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
 
         builder.HasKey(l => l.Id).HasName("pk_locations");
 
+        builder.HasIndex(l => l.Name)
+            .IsUnique()
+            .HasDatabaseName("ix_locations_name");
+
         builder.Property(l => l.Id)
             .HasColumnName("id")
             .HasConversion(li => li.Value, guid => new LocationId(guid))
@@ -55,7 +59,20 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
                 .HasJsonPropertyName("apartment")
                 .HasMaxLength(LengthConstants.LENGTH_500)
                 .IsRequired(false);
+
+            ab.HasIndex(a => new
+                {
+                    a.Country,
+                    a.City,
+                    a.Street,
+                    a.BuildingNumber,
+                    a.PostalCode,
+                })
+                .IsUnique()
+                .HasDatabaseName("ix_locations_address");
         });
+
+        builder.Navigation(l => l.Address);
 
         builder.Property(l => l.Timezone)
             .HasColumnName("timezone")
