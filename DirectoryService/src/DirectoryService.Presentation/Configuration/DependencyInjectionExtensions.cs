@@ -2,8 +2,9 @@
 using DirectoryService.Application;
 using DirectoryService.Infrastructure.Postgres;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
-namespace DirectoryService.Presentation;
+namespace DirectoryService.Presentation.Configuration;
 
 public static class DependencyInjectionExtensions
 {
@@ -11,6 +12,7 @@ public static class DependencyInjectionExtensions
     {
         public IServiceCollection AddDependency(IConfiguration configuration)
         {
+            services.ConfigureSerilog(configuration);
             services.AddControllers();
             services.AddOpenApi();
             services.ConfigureApiBehaviorOptions();
@@ -37,6 +39,17 @@ public static class DependencyInjectionExtensions
             {
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
+            return services;
+        }
+
+        private IServiceCollection ConfigureSerilog(IConfiguration configuration)
+        {
+            services.AddSerilog((sp, lc) => lc
+                 .ReadFrom.Configuration(configuration)
+                 .ReadFrom.Services(sp)
+                 .Enrich.FromLogContext()
+                 .Enrich.WithProperty("ServiceName", "DirectoryService"));
+
             return services;
         }
     }
