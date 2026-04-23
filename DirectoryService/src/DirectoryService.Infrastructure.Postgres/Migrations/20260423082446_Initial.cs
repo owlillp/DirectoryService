@@ -19,11 +19,11 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     identifier = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     parent_id = table.Column<Guid>(type: "uuid", maxLength: 500, nullable: true),
-                    path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     depth = table.Column<short>(type: "smallint", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                 },
                 constraints: table =>
                 {
@@ -36,11 +36,16 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    country = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    city = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    street = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    postal_code = table.Column<int>(type: "integer", nullable: false),
+                    building_number = table.Column<int>(type: "integer", nullable: false),
+                    apartment = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
                     timezone = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    address = table.Column<string>(type: "jsonb", nullable: false),
                 },
                 constraints: table =>
                 {
@@ -132,6 +137,18 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 name: "IX_department_positions_position_id",
                 table: "department_positions",
                 column: "position_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_locations_address",
+                table: "locations",
+                columns: new[] { "country", "city", "street", "building_number", "postal_code" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_locations_name",
+                table: "locations",
+                column: "name",
+                unique: true);
         }
 
         /// <inheritdoc />

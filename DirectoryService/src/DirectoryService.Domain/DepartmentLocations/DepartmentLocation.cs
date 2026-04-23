@@ -8,11 +8,11 @@ public class DepartmentLocation
     // EF Core
     private DepartmentLocation() { }
 
-    public DepartmentLocationId Id { get; private init; }
+    public DepartmentLocationId Id { get; private init; } = null!;
 
-    public DepartmentId DepartmentId { get; private init; }
+    public DepartmentId DepartmentId { get; private init; } = null!;
 
-    public LocationId LocationId { get; private init; }
+    public LocationId LocationId { get; private init; } = null!;
 
     public DepartmentLocation(
         DepartmentLocationId id,

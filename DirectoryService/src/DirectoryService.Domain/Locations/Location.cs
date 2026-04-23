@@ -24,7 +24,7 @@ public sealed class Location
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public LocationId Id { get; private init; }
+    public LocationId Id { get; private init; } = null!;
 
     public LocationName Name { get; private set; } = null!;
 

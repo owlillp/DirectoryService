@@ -160,6 +160,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_locations");
 
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_locations_name");
+
                     b.ToTable("locations", (string)null);
                 });
 
@@ -227,40 +231,47 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 {
                     b.OwnsOne("DirectoryService.Domain.Locations.LocationAddress", "Address", b1 =>
                         {
-                            b1.Property<Guid>("LocationId");
+                            b1.Property<Guid>("LocationId")
+                                .HasColumnType("uuid");
 
                             b1.Property<string>("Apartment")
                                 .HasMaxLength(500)
-                                .HasJsonPropertyName("apartment");
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("apartment");
 
                             b1.Property<int>("BuildingNumber")
-                                .HasJsonPropertyName("building_number");
+                                .HasColumnType("integer")
+                                .HasColumnName("building_number");
 
                             b1.Property<string>("City")
                                 .IsRequired()
                                 .HasMaxLength(500)
-                                .HasJsonPropertyName("city");
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("city");
 
                             b1.Property<string>("Country")
                                 .IsRequired()
                                 .HasMaxLength(500)
-                                .HasJsonPropertyName("country");
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("country");
 
                             b1.Property<int>("PostalCode")
-                                .HasJsonPropertyName("postal_code");
+                                .HasColumnType("integer")
+                                .HasColumnName("postal_code");
 
                             b1.Property<string>("Street")
                                 .IsRequired()
                                 .HasMaxLength(500)
-                                .HasJsonPropertyName("street");
+                                .HasColumnType("character varying(500)")
+                                .HasColumnName("street");
 
                             b1.HasKey("LocationId");
 
-                            b1.ToTable("locations");
+                            b1.HasIndex("Country", "City", "Street", "BuildingNumber", "PostalCode")
+                                .IsUnique()
+                                .HasDatabaseName("ix_locations_address");
 
-                            b1
-                                .ToJson("address")
-                                .HasColumnType("jsonb");
+                            b1.ToTable("locations");
 
                             b1.WithOwner()
                                 .HasForeignKey("LocationId");

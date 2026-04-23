@@ -33,7 +33,7 @@ public sealed class Department
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public DepartmentId Id { get; private init; }
+    public DepartmentId Id { get; private init; } = null!;
 
     public DepartmentName Name { get; private set; } = null!;
 
