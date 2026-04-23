@@ -8,11 +8,11 @@ public class DepartmentPosition
     // EF Core
     private DepartmentPosition() { }
 
-    public DepartmentPositionId Id { get; private init; }
+    public DepartmentPositionId Id { get; private init; } = null!;
 
-    public DepartmentId DepartmentId { get; private init; }
+    public DepartmentId DepartmentId { get; private init; } = null!;
 
-    public PositionId PositionId { get; private init; }
+    public PositionId PositionId { get; private init; } = null!;
 
     public DepartmentPosition(
         DepartmentPositionId id,

@@ -19,7 +19,7 @@ public class Position
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public PositionId Id { get; private init; }
+    public PositionId Id { get; private init; } = null!;
 
     public PositionName Name { get; private set; } = null!;
 

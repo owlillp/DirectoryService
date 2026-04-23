@@ -42,7 +42,7 @@ public class LocationsRepository : ILocationsRepository
                 if (pgEx.ConstraintName.Contains("ix_locations_address", StringComparison.InvariantCultureIgnoreCase))
                 {
                     _logger.LogError(ex, "Database address conflict error while creating location with name: {locationName}", location.Name.Value);
-                    return GeneralErrors.Conflict(nameof(Location), nameof(location.Name));
+                    return GeneralErrors.Conflict(nameof(Location), nameof(location.Address));
                 }
 
                 _logger.LogError(ex, "Database update error while creating location with name: {Name}", location.Name.Value);

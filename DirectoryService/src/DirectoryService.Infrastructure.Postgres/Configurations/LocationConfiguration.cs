@@ -30,33 +30,31 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
 
         builder.OwnsOne(l => l.Address, ab =>
         {
-            ab.ToJson("address");
-
             ab.Property(a => a.Country)
-                .HasJsonPropertyName("country")
+                .HasColumnName("country")
                 .HasMaxLength(LengthConstants.LENGTH_500)
                 .IsRequired();
 
             ab.Property(a => a.City)
-                .HasJsonPropertyName("city")
+                .HasColumnName("city")
                 .HasMaxLength(LengthConstants.LENGTH_500)
                 .IsRequired();
 
             ab.Property(a => a.Street)
-                .HasJsonPropertyName("street")
+                .HasColumnName("street")
                 .HasMaxLength(LengthConstants.LENGTH_500)
                 .IsRequired();
 
             ab.Property(a => a.PostalCode)
-                .HasJsonPropertyName("postal_code")
+                .HasColumnName("postal_code")
                 .IsRequired();
 
             ab.Property(a => a.BuildingNumber)
-                .HasJsonPropertyName("building_number")
+                .HasColumnName("building_number")
                 .IsRequired();
 
             ab.Property(a => a.Apartment)
-                .HasJsonPropertyName("apartment")
+                .HasColumnName("apartment")
                 .HasMaxLength(LengthConstants.LENGTH_500)
                 .IsRequired(false);
 
