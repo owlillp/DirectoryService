@@ -2,7 +2,7 @@
 
 public record DepartmentPath
 {
-    private const char PATH_SEPARATOR = '/';
+    private const char PATH_SEPARATOR = '.';
 
     // EF Core
     private DepartmentPath() { }

@@ -15,11 +15,11 @@ public class DepartmentLocation
     public LocationId LocationId { get; private init; } = null!;
 
     public DepartmentLocation(
-        DepartmentLocationId id,
         DepartmentId departmentId,
-        LocationId locationId)
+        LocationId locationId,
+        DepartmentLocationId? id = null)
     {
-        Id = id;
+        Id = id ?? new DepartmentLocationId(Guid.NewGuid());
         DepartmentId = departmentId;
         LocationId = locationId;
     }
