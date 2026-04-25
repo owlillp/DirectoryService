@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,29 @@ public class LocationsRepository(ILogger<LocationsRepository> logger, DirectoryS
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error while creating location with name: {name}", location.Name.Value);
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<Result<Location, Error>> GetByAsync(Expression<Func<Location, bool>> expression, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var location = await dbContext.Locations
+                .FirstOrDefaultAsync(expression, cancellationToken);
+
+            return location != null
+                ? location
+                : GeneralErrors.NotFound(nameof(Location));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting location");
+            return GeneralErrors.Canceled("Process get location");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting location");
             return GeneralErrors.Failure();
         }
     }

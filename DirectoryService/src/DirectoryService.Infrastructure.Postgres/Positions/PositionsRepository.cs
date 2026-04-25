@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Positions;
 using DirectoryService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,29 @@ public class PositionsRepository(ILogger<PositionsRepository> logger, DirectoryS
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error while creating position with name: {name}", position.Name.Value);
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<Result<Position, Error>> GetByAsync(Expression<Func<Position, bool>> expression, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var position = await dbContext.Positions
+                .FirstOrDefaultAsync(expression, cancellationToken);
+
+            return position != null
+                ? position
+                : GeneralErrors.NotFound(nameof(Position));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting position");
+            return GeneralErrors.Canceled("Process get position");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting position");
             return GeneralErrors.Failure();
         }
     }

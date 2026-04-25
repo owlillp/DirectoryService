@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments;
 using DirectoryService.Domain.Departments;
 using Microsoft.EntityFrameworkCore;
@@ -32,24 +33,25 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
         }
     }
 
-    public async Task<Result<Department, Error>> GetByIdAsync(DepartmentId id, CancellationToken cancellationToken)
+    public async Task<Result<Department, Error>> GetByAsync(Expression<Func<Department, bool>> expression, CancellationToken cancellationToken)
     {
         try
         {
-            var department = await dbContext.Departments.FindAsync([id], cancellationToken);
+            var department = await dbContext.Departments
+                .FirstOrDefaultAsync(expression, cancellationToken);
 
             return department != null
                 ? department
-                : GeneralErrors.NotFound(nameof(Department), id.Value);
+                : GeneralErrors.NotFound(nameof(Department));
         }
         catch (OperationCanceledException ex)
         {
-            logger.LogError(ex, "Operation was cancelled while getting department with id {id}", id.Value);
+            logger.LogError(ex, "Operation was cancelled while getting department");
             return GeneralErrors.Canceled("Process get department");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error while getting department with id {id}", id.Value);
+            logger.LogError(ex, "Unexpected error while getting department");
             return GeneralErrors.Failure();
         }
     }
