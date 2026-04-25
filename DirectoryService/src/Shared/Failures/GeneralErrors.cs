@@ -2,11 +2,11 @@
 
 public static class GeneralErrors
 {
-    public static Error NotFound(Guid? id = null)
+    public static Error NotFound(string name, Guid? id = null)
     {
         string message = id == null
-            ? "Record from id: not found"
-            : $"Record from id: {id.ToString()} not found";
+            ? $"Record of {name} not found"
+            : $"Record of {name} with id: {id.ToString()} not found";
 
         return Error.NotFound("record.not.found", message);
     }
@@ -19,6 +19,9 @@ public static class GeneralErrors
 
         return Error.Validation("value.is.invalid", message, field);
     }
+
+    public static Error Duplicate(string? name = null, string? field = null)
+        => ValueIsInvalid(name, "Duplicated values", field);
 
     public static Error InvalidLength(string? name = null, string? field = null)
         => ValueIsInvalid(name, "Invalid length", field);

@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 using Microsoft.EntityFrameworkCore;
@@ -8,24 +9,16 @@ using Shared.Failures;
 
 namespace DirectoryService.Infrastructure.Postgres.Locations;
 
-public class LocationsRepository : ILocationsRepository
+public class LocationsRepository(ILogger<LocationsRepository> logger, DirectoryServiceDbContext dbContext)
+    : ILocationsRepository
 {
-    private readonly ILogger<LocationsRepository> _logger;
-    private readonly DirectoryServiceDbContext _dbContext;
-
-    public LocationsRepository(ILogger<LocationsRepository> logger, DirectoryServiceDbContext dbContext)
-    {
-        _logger = logger;
-        _dbContext = dbContext;
-    }
-
     public async Task<Result<LocationId, Error>> AddAsync(Location location, CancellationToken cancellationToken)
     {
         try
         {
-            _dbContext.Add(location);
+            dbContext.Locations.Add(location);
 
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            await dbContext.SaveChangesAsync(cancellationToken);
 
             return location.Id;
         }
@@ -35,31 +28,67 @@ public class LocationsRepository : ILocationsRepository
             {
                 if (pgEx.ConstraintName.Contains("ix_locations_name", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    _logger.LogError(ex, "Database name conflict error while creating location with name: {locationName}", location.Name.Value);
+                    logger.LogError(ex, "Database name conflict error while creating location with name: {name}", location.Name.Value);
                     return GeneralErrors.Conflict(nameof(Location), nameof(location.Name));
                 }
 
                 if (pgEx.ConstraintName.Contains("ix_locations_address", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    _logger.LogError(ex, "Database address conflict error while creating location with name: {locationName}", location.Name.Value);
+                    logger.LogError(ex, "Database address conflict error while creating location with name: {name}", location.Name.Value);
                     return GeneralErrors.Conflict(nameof(Location), nameof(location.Address));
                 }
-
-                _logger.LogError(ex, "Database update error while creating location with name: {Name}", location.Name.Value);
-                return GeneralErrors.Failure();
             }
 
-            _logger.LogError(ex, "Database update error while creating location with name: {locationName}", location.Name.Value);
+            logger.LogError(ex, "Database update error while creating location with name: {name}", location.Name.Value);
             return GeneralErrors.Failure();
         }
         catch (OperationCanceledException ex)
         {
-            _logger.LogError(ex, "Operation was canceled while creating location with name: {locationName}", location.Name.Value);
-            return GeneralErrors.Canceled("Create Location");
+            logger.LogError(ex, "Operation was canceled while creating location with name: {name}", location.Name.Value);
+            return GeneralErrors.Canceled("Process create location");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Unexpected error while creating location with name: {name}", location.Name.Value);
+            logger.LogError(ex, "Unexpected error while creating location with name: {name}", location.Name.Value);
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<Result<Location, Error>> GetByAsync(Expression<Func<Location, bool>> expression, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var location = await dbContext.Locations
+                .FirstOrDefaultAsync(expression, cancellationToken);
+
+            return location != null
+                ? location
+                : GeneralErrors.NotFound(nameof(Location));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting location");
+            return GeneralErrors.Canceled("Process get location");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting location");
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<Result<bool, Error>> ExistAsync(IEnumerable<LocationId> locationIds, CancellationToken cancellationToken)
+    {
+        try
+        {
+            int existCount = await dbContext.Locations
+                .CountAsync(l => locationIds.Contains(l.Id), cancellationToken);
+
+            return existCount == locationIds.Count();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while check of exist location");
             return GeneralErrors.Failure();
         }
     }

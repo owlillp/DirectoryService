@@ -9,8 +9,14 @@ public class Position
     // EF Core
     private Position() { }
 
-    private Position(PositionId id, PositionName name, PositionDescription? description)
+    private Position(
+        PositionId id,
+        PositionName name,
+        PositionDescription? description,
+        IEnumerable<DepartmentPosition> departments)
     {
+        _departments = departments.ToList();
+
         Id = id;
         Name = name;
         Description = description;
@@ -33,6 +39,13 @@ public class Position
 
     public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
-    public static Position Create(PositionName name, PositionDescription? description, PositionId? id = null)
-        => new(id ?? new PositionId(Guid.NewGuid()), name, description);
+    public static Position Create(
+        PositionName name,
+        PositionDescription? description,
+        IEnumerable<DepartmentPosition> departments,
+        PositionId? id = null)
+        => new(id ?? new PositionId(Guid.NewGuid()),
+            name,
+            description,
+            departments);
 }

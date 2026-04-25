@@ -20,8 +20,10 @@ public sealed class Department
         DepartmentPath path,
         DepartmentId? parentId,
         short depth,
-        IEnumerable<DepartmentLocation> locations)
+        List<DepartmentLocation> locations)
     {
+        _locations = locations;
+
         Id = id;
         Name = name;
         Identifier = identifier;

@@ -1,5 +1,9 @@
+using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
+using DirectoryService.Application.Positions;
+using DirectoryService.Infrastructure.Postgres.Departments;
 using DirectoryService.Infrastructure.Postgres.Locations;
+using DirectoryService.Infrastructure.Postgres.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,6 +41,8 @@ public static class DependencyInjectionExtensions
     private static IServiceCollection AddRepositories(IServiceCollection services)
     {
         services.AddScoped<ILocationsRepository, LocationsRepository>();
+        services.AddScoped<IPositionsRepository, PositionsRepository>();
+        services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
 
         return services;
     }
