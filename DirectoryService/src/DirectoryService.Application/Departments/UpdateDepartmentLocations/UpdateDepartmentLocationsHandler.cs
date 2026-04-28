@@ -27,17 +27,9 @@ public class UpdateDepartmentLocationsHandler(
             return validationResult.ToErrors();
         }
 
-        var departmentId = new DepartmentId(command.DepartmentId);
-
-        var getDepartmentResult = await departmentsRepository.GetByAsync(
-            d => d.Id == departmentId && d.IsActive,
-            cancellationToken);
-        if (getDepartmentResult.IsFailure)
-        {
-            return getDepartmentResult.Error.ToErrors();
-        }
-
-        var department = getDepartmentResult.Value;
+        var transactionScopeResult = await transactionManager.BeginTransactionAsync(cancellationToken);
+        if (transactionScopeResult.IsFailure)
+            return transactionScopeResult.Error.ToErrors();
 
         var locationIds = command.Request.LocationIds
             .Select(l => new LocationId(l))
@@ -54,12 +46,19 @@ public class UpdateDepartmentLocationsHandler(
             return GeneralErrors.NotFound(nameof(Location)).ToErrors();
         }
 
-        var transactionScopeResult = await transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-            return transactionScopeResult.Error.ToErrors();
-
         using (var transactionScope = transactionScopeResult.Value)
         {
+            var departmentId = new DepartmentId(command.DepartmentId);
+
+            var getDepartmentResult = await departmentsRepository.GetByAsync(
+                d => d.Id == departmentId && d.IsActive,
+                cancellationToken);
+            if (getDepartmentResult.IsFailure)
+            {
+                return getDepartmentResult.Error.ToErrors();
+            }
+
+            var department = getDepartmentResult.Value;
             department.UpdateLocations(locationIds);
 
             var deleteLocationsResult = await departmentsRepository.DeleteAllLocationsAsync(departmentId, cancellationToken);
