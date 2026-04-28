@@ -92,4 +92,22 @@ public class LocationsRepository(ILogger<LocationsRepository> logger, DirectoryS
             return GeneralErrors.Failure();
         }
     }
+
+    public async Task<Result<bool, Error>> ExistAndActiveAsync(IEnumerable<LocationId> locationIds, CancellationToken cancellationToken)
+    {
+        try
+        {
+            int existCount = await dbContext.Locations
+                .CountAsync(
+                    l => locationIds.Contains(l.Id) && l.IsActive,
+                    cancellationToken);
+
+            return existCount == locationIds.Count();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while check of exist location");
+            return GeneralErrors.Failure();
+        }
+    }
 }

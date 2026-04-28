@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(DirectoryServiceDbContext))]
-    [Migration("20260423082446_Initial")]
+    [Migration("20260428163725_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -43,9 +43,11 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_locations");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("DepartmentId", "LocationId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_department_locations_department_id_location_id");
 
                     b.ToTable("department_locations", (string)null);
                 });
@@ -67,9 +69,11 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_positions");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("PositionId");
+
+                    b.HasIndex("DepartmentId", "PositionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_department_positions_department_id_position_id");
 
                     b.ToTable("department_positions", (string)null);
                 });

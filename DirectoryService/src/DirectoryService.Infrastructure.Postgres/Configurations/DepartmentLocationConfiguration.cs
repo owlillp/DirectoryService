@@ -14,6 +14,13 @@ public class DepartmentLocationConfiguration : IEntityTypeConfiguration<Departme
 
         builder.HasKey(dl => dl.Id).HasName("pk_department_locations");
 
+        builder.HasIndex(dl => new
+            {
+                dl.DepartmentId,
+                dl.LocationId,
+            }).HasDatabaseName("ix_department_locations_department_id_location_id")
+            .IsUnique();
+
         builder.Property(dl => dl.Id)
             .HasColumnName("id")
             .HasConversion(id => id.Value, guid => new DepartmentLocationId(guid))

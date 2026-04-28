@@ -119,9 +119,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_department_locations_department_id",
+                name: "ix_department_locations_department_id_location_id",
                 table: "department_locations",
-                column: "department_id");
+                columns: new[] { "department_id", "location_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_department_locations_location_id",
@@ -129,9 +130,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 column: "location_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_department_positions_department_id",
+                name: "ix_department_positions_department_id_position_id",
                 table: "department_positions",
-                column: "department_id");
+                columns: new[] { "department_id", "position_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_department_positions_position_id",

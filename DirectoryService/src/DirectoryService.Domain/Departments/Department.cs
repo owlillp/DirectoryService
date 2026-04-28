@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
+using DirectoryService.Domain.Locations;
 using Shared.Failures;
 
 namespace DirectoryService.Domain.Departments;
@@ -107,5 +108,23 @@ public sealed class Department
             parent.Id,
             depth,
             departmentLocationsList);
+    }
+
+    public UnitResult<Error> UpdateLocations(IEnumerable<LocationId> locationIds)
+    {
+        var enumerable = locationIds.ToArray();
+        if (enumerable.Distinct().Count() != enumerable.Length)
+        {
+            return GeneralErrors.Duplicate(nameof(Locations));
+        }
+
+        var departmentLocations = enumerable
+            .Select(l => new DepartmentLocation(Id, l))
+            .ToList();
+
+        _locations.Clear();
+        _locations.AddRange(departmentLocations);
+
+        return UnitResult.Success<Error>();
     }
 }
