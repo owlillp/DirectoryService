@@ -73,4 +73,21 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
             return GeneralErrors.Failure();
         }
     }
+
+    public async Task<UnitResult<Error>> DeleteAllLocationsAsync(DepartmentId departmentId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await dbContext.DepartmentLocations
+                .Where(l => l.DepartmentId == departmentId)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while deleting locations from department with id: {departmentId}", departmentId.Value);
+            return GeneralErrors.Failure();
+        }
+    }
 }

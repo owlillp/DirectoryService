@@ -1,6 +1,8 @@
+using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
+using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Departments;
 using DirectoryService.Infrastructure.Postgres.Locations;
 using DirectoryService.Infrastructure.Postgres.Positions;
@@ -34,6 +36,8 @@ public static class DependencyInjectionExtensions
         });
 
         AddRepositories(services);
+
+        services.AddScoped<ITransactionManager, TransactionManager>();
 
         return services;
     }

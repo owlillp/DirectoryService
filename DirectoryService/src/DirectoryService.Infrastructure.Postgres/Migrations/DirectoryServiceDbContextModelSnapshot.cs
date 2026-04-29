@@ -40,9 +40,11 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_locations");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("LocationId");
+
+                    b.HasIndex("DepartmentId", "LocationId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_department_locations_department_id_location_id");
 
                     b.ToTable("department_locations", (string)null);
                 });
@@ -64,9 +66,11 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     b.HasKey("Id")
                         .HasName("pk_department_positions");
 
-                    b.HasIndex("DepartmentId");
-
                     b.HasIndex("PositionId");
+
+                    b.HasIndex("DepartmentId", "PositionId")
+                        .IsUnique()
+                        .HasDatabaseName("ix_department_positions_department_id_position_id");
 
                     b.ToTable("department_positions", (string)null);
                 });
