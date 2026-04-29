@@ -46,44 +46,43 @@ public class UpdateDepartmentLocationsHandler(
             return GeneralErrors.NotFound(nameof(Location)).ToErrors();
         }
 
-        using (var transactionScope = transactionScopeResult.Value)
+        using var transactionScope = transactionScopeResult.Value;
+
+        var departmentId = new DepartmentId(command.DepartmentId);
+
+        var getDepartmentResult = await departmentsRepository.GetByAsync(
+            d => d.Id == departmentId && d.IsActive,
+            cancellationToken);
+        if (getDepartmentResult.IsFailure)
         {
-            var departmentId = new DepartmentId(command.DepartmentId);
-
-            var getDepartmentResult = await departmentsRepository.GetByAsync(
-                d => d.Id == departmentId && d.IsActive,
-                cancellationToken);
-            if (getDepartmentResult.IsFailure)
-            {
-                return getDepartmentResult.Error.ToErrors();
-            }
-
-            var department = getDepartmentResult.Value;
-            department.UpdateLocations(locationIds);
-
-            var deleteLocationsResult = await departmentsRepository.DeleteAllLocationsAsync(departmentId, cancellationToken);
-            if (deleteLocationsResult.IsFailure)
-            {
-                transactionScope.Rollback();
-                return deleteLocationsResult.Error.ToErrors();
-            }
-
-            var saveChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
-            if (saveChangesResult.IsFailure)
-            {
-                transactionScope.Rollback();
-                return saveChangesResult.Error.ToErrors();
-            }
-
-            var commitResult = transactionScope.Commit();
-            if (commitResult.IsFailure)
-            {
-                return commitResult.Error.ToErrors();
-            }
-
-            logger.LogInformation("Success updated locations from department with id:{departmentId}",  departmentId.Value);
-
-            return departmentId.Value;
+            return getDepartmentResult.Error.ToErrors();
         }
+
+        var department = getDepartmentResult.Value;
+        department.UpdateLocations(locationIds);
+
+        var deleteLocationsResult = await departmentsRepository.DeleteAllLocationsAsync(departmentId, cancellationToken);
+        if (deleteLocationsResult.IsFailure)
+        {
+            transactionScope.Rollback();
+            return deleteLocationsResult.Error.ToErrors();
+        }
+
+        var saveChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveChangesResult.IsFailure)
+        {
+            transactionScope.Rollback();
+            return saveChangesResult.Error.ToErrors();
+        }
+
+        var commitResult = transactionScope.Commit();
+        if (commitResult.IsFailure)
+        {
+            return commitResult.Error.ToErrors();
+        }
+
+        logger.LogInformation("Success updated locations from department with id:{departmentId}",  departmentId.Value);
+
+        return departmentId.Value;
     }
 }
