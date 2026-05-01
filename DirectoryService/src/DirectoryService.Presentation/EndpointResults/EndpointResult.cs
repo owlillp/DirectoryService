@@ -6,6 +6,47 @@ using IResult = Microsoft.AspNetCore.Http.IResult;
 
 namespace DirectoryService.Presentation.EndpointResults;
 
+public sealed class EndpointResult : IResult, IEndpointMetadataProvider
+{
+    private readonly IResult _result;
+
+    public EndpointResult(UnitResult<Error> result)
+    {
+        _result = result.IsSuccess
+            ? new SuccessResult()
+            : new FailureResult(result.Error);
+    }
+
+    public EndpointResult(UnitResult<Errors> result)
+    {
+        _result = result.IsSuccess
+            ? new SuccessResult()
+            : new FailureResult(result.Error);
+    }
+
+    public async Task ExecuteAsync(HttpContext httpContext) =>
+        await _result.ExecuteAsync(httpContext);
+
+    public static implicit operator EndpointResult(UnitResult<Error> result) => new(result);
+
+    public static implicit operator EndpointResult(UnitResult<Errors> result) => new(result);
+
+    public static void PopulateMetadata(MethodInfo method, EndpointBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(method);
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(200, typeof(Envelope), ["application/json"]));
+
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(500, typeof(Envelope), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(400, typeof(Envelope), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(404, typeof(Envelope), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(401, typeof(Envelope), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(403, typeof(Envelope), ["application/json"]));
+        builder.Metadata.Add(new ProducesResponseTypeMetadata(409, typeof(Envelope), ["application/json"]));
+    }
+}
+
 public class EndpointResult<T> : IResult, IEndpointMetadataProvider
 {
     private readonly IResult _result;

@@ -13,6 +13,10 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
         builder.HasKey(d => d.Id).HasName("pk_departments");
 
+        builder.HasIndex(d => d.Path)
+            .HasMethod("gist")
+            .HasDatabaseName("ix_departments_path");
+
         builder.Property(d => d.Id)
             .HasColumnName("id")
             .HasConversion(di => di.Value, guid => new DepartmentId(guid))
@@ -36,13 +40,12 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
             .IsRequired(false)
             .HasConversion(di => di!.Value, guid => new DepartmentId(guid));
 
-        builder.ComplexProperty(d => d.Path, pb =>
-        {
-            pb.Property(p => p.Value)
-                .HasColumnName("path")
-                .HasMaxLength(LengthConstants.LENGTH_500)
-                .IsRequired();
-        });
+        builder.Property(d => d.Path)
+            .HasColumnName("path")
+            .HasColumnType("ltree")
+            .HasMaxLength(LengthConstants.LENGTH_500)
+            .IsRequired()
+            .HasConversion(p => p.Value, s => DepartmentPath.Create(s).Value);
 
         builder.Property(d => d.Depth)
             .HasColumnName("depth")
