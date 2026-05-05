@@ -13,8 +13,8 @@ public class UpdateDepartmentLocationsValidator : AbstractValidator<UpdateDepart
             .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateDepartmentLocationsCommand.Request)));
 
         RuleFor(d => d.DepartmentId)
-            .NotNull()
-            .WithError(GeneralErrors.ValueIsRequired(nameof(UpdateDepartmentLocationsCommand.DepartmentId)));
+            .NotNull().WithError(GeneralErrors.ValueIsRequired(nameof(UpdateDepartmentLocationsCommand.DepartmentId)))
+            .NotEmpty().WithError(GeneralErrors.ValueIsInvalid(nameof(UpdateDepartmentLocationsCommand.DepartmentId)));
 
         RuleForEach(c => c.Request.LocationIds)
             .NotNull()

@@ -20,5 +20,8 @@ public class DirectoryServiceDbContext(DbContextOptions<DirectoryServiceDbContex
     public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServiceDbContext).Assembly);
+    {
+        modelBuilder.HasPostgresExtension("ltree");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServiceDbContext).Assembly);
+    }
 }

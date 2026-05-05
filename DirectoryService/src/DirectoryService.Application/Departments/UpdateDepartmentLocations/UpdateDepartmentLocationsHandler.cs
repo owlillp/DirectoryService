@@ -29,7 +29,9 @@ public class UpdateDepartmentLocationsHandler(
 
         var transactionScopeResult = await transactionManager.BeginTransactionAsync(cancellationToken);
         if (transactionScopeResult.IsFailure)
+        {
             return transactionScopeResult.Error.ToErrors();
+        }
 
         var locationIds = command.Request.LocationIds
             .Select(l => new LocationId(l))

@@ -125,6 +125,21 @@ public sealed class Department
         _locations.Clear();
         _locations.AddRange(departmentLocations);
 
+        UpdatedAt = DateTime.UtcNow;
+
         return UnitResult.Success<Error>();
+    }
+
+    public void UpdateParent(Department? parent)
+    {
+        ParentId = parent?.Id;
+
+        Path = parent == null
+            ? DepartmentPath.CreateParent(Identifier)
+            : parent.Path.CreateChild(Identifier);
+
+        Depth = Path.GetDepth();
+
+        UpdatedAt = DateTime.UtcNow;
     }
 }
