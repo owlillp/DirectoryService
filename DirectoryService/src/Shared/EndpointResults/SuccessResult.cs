@@ -1,4 +1,6 @@
-﻿namespace DirectoryService.Presentation.EndpointResults;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Shared.EndpointResults;
 
 public class SuccessResult : IResult
 {

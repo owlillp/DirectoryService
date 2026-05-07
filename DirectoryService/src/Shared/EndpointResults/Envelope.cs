@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using Shared.Failures;
 
-namespace DirectoryService.Presentation.EndpointResults;
+namespace Shared.EndpointResults;
 
 public record Envelope
 {
@@ -11,16 +11,19 @@ public record Envelope
 
     public DateTime TimeGenerated { get; }
 
-    public bool IsFailure => Errors != null || (Errors != null && Errors.Any());
+    public bool IsFailure => Errors != null && Errors.Any();
 
     public bool IsSuccess => !IsFailure;
 
     [JsonConstructor]
-    private Envelope(object? result, Errors? errors)
+    private Envelope(
+        object? result,
+        Errors? errors,
+        DateTime? timeGenerated = null)
     {
         Result = result;
         Errors = errors;
-        TimeGenerated = DateTime.UtcNow;
+        TimeGenerated = timeGenerated ?? DateTime.UtcNow;
     }
 
     public static Envelope Success(object? result)
@@ -38,7 +41,7 @@ public record Envelope<T>
 
     public DateTime TimeGenerated { get; }
 
-    public bool IsFailure => Errors != null || (Errors != null && Errors.Any());
+    public bool IsFailure => Errors != null && Errors.Any();
 
     public bool IsSuccess => !IsFailure;
 

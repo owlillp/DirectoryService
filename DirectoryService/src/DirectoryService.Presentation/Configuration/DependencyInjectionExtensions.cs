@@ -2,7 +2,9 @@
 using DirectoryService.Application;
 using DirectoryService.Infrastructure.Postgres;
 using Microsoft.AspNetCore.Mvc;
+using NJsonSchema;
 using Serilog;
+using Shared.Serializations;
 
 namespace DirectoryService.Presentation.Configuration;
 
@@ -14,13 +16,26 @@ public static class DependencyInjectionExtensions
         {
             services.ConfigureSerilog(configuration);
             services.AddControllers();
-            services.AddOpenApi();
+            services.ConfigureOpenApi();
             services.ConfigureApiBehaviorOptions();
             services.ConfigureJsonOptions();
 
             services.AddApplication();
             services.AddInfrastructurePostgres(configuration);
 
+            return services;
+        }
+
+        private IServiceCollection ConfigureOpenApi()
+        {
+            services.AddOpenApiDocument(settings =>
+            {
+                settings.Title = "DirectoryServiceApi";
+                settings.Version = "v1";
+                settings.SchemaSettings.SchemaType = SchemaType.OpenApi3;
+                settings.SchemaSettings.GenerateEnumMappingDescription = true;
+                settings.SchemaSettings.SchemaProcessors.Add(new EnvelopeSchemaProcessor());
+            });
             return services;
         }
 
@@ -38,6 +53,7 @@ public static class DependencyInjectionExtensions
             services.ConfigureHttpJsonOptions(options =>
             {
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.SerializerOptions.Converters.Add(new ErrorsJsonConverter());
             });
             return services;
         }

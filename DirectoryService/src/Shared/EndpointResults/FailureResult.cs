@@ -1,6 +1,7 @@
-﻿using Shared.Failures;
+﻿using Microsoft.AspNetCore.Http;
+using Shared.Failures;
 
-namespace DirectoryService.Presentation.EndpointResults;
+namespace Shared.EndpointResults;
 
 public class FailureResult : IResult
 {

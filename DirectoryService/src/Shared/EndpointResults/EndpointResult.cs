@@ -1,10 +1,12 @@
 ﻿using System.Reflection;
 using CSharpFunctionalExtensions;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Metadata;
 using Shared.Failures;
 using IResult = Microsoft.AspNetCore.Http.IResult;
 
-namespace DirectoryService.Presentation.EndpointResults;
+namespace Shared.EndpointResults;
 
 public sealed class EndpointResult : IResult, IEndpointMetadataProvider
 {

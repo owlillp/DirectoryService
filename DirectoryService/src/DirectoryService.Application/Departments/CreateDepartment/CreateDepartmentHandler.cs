@@ -36,7 +36,7 @@ public class CreateDepartmentHandler(
             .Select(l => new LocationId(l))
             .ToArray();
 
-        var locationValidationResult = await locationsRepository.ExistAsync(locationIds, cancellationToken);
+        var locationValidationResult = await locationsRepository.ExistAndActiveAsync(locationIds, cancellationToken);
         if (locationValidationResult.IsFailure)
         {
             return locationValidationResult.Error.ToErrors();
@@ -73,8 +73,9 @@ public class CreateDepartmentHandler(
         {
             var parentId = new DepartmentId(request.ParentId.Value);
 
-            var getParentResult = await departmentsRepository
-                .GetByAsync(d => d.Id == parentId, cancellationToken);
+            var getParentResult = await departmentsRepository.GetByAsync(
+                d => d.Id == parentId && d.IsActive,
+                cancellationToken);
             if (getParentResult.IsFailure)
             {
                 return getParentResult.Error;

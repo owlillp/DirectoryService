@@ -12,8 +12,8 @@ public static class AppConfigurationExtensions
 
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
-            app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "DirectoryService"));
+            app.UseOpenApi();
+            app.UseSwaggerUI();
         }
 
         app.MapControllers();

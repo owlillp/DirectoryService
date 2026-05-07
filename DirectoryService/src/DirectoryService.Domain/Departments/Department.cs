@@ -142,4 +142,15 @@ public sealed class Department
 
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void SetActive(bool value)
+    {
+        if (IsActive == value)
+        {
+            return;
+        }
+
+        IsActive = value;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }
