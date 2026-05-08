@@ -15,7 +15,6 @@ public static class HttpResponseMessageExtensions
     {
         try
         {
-            var json = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
             var response = await httpResponse.Content.ReadFromJsonAsync<Envelope<TResponse>>(JsonOptionsProvider.Options, cancellationToken);
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -52,7 +51,8 @@ public static class HttpResponseMessageExtensions
     {
         try
         {
-            var response = await httpResponse.Content.ReadFromJsonAsync<Envelope>(cancellationToken);
+            var json = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+            var response = await httpResponse.Content.ReadFromJsonAsync<Envelope>(JsonOptionsProvider.Options, cancellationToken);
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -67,11 +67,6 @@ public static class HttpResponseMessageExtensions
             if (response is { IsFailure: true, Errors: not null })
             {
                 return response.Errors;
-            }
-
-            if (response.Result == null)
-            {
-                return Error.Failure("http.error", "Error while reading http response").ToErrors();
             }
 
             return UnitResult.Success<Errors>();

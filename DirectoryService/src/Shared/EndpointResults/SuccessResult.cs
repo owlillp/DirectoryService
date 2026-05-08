@@ -8,7 +8,7 @@ public class SuccessResult : IResult
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        var envelope = Envelope.Success(null);
+        var envelope = Envelope.Success();
 
         httpContext.Response.StatusCode = StatusCodes.Status200OK;
 
@@ -27,7 +27,7 @@ public class SuccessResult<TValue> : IResult
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        var envelope = Envelope.Success(_value);
+        var envelope = Envelope<TValue>.Success(_value);
 
         httpContext.Response.StatusCode = StatusCodes.Status200OK;
 

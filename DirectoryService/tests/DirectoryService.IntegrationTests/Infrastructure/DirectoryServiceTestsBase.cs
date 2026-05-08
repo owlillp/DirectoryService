@@ -39,7 +39,7 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
         await action(dbContext);
     }
 
-    protected async Task<LocationId> CreateLocationAsync(
+    protected async Task<Location> CreateLocationAsync(
         string name = "test_location",
         string country = "test_country",
         string city = "test_city",
@@ -70,14 +70,14 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
             dbContext.Locations.Add(location);
             await dbContext.SaveChangesAsync();
 
-            return location.Id;
+            return location;
         });
     }
 
-    protected async Task<DepartmentId> CreateDepartmentAsync(
-        string name,
-        string identifier,
+    protected async Task<Department> CreateDepartmentAsync(
         IEnumerable<Guid> locationIds,
+        string name = "test_name",
+        string identifier = "test",
         Department? parent = null,
         bool isActive = true,
         Guid? id = null)
@@ -109,7 +109,7 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
             dbContext.Departments.Add(department);
             await dbContext.SaveChangesAsync();
 
-            return department.Id;
+            return department;
         });
     }
 }

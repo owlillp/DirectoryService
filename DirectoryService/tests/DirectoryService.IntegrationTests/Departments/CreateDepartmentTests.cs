@@ -17,7 +17,8 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
+
         string nameValue = "test_name";
         string identifierValue = "test";
 
@@ -25,7 +26,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -51,7 +52,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             Assert.Equal(department.Name.Value, nameValue);
             Assert.Equal(department.Identifier.Value, identifierValue);
             Assert.Single(department.Locations);
-            Assert.Contains(locationId, department.Locations.Select(l => l.LocationId));
+            Assert.Contains(location.Id, department.Locations.Select(l => l.LocationId));
         });
     }
 
@@ -61,12 +62,12 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string parentNameValue = "parent_name";
         string parentIdentifierValue = "parent";
 
-        var parentDepartmentId = await CreateDepartmentAsync(parentNameValue, parentIdentifierValue, [ locationId.Value ]);
+        var parentDepartment = await CreateDepartmentAsync([location.Id.Value], parentNameValue, parentIdentifierValue);
 
         string childNameValue = "child_name";
         string childIdentifierValue = "child";
@@ -74,8 +75,8 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         var request = new CreateDepartmentRequest(
             childNameValue,
             childIdentifierValue,
-            parentDepartmentId.Value,
-            [locationId.Value]);
+            parentDepartment.Id.Value,
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -98,11 +99,11 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             Assert.NotNull(department);
             Assert.Equal(department.Id, targetDepartmentId);
             Assert.NotNull(department.ParentId);
-            Assert.Equal(department.ParentId, parentDepartmentId);
+            Assert.Equal(department.ParentId, parentDepartment.Id);
             Assert.Equal(department.Name.Value, childNameValue);
             Assert.Equal(department.Identifier.Value, childIdentifierValue);
             Assert.Single(department.Locations);
-            Assert.Contains(locationId, department.Locations.Select(l => l.LocationId));
+            Assert.Contains(location.Id, department.Locations.Select(l => l.LocationId));
         });
     }
 
@@ -112,13 +113,13 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        int locationsLength = 3;
-        var locationIds = new List<LocationId>();
+        const int locationsLength = 3;
+        var locations = new List<Location>();
 
         for (int i = 0; i < locationsLength; i++)
         {
-            var locationId = await CreateLocationAsync($"name_{i}", $"country_{i}");
-            locationIds.Add(locationId);
+            var location = await CreateLocationAsync($"name_{i}", $"country_{i}");
+            locations.Add(location);
         }
 
         string nameValue = "test_name";
@@ -128,7 +129,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            locationIds.Select(l => l.Value));
+            locations.Select(l => l.Id.Value));
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -153,8 +154,8 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             Assert.Null(department.ParentId);
             Assert.Equal(department.Name.Value, nameValue);
             Assert.Equal(department.Identifier.Value, identifierValue);
-            Assert.Equal(department.Locations.Count, locationsLength);
-            Assert.All(department.Locations, dl => Assert.Contains(dl.LocationId, locationIds));
+            Assert.Equal(locationsLength, department.Locations.Count);
+            Assert.All(department.Locations, dl => Assert.Contains(dl.LocationId, locations.Select(l => l.Id)));
         });
     }
 
@@ -164,19 +165,19 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        int locationsLength = 3;
-        var locationIds = new List<LocationId>();
+        const int locationsLength = 3;
+        var locations = new List<Location>();
 
         for (int i = 0; i < locationsLength; i++)
         {
-            var locationId = await CreateLocationAsync($"name_{i}", $"country_{i}");
-            locationIds.Add(locationId);
+            var location = await CreateLocationAsync($"name_{i}", $"country_{i}");
+            locations.Add(location);
         }
 
         string parentNameValue = "parent_name";
         string parentIdentifierValue = "parent";
 
-        var parentDepartmentId = await CreateDepartmentAsync(parentNameValue, parentIdentifierValue, locationIds.Select(l => l.Value));
+        var parentDepartment = await CreateDepartmentAsync(locations.Select(l => l.Id.Value), parentNameValue, parentIdentifierValue);
 
         string childNameValue = "child_name";
         string childIdentifierValue = "child";
@@ -184,8 +185,8 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         var request = new CreateDepartmentRequest(
             childNameValue,
             childIdentifierValue,
-            parentDepartmentId.Value,
-            locationIds.Select(l => l.Value));
+            parentDepartment.Id.Value,
+            locations.Select(l => l.Id.Value));
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -208,11 +209,11 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             Assert.NotNull(department);
             Assert.Equal(department.Id, targetDepartmentId);
             Assert.NotNull(department.ParentId);
-            Assert.Equal(department.ParentId, parentDepartmentId);
+            Assert.Equal(department.ParentId, parentDepartment.Id);
             Assert.Equal(department.Name.Value, childNameValue);
             Assert.Equal(department.Identifier.Value, childIdentifierValue);
-            Assert.Equal(department.Locations.Count, locationsLength);
-            Assert.All(department.Locations, dl => Assert.Contains(dl.LocationId, locationIds));
+            Assert.Equal(locationsLength, department.Locations.Count);
+            Assert.All(department.Locations, dl => Assert.Contains(dl.LocationId, locations.Select(l => l.Id)));
         });
     }
 
@@ -239,6 +240,38 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         Assert.True(createDepartmentResult.IsFailure);
         Assert.NotNull(createDepartmentResult.Error);
         Assert.Contains(createDepartmentResult.Error, e => e.Type == ErrorType.FAILURE);
+
+        await ExecuteInDb(async dbContext =>
+        {
+            int departmentsCount = await dbContext.Departments.CountAsync(cancellationToken);
+
+            Assert.Equal(0, departmentsCount);
+        });
+    }
+
+    [Fact]
+    public async Task CreateDepartment_with_empty_locations_should_fail()
+    {
+        // arrange
+        var cancellationToken = new CancellationTokenSource().Token;
+
+        string nameValue = "test_name";
+        string identifierValue = "test";
+
+        var request = new CreateDepartmentRequest(
+            nameValue,
+            identifierValue,
+            null,
+            []);
+
+        // act
+        var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+
+        // assert
+        Assert.True(createDepartmentResult.IsFailure);
+        Assert.NotNull(createDepartmentResult.Error);
+        Assert.Contains(createDepartmentResult.Error, e => e.Type == ErrorType.VALIDATION);
 
         await ExecuteInDb(async dbContext =>
         {
@@ -286,7 +319,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync(isActive: false);
+        var location = await CreateLocationAsync(isActive: false);
 
         string nameValue = "test_name";
         string identifierValue = "test";
@@ -295,7 +328,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -320,12 +353,12 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string parentNameValue = "parent_name";
         string parentIdentifierValue = "parent";
 
-        var parentDepartmentId = await CreateDepartmentAsync(parentNameValue, parentIdentifierValue, [ locationId.Value ], isActive: false);
+        var parentDepartment = await CreateDepartmentAsync([location.Id.Value], parentNameValue, parentIdentifierValue, isActive: false);
 
         string childNameValue = "child_name";
         string childIdentifierValue = "child";
@@ -333,8 +366,8 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         var request = new CreateDepartmentRequest(
             childNameValue,
             childIdentifierValue,
-            parentDepartmentId.Value,
-            [locationId.Value]);
+            parentDepartment.Id.Value,
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -359,12 +392,12 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string parentNameValue = "parent_name";
         string parentIdentifierValue = "parent";
 
-        var parentDepartmentId = await CreateDepartmentAsync(parentNameValue, parentIdentifierValue, [ locationId.Value ], isActive: false);
+        var parentDepartment = await CreateDepartmentAsync([location.Id.Value], parentNameValue, parentIdentifierValue, isActive: false);
 
         string childNameValue = "child_name";
         string childIdentifierValue = "child";
@@ -372,8 +405,8 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         var request = new CreateDepartmentRequest(
             childNameValue,
             childIdentifierValue,
-            parentDepartmentId.Value,
-            [locationId.Value]);
+            parentDepartment.Id.Value,
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -398,7 +431,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string nameValue = string.Empty;
         string identifierValue = "test";
@@ -407,7 +440,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -432,7 +465,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string nameValue = "sh";
         string identifierValue = "test";
@@ -441,7 +474,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -466,7 +499,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string nameValue = "test_name";
         string identifierValue = string.Empty;
@@ -475,7 +508,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -500,7 +533,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string nameValue = "test_name";
         string identifierValue = "sh";
@@ -509,7 +542,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
@@ -534,7 +567,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
 
-        var locationId = await CreateLocationAsync();
+        var location = await CreateLocationAsync();
 
         string nameValue = "test_name";
         string identifierValue = "тест-на-русском";
@@ -543,7 +576,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
             nameValue,
             identifierValue,
             null,
-            [locationId.Value]);
+            [location.Id.Value]);
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
