@@ -1,11 +1,14 @@
-﻿using DirectoryService.Presentation.Middlewares;
+﻿using DirectoryService.Infrastructure.Postgres.Seeding;
+using DirectoryService.Presentation.Middlewares;
 using Serilog;
 
 namespace DirectoryService.Presentation.Configuration;
 
 public static class AppConfigurationExtensions
 {
-    public static IApplicationBuilder Configure(this WebApplication app)
+    private const string SEEDING_KEY = "--seeding";
+
+    public static async Task<IApplicationBuilder> Configure(this WebApplication app, string[] args)
     {
         app.UseExceptionMiddleware();
         app.UseSerilogRequestLogging();
@@ -14,6 +17,11 @@ public static class AppConfigurationExtensions
         {
             app.UseOpenApi();
             app.UseSwaggerUI();
+
+            if (args.Contains(SEEDING_KEY))
+            {
+                await app.Services.RunSeeding();
+            }
         }
 
         app.MapControllers();

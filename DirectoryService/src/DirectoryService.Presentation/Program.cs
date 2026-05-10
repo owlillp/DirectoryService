@@ -17,7 +17,7 @@ try
 
     var app = builder.Build();
 
-    app.Configure();
+    await app.Configure(args);
 
     app.Run();
 }

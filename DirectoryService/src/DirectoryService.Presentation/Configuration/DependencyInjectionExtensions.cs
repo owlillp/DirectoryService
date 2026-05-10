@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using DirectoryService.Application;
 using DirectoryService.Infrastructure.Postgres;
+using DirectoryService.Infrastructure.Postgres.Seeding;
 using Microsoft.AspNetCore.Mvc;
 using NJsonSchema;
 using Serilog;
@@ -22,6 +23,8 @@ public static class DependencyInjectionExtensions
 
             services.AddApplication();
             services.AddInfrastructurePostgres(configuration);
+
+            services.AddSeeders();
 
             return services;
         }
