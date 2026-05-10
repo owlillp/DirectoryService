@@ -5,7 +5,7 @@ using Serilog;
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
     .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
-    .CreateBootstrapLogger();
+    .CreateLogger();
 
 try
 {
@@ -28,4 +28,9 @@ catch (Exception e)
 finally
 {
     Log.CloseAndFlush();
+}
+
+namespace DirectoryService.Presentation
+{
+    public partial class Program;
 }

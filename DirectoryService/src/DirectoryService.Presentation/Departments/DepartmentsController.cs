@@ -3,8 +3,8 @@ using DirectoryService.Application.Departments.CreateDepartment;
 using DirectoryService.Application.Departments.UpdateDepartmentLocations;
 using DirectoryService.Application.Departments.UpdateDepartmentParent;
 using DirectoryService.Contracts.Departments;
-using DirectoryService.Presentation.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
+using Shared.EndpointResults;
 
 namespace DirectoryService.Presentation.Departments;
 

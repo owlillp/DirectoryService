@@ -52,4 +52,15 @@ public sealed class Location
             address,
             timezone);
     }
+
+    public void SetActive(bool value)
+    {
+        if (IsActive == value)
+        {
+            return;
+        }
+
+        IsActive = value;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

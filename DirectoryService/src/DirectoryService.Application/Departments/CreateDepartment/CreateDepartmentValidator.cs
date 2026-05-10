@@ -23,11 +23,11 @@ public class CreateDepartmentValidator : AbstractValidator<CreateDepartmentComma
             .NotNull()
             .WithError(GeneralErrors.ValueIsRequired(nameof(CreateDepartmentCommand.Request.LocationIds)));
 
-        RuleFor(p => p.Request.LocationIds)
+        RuleFor(c => c.Request.LocationIds)
             .Must(locationIds => locationIds.Any())
             .WithError(GeneralErrors.InvalidLength(nameof(CreateDepartmentCommand.Request.LocationIds)));
 
-        RuleFor(p => p.Request.LocationIds)
+        RuleFor(c => c.Request.LocationIds)
             .Must(locationIds =>
             {
                 var enumerable = locationIds.ToArray();

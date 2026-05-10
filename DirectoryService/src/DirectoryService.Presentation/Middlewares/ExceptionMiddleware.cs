@@ -1,5 +1,5 @@
 ﻿using DirectoryService.Application.Exceptions;
-using DirectoryService.Presentation.EndpointResults;
+using Shared.EndpointResults;
 using Shared.Failures;
 
 namespace DirectoryService.Presentation.Middlewares;

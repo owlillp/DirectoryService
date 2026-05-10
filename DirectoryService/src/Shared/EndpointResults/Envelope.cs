@@ -1,33 +1,32 @@
 ﻿using System.Text.Json.Serialization;
 using Shared.Failures;
 
-namespace DirectoryService.Presentation.EndpointResults;
+namespace Shared.EndpointResults;
 
 public record Envelope
 {
-    public object? Result { get; }
-
     public Errors? Errors { get; }
 
     public DateTime TimeGenerated { get; }
 
-    public bool IsFailure => Errors != null || (Errors != null && Errors.Any());
+    public bool IsFailure => Errors != null && Errors.Any();
 
     public bool IsSuccess => !IsFailure;
 
     [JsonConstructor]
-    private Envelope(object? result, Errors? errors)
+    private Envelope(Errors? errors = null, DateTime timeGenerated = default)
     {
-        Result = result;
         Errors = errors;
-        TimeGenerated = DateTime.UtcNow;
+        TimeGenerated = timeGenerated == default
+            ? DateTime.UtcNow
+            : timeGenerated;
     }
 
-    public static Envelope Success(object? result)
-        => new(result, null);
+    public static Envelope Success()
+        => new();
 
     public static Envelope Failure(Errors? errors)
-        => new(null, errors);
+        => new(errors);
 }
 
 public record Envelope<T>
@@ -38,16 +37,18 @@ public record Envelope<T>
 
     public DateTime TimeGenerated { get; }
 
-    public bool IsFailure => Errors != null || (Errors != null && Errors.Any());
+    public bool IsFailure => Errors != null && Errors.Any();
 
     public bool IsSuccess => !IsFailure;
 
     [JsonConstructor]
-    private Envelope(T? result, Errors? errors)
+    private Envelope(T? result, Errors? errors, DateTime timeGenerated = default)
     {
         Result = result;
         Errors = errors;
-        TimeGenerated = DateTime.UtcNow;
+        TimeGenerated = timeGenerated == default
+            ? DateTime.UtcNow
+            : timeGenerated;
     }
 
     public static Envelope<T> Success(T? result)
