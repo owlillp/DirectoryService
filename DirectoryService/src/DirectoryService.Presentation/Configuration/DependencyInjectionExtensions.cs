@@ -24,8 +24,6 @@ public static class DependencyInjectionExtensions
             services.AddApplication();
             services.AddInfrastructurePostgres(configuration);
 
-            services.AddSeeders();
-
             return services;
         }
 
