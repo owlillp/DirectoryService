@@ -11,8 +11,10 @@ public static class DependencyInjectionExtensions
         var assembly = typeof(DependencyInjectionExtensions).Assembly;
 
         services.Scan(scan => scan.FromAssemblies(assembly)
-            .AddClasses(classes => classes
-                .AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
+            .AddClasses(classes => classes.AssignableToAny(
+                typeof(ICommandHandler<,>),
+                typeof(ICommandHandler<>),
+                typeof(IQueryHandler<,>)))
             .AsImplementedInterfaces()
             .WithScopedLifetime());
 

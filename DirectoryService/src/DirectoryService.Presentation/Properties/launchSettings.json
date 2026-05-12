@@ -9,7 +9,8 @@
       "launchUrl": "http://localhost:5209/swagger/index.html",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "commandLineArgs": "--seeding"
     },
     "https": {
       "commandName": "Project",

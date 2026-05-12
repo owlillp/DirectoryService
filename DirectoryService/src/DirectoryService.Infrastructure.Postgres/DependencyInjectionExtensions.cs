@@ -6,6 +6,7 @@ using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Departments;
 using DirectoryService.Infrastructure.Postgres.Locations;
 using DirectoryService.Infrastructure.Postgres.Positions;
+using DirectoryService.Infrastructure.Postgres.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,13 +19,29 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddInfrastructurePostgres(this IServiceCollection services, IConfiguration configuration)
     {
+        AddDbContext(services, configuration);
+
+        AddRepositories(services);
+
+        services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+        services.AddScoped<ITransactionManager, TransactionManager>();
+        services.AddSeeders();
+
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+        return services;
+    }
+
+    private static void AddDbContext(IServiceCollection services, IConfiguration configuration)
+    {
+        string? dbConnectionString = configuration.GetConnectionString(Constants.DATABASE_CONNECTION_STRING);
+
         services.AddDbContextPool<DirectoryServiceDbContext>((sp, options) =>
         {
-            string? connectionString = configuration.GetConnectionString(Constants.DATABASE_CONNECTION_STRING);
             var hostEnvironment = sp.GetRequiredService<IHostEnvironment>();
             var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-            options.UseNpgsql(connectionString);
+            options.UseNpgsql(dbConnectionString);
             options.UseLoggerFactory(loggerFactory);
 
             if (hostEnvironment.IsDevelopment())
@@ -32,14 +49,22 @@ public static class DependencyInjectionExtensions
                 options.EnableSensitiveDataLogging();
                 options.EnableDetailedErrors();
             }
-
         });
 
-        AddRepositories(services);
+        services.AddDbContextPool<IReadDbContext, DirectoryServiceDbContext>((sp, options) =>
+        {
+            var hostEnvironment = sp.GetRequiredService<IHostEnvironment>();
+            var loggerFactory = sp.GetRequiredService<ILoggerFactory>();
 
-        services.AddScoped<ITransactionManager, TransactionManager>();
+            options.UseNpgsql(dbConnectionString);
+            options.UseLoggerFactory(loggerFactory);
 
-        return services;
+            if (hostEnvironment.IsDevelopment())
+            {
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
+            }
+        });
     }
 
     private static IServiceCollection AddRepositories(IServiceCollection services)
