@@ -1,6 +1,8 @@
 ﻿using DirectoryService.Domain.DepartmentLocations;
+using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
+using DirectoryService.Domain.Positions;
 using DirectoryService.Infrastructure.Postgres;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -110,6 +112,31 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
             await dbContext.SaveChangesAsync();
 
             return department;
+        });
+    }
+
+    protected async Task<Position> CreatePositionAsync(
+        IEnumerable<Guid> departmentsIds,
+        string name = "test_name",
+        Guid? id = null)
+    {
+        var departmentsList = departmentsIds.Select(d => new DepartmentId(d)).ToList();
+
+        return await ExecuteInDb(async dbContext =>
+        {
+
+            var positionId = new PositionId(id ?? Guid.NewGuid());
+            var positionsName = PositionName.Create(name).Value;
+
+            var position = Position.Create(
+                positionsName,
+                null,
+                departmentsList.Select(d => new DepartmentPosition(d, positionId)));
+
+            dbContext.Positions.Add(position);
+            await dbContext.SaveChangesAsync();
+
+            return position;
         });
     }
 }

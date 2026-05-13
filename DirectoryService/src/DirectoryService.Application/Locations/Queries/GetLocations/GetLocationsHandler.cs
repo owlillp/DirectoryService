@@ -4,7 +4,7 @@ using Dapper;
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Locations;
+using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Locations.Responses;
 using FluentValidation;
 using Shared.Failures;

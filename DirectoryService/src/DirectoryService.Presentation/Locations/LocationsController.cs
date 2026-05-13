@@ -1,7 +1,6 @@
 ﻿using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Locations.Commands.CreateLocation;
 using DirectoryService.Application.Locations.Queries.GetLocations;
-using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.Requests;
 using DirectoryService.Contracts.Locations.Responses;
 using Microsoft.AspNetCore.Mvc;
