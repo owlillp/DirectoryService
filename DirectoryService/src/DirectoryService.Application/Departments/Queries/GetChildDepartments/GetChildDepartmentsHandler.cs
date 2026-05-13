@@ -1,0 +1,75 @@
+﻿using System.Data;
+using CSharpFunctionalExtensions;
+using Dapper;
+using DirectoryService.Application.Abstractions;
+using DirectoryService.Application.Abstractions.Database;
+using DirectoryService.Application.Validation;
+using DirectoryService.Contracts.Departments.Dtos;
+using DirectoryService.Contracts.Departments.Responses;
+using FluentValidation;
+using Shared.Failures;
+
+namespace DirectoryService.Application.Departments.Queries.GetChildDepartments;
+
+public class GetChildDepartmentsHandler(
+    IValidator<GetChildDepartmentsQuery> validator,
+    IDbConnectionFactory connectionFactory)
+    : IQueryHandler<GetChildDepartmentsResponse, GetChildDepartmentsQuery>
+{
+    private const string CHILD_LIMIT_PARAMETER = "child_limit";
+    private const string CHILD_OFFSET_PARAMETER = "child_offset";
+    private const string ROOT_ID_PARAMETER = "root_id";
+
+    public async Task<Result<GetChildDepartmentsResponse, Errors>> Handle(
+        GetChildDepartmentsQuery query,
+        CancellationToken cancellationToken)
+    {
+        var validationResult = await validator.ValidateAsync(query, cancellationToken);
+        if (!validationResult.IsValid)
+        {
+            return validationResult.ToErrors();
+        }
+
+        var request = query.Request;
+
+        var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        int offset = (request.Page - 1) * request.Size;
+
+        var parameters = new DynamicParameters();
+        parameters.Add(CHILD_LIMIT_PARAMETER, request.Size, DbType.Int32);
+        parameters.Add(CHILD_OFFSET_PARAMETER, offset, DbType.Int32);
+        parameters.Add(ROOT_ID_PARAMETER, query.ParentId, DbType.Guid);
+
+        long? childCount = null;
+
+        var departmentDtoList = (await connection.QueryAsync<DepartmentDto, long, DepartmentDto>(
+            $"""
+             SELECT  d.id,
+                     d.name,
+                     d.identifier,
+                     d.parent_id,
+                     d.path,
+                     d.depth,
+                     d.is_active,
+                     d.created_at,
+                     d.updated_at,
+                     EXISTS(SELECT 1 FROM departments c WHERE c.parent_id = d.Id AND c.is_active = true) AS has_more_children,
+                     COUNT(*) OVER () AS child_count
+             FROM departments d
+             WHERE d.parent_id = @{ROOT_ID_PARAMETER} AND d.is_active = TRUE
+             ORDER BY d.created_at, d.name
+             OFFSET @{CHILD_OFFSET_PARAMETER}
+             LIMIT @{CHILD_LIMIT_PARAMETER}
+             """,
+            param: parameters,
+            splitOn: "child_count",
+            map: (departmentDto, totalChildCount) =>
+            {
+                childCount ??= totalChildCount;
+                return departmentDto;
+            })).ToList();
+
+        return new GetChildDepartmentsResponse(query.ParentId, departmentDtoList, childCount ?? 0);
+    }
+}

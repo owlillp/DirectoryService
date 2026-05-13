@@ -124,7 +124,6 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
 
         return await ExecuteInDb(async dbContext =>
         {
-
             var positionId = new PositionId(id ?? Guid.NewGuid());
             var positionsName = PositionName.Create(name).Value;
 
