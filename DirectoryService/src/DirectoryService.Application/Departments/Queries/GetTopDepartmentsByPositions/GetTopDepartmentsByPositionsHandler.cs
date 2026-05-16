@@ -10,7 +10,7 @@ using Shared.Failures;
 
 namespace DirectoryService.Application.Departments.Queries.GetTopDepartmentsByPositions;
 
-public class GetTopDepartmentsByPositionsQueryHandler(
+public class GetTopDepartmentsByPositionsHandler(
     IValidator<GetTopDepartmentsByPositionQuery> validator,
     IDbConnectionFactory connectionFactory) :
     IQueryHandler<GetTopDepartmentsByPositionsResponse, GetTopDepartmentsByPositionQuery>

@@ -2,8 +2,9 @@
 using DirectoryService.Application.Departments.Commands.CreateDepartment;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocations;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentParent;
+using DirectoryService.Application.Departments.Queries.GetChildDepartments;
+using DirectoryService.Application.Departments.Queries.GetRootDepartments;
 using DirectoryService.Application.Departments.Queries.GetTopDepartmentsByPositions;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.Contracts.Departments.Responses;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,27 @@ public class DepartmentsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var query = new GetTopDepartmentsByPositionQuery(topCount);
+        return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet("roots")]
+    public async Task<EndpointResult<GetRootDepartmentsResponse>> GetRootDepartments(
+        [FromServices] IQueryHandler<GetRootDepartmentsResponse, GetRootDepartmentsQuery> handler,
+        [FromQuery] GetRootDepartmentsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetRootDepartmentsQuery(request);
+        return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet("{parentId:guid}/children")]
+    public async Task<EndpointResult<GetChildDepartmentsResponse>> GetChildDepartmentsByParentId(
+        [FromServices] IQueryHandler<GetChildDepartmentsResponse, GetChildDepartmentsQuery> handler,
+        [FromRoute] Guid parentId,
+        [FromQuery] GetChildDepartmentsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetChildDepartmentsQuery(parentId, request);
         return await handler.Handle(query, cancellationToken);
     }
 }
