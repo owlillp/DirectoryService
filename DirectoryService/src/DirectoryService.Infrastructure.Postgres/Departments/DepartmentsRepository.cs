@@ -118,13 +118,13 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
 
     public async Task<UnitResult<Error>> LockDescendantsAsync(DepartmentPath rootPath, CancellationToken cancellationToken)
     {
-        var sql = """
-                  SELECT id
-                  FROM departments
-                  WHERE path <@ @rootPath::ltree
-                  AND path != @rootPath::ltree
-                  FOR UPDATE
-                  """;
+        string sql = """
+                     SELECT id
+                     FROM departments
+                     WHERE path <@ @rootPath::ltree
+                     AND path != @rootPath::ltree
+                     FOR UPDATE
+                     """;
 
         try
         {
@@ -147,15 +147,15 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
 
     public async Task<UnitResult<Error>> UpdateDescendantsPathAsync(DepartmentPath destinationPath, DepartmentPath sourcePath, CancellationToken cancellationToken)
     {
-        var sql = """
-                  UPDATE departments
-                  SET 
-                      path = @sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree)),
-                      depth = nlevel(@sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree))) - 1,
-                      updated_at = NOW()
-                  WHERE path <@ @destinationPath::ltree
-                  AND path != @destinationPath::ltree
-                  """;
+        string sql = """
+                     UPDATE departments
+                     SET 
+                         path = @sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree)),
+                         depth = nlevel(@sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree))) - 1,
+                         updated_at = NOW()
+                     WHERE path <@ @destinationPath::ltree
+                     AND path != @destinationPath::ltree
+                     """;
 
         try
         {
@@ -184,6 +184,60 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
                 "Unexpected error while while update descendants path from: {destinationPath} to: {sourcePath}",
                 destinationPath.Value,
                 sourcePath.Value);
+
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<UnitResult<Error>> DeactivateUnusedReferencesAsync(DepartmentId departmentId, CancellationToken cancellationToken)
+    {
+        string sql = """
+                     UPDATE locations 
+                     SET is_active = FALSE,
+                         deleted_at = NOW()
+                     WHERE is_active = TRUE
+                        AND id IN (
+                            SELECT dl.location_id
+                            FROM department_locations dl
+                            WHERE dl.department_id = @departmentId
+                                AND NOT EXISTS (
+                                    SELECT 1 FROM department_locations rdl
+                                    JOIN departments rd ON rdl.department_id = rd.id
+                                    WHERE rdl.location_id = dl.location_id
+                                        AND rd.is_active = TRUE
+                                        AND rdl.department_id != @departmentId));
+
+                     UPDATE positions 
+                     SET is_active = FALSE,
+                         deleted_at = NOW()
+                     WHERE is_active = TRUE
+                        AND id IN (
+                            SELECT dp.position_id
+                            FROM department_positions dp
+                            WHERE dp.department_id = @departmentId
+                                AND NOT EXISTS (
+                                    SELECT 1 FROM department_positions rdp
+                                    JOIN departments rd ON rdp.department_id = rd.id
+                                    WHERE rdp.position_id = dp.position_id
+                                        AND rd.is_active = TRUE
+                                        AND rdp.department_id != @departmentId));
+                     """;
+
+        try
+        {
+            await dbContext.Database.ExecuteSqlRawAsync(
+                sql,
+                [new NpgsqlParameter("departmentId", departmentId.Value)],
+                cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Unexpected error while while deactivating unused references for department {DepartmentId}",
+                departmentId.Value);
 
             return GeneralErrors.Failure();
         }

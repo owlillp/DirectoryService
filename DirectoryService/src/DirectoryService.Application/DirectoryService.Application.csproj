@@ -21,7 +21,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Departments\Commands\" />
       <Folder Include="Locations\Commands\" />
       <Folder Include="Positions\Commands\" />
       <Folder Include="Positions\Queries\" />

@@ -6,6 +6,7 @@ namespace DirectoryService.Domain.Departments;
 public record DepartmentPath
 {
     private const char PATH_SEPARATOR = '.';
+    private const string DELETED_PREFIX = "deleted_";
 
     // EF Core
     private DepartmentPath() { }
@@ -35,4 +36,16 @@ public record DepartmentPath
 
     public short GetDepth()
         => (short)(Value.Split('.').Length - 1);
+
+    public DepartmentPath AddSoftDeletePrefix()
+    {
+        string[] pathParts = Value.Split(PATH_SEPARATOR);
+        if (!pathParts[^1].StartsWith(DELETED_PREFIX))
+        {
+            pathParts[^1] = DELETED_PREFIX + pathParts[^1];
+        }
+
+        string pathValue = string.Join(PATH_SEPARATOR, pathParts);
+        return new DepartmentPath(pathValue);
+    }
 }

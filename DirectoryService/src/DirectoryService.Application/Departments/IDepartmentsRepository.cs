@@ -20,4 +20,6 @@ public interface IDepartmentsRepository
     Task<UnitResult<Error>> LockDescendantsAsync(DepartmentPath rootPath, CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> UpdateDescendantsPathAsync(DepartmentPath destinationPath, DepartmentPath sourcePath, CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> DeactivateUnusedReferencesAsync(DepartmentId departmentId, CancellationToken cancellationToken);
 }

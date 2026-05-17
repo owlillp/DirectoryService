@@ -67,7 +67,10 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
 
             var location = Location.Create(locationName, locationAddress, locationTimeZone, locationId);
 
-            location.SetActive(isActive);
+            if (!isActive)
+            {
+                location.Deactivate();
+            }
 
             dbContext.Locations.Add(location);
             await dbContext.SaveChangesAsync();
@@ -106,7 +109,10 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
                     departmentLocations,
                     departmentId).Value;
 
-            department.SetActive(isActive);
+            if (!isActive)
+            {
+                department.Deactivate();
+            }
 
             dbContext.Departments.Add(department);
             await dbContext.SaveChangesAsync();

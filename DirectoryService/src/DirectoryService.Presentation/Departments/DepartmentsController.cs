@@ -1,5 +1,6 @@
 ﻿using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Departments.Commands.CreateDepartment;
+using DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentLocations;
 using DirectoryService.Application.Departments.Commands.UpdateDepartmentParent;
 using DirectoryService.Application.Departments.Queries.GetChildDepartments;
@@ -77,5 +78,15 @@ public class DepartmentsController : ControllerBase
     {
         var query = new GetChildDepartmentsQuery(parentId, request);
         return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpDelete("{departmentId:guid}")]
+    public async Task<EndpointResult> SoftDelete(
+        [FromRoute] Guid departmentId,
+        [FromServices] ICommandHandler<SoftDeleteDepartmentCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new SoftDeleteDepartmentCommand(departmentId);
+        return await handler.Handle(command, cancellationToken);
     }
 }

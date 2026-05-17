@@ -54,6 +54,8 @@ public sealed class Department
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; private set; }
+
     public IReadOnlyList<DepartmentPosition> Positions => _positions;
 
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
@@ -143,14 +145,13 @@ public sealed class Department
         UpdatedAt = DateTime.UtcNow;
     }
 
-    public void SetActive(bool value)
+    public void Deactivate()
     {
-        if (IsActive == value)
-        {
-            return;
-        }
+        IsActive = false;
 
-        IsActive = value;
+        Path = Path.AddSoftDeletePrefix();
+
+        DeletedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 }

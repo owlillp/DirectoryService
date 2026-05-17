@@ -62,5 +62,9 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.Property(d => d.UpdatedAt)
             .HasColumnName("updated_at")
             .IsRequired();
+
+        builder.Property(d => d.DeletedAt)
+            .HasColumnName("deleted_at")
+            .IsRequired(false);
     }
 }
