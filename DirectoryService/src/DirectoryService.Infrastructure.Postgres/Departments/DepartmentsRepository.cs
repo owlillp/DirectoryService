@@ -154,7 +154,7 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
                          depth = nlevel(@sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree))) - 1,
                          updated_at = NOW()
                      WHERE path <@ @destinationPath::ltree
-                     AND path != @destinationPath::ltree
+                        AND path != @destinationPath::ltree
                      """;
 
         try

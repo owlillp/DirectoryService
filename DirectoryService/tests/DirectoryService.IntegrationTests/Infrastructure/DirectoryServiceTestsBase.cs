@@ -1,10 +1,13 @@
-﻿using DirectoryService.Domain.DepartmentLocations;
+﻿using Dapper;
+using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Positions;
 using DirectoryService.Infrastructure.Postgres;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 
 namespace DirectoryService.IntegrationTests.Infrastructure;
 
@@ -142,6 +145,41 @@ public class DirectoryServiceTestsBase(IntegrationTestsWebFactory factory)
             await dbContext.SaveChangesAsync();
 
             return position;
+        });
+    }
+
+    protected async Task DisableDepartmentAtDateAsync(DepartmentId departmentId, DateTime deletedDate)
+    {
+        await ExecuteInDb(async dbContext =>
+        {
+            var department = await dbContext.Departments.FirstAsync(d => d.Id == departmentId);
+
+            var destinationPath = department.Path;
+
+            department.Deactivate();
+
+            var sourcePath = department.Path;
+
+            await dbContext.SaveChangesAsync();
+
+            await dbContext.Departments.Where(d => d.Id == departmentId)
+                .ExecuteUpdateAsync(setter
+                    => setter.SetProperty(d => d.DeletedAt, deletedDate));
+
+            string updateChildSql = """
+                     UPDATE departments
+                     SET 
+                         path = @sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree)),
+                         depth = nlevel(@sourcePath::ltree || subpath(path, nlevel(@destinationPath::ltree))) - 1,
+                         updated_at = NOW()
+                     WHERE path <@ @destinationPath::ltree
+                        AND path != @destinationPath::ltree
+                     """;
+
+            await dbContext.Database.ExecuteSqlRawAsync(
+                updateChildSql,
+                new NpgsqlParameter("sourcePath", sourcePath.Value),
+                new NpgsqlParameter("destinationPath", destinationPath.Value));
         });
     }
 }

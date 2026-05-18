@@ -4,6 +4,7 @@ using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
 using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Departments;
+using DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
 using DirectoryService.Infrastructure.Postgres.Locations;
 using DirectoryService.Infrastructure.Postgres.Positions;
 using DirectoryService.Infrastructure.Postgres.Seeding;
@@ -26,6 +27,8 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
         services.AddScoped<ITransactionManager, TransactionManager>();
         services.AddSeeders();
+
+        AddBackgroundServices(services);
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -72,6 +75,18 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ILocationsRepository, LocationsRepository>();
         services.AddScoped<IPositionsRepository, PositionsRepository>();
         services.AddScoped<IDepartmentsRepository, DepartmentsRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddBackgroundServices(IServiceCollection services)
+    {
+        services.AddOptions<DepartmentsCleanupOptions>()
+            .BindConfiguration(Constants.DEPARTMENT_CLEANUP_OPTIONS_SECTION)
+            .ValidateOnStart();
+
+        services.AddScoped<DepartmentsCleanupService>();
+        services.AddHostedService<DepartmentsCleanupBackgroundService>();
 
         return services;
     }
