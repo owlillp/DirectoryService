@@ -51,7 +51,6 @@ public static class HttpResponseMessageExtensions
     {
         try
         {
-            var json = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
             var response = await httpResponse.Content.ReadFromJsonAsync<Envelope>(JsonOptionsProvider.Options, cancellationToken);
 
             if (!httpResponse.IsSuccessStatusCode)

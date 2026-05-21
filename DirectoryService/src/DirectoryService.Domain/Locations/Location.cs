@@ -38,6 +38,8 @@ public sealed class Location
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; private set; }
+
     public IReadOnlyList<DepartmentLocation> Departments => _departments;
 
     public static Location Create(
@@ -53,14 +55,15 @@ public sealed class Location
             timezone);
     }
 
-    public void SetActive(bool value)
+    public void Deactivate()
     {
-        if (IsActive == value)
+        if (!IsActive)
         {
             return;
         }
 
-        IsActive = value;
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -37,6 +37,8 @@ public class Position
 
     public DateTime UpdatedAt { get; private set; }
 
+    public DateTime? DeletedAt { get; private set; }
+
     public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
     public static Position Create(
@@ -48,4 +50,16 @@ public class Position
             name,
             description,
             departments);
+
+    public void Deactivate()
+    {
+        if (!IsActive)
+        {
+            return;
+        }
+
+        IsActive = false;
+        DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

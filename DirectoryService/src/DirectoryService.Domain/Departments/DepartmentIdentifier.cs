@@ -6,6 +6,8 @@ namespace DirectoryService.Domain.Departments;
 
 public record DepartmentIdentifier
 {
+    private const char SEPARATOR = '_';
+
     // EF Core
     private DepartmentIdentifier() { }
 
@@ -25,7 +27,7 @@ public record DepartmentIdentifier
             return GeneralErrors.InvalidLength(nameof(DepartmentIdentifier));
         }
 
-        if (!value.All(char.IsAsciiLetter))
+        if (!value.All(c => char.IsAsciiLetter(c) || c == SEPARATOR))
         {
             return GeneralErrors.InvalidCharacters(nameof(DepartmentIdentifier));
         }

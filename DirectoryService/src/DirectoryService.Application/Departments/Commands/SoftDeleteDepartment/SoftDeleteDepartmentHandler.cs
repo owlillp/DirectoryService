@@ -2,25 +2,22 @@
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Departments.Failures;
-using DirectoryService.Application.Locations;
 using DirectoryService.Application.Validation;
 using DirectoryService.Domain.Departments;
-using DirectoryService.Domain.Locations;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.Failures;
 
-namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentLocations;
+namespace DirectoryService.Application.Departments.Commands.SoftDeleteDepartment;
 
-public class UpdateDepartmentLocationsHandler(
-    ILogger<UpdateDepartmentLocationsHandler> logger,
-    IValidator<UpdateDepartmentLocationsCommand> validator,
+public class SoftDeleteDepartmentHandler(
+    ILogger<SoftDeleteDepartmentHandler> logger,
+    IValidator<SoftDeleteDepartmentCommand> validator,
     ITransactionManager transactionManager,
-    IDepartmentsRepository departmentsRepository,
-    ILocationsRepository locationsRepository
-    ) : ICommandHandler<Guid, UpdateDepartmentLocationsCommand>
+    IDepartmentsRepository departmentsRepository)
+    : ICommandHandler<SoftDeleteDepartmentCommand>
 {
-    public async Task<Result<Guid, Errors>> Handle(UpdateDepartmentLocationsCommand command, CancellationToken cancellationToken)
+    public async Task<UnitResult<Errors>> Handle(SoftDeleteDepartmentCommand command, CancellationToken cancellationToken)
     {
         var validationResult = await validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
@@ -32,21 +29,6 @@ public class UpdateDepartmentLocationsHandler(
         if (transactionScopeResult.IsFailure)
         {
             return transactionScopeResult.Error.ToErrors();
-        }
-
-        var locationIds = command.Request.LocationIds
-            .Select(l => new LocationId(l))
-            .ToArray();
-
-        var locationValidationResult = await locationsRepository.ExistAndActiveAsync(locationIds, cancellationToken);
-        if (locationValidationResult.IsFailure)
-        {
-            return locationValidationResult.Error.ToErrors();
-        }
-
-        if (!locationValidationResult.Value)
-        {
-            return GeneralErrors.NotFound(nameof(Location)).ToErrors();
         }
 
         using var transactionScope = transactionScopeResult.Value;
@@ -68,13 +50,29 @@ public class UpdateDepartmentLocationsHandler(
             return DepartmentsErrors.Inactive(departmentId.Value).ToErrors();
         }
 
-        department.UpdateLocations(locationIds);
+        var destinationPath = department.Path;
 
-        var deleteLocationsResult = await departmentsRepository.DeleteAllLocationsAsync(departmentId, cancellationToken);
-        if (deleteLocationsResult.IsFailure)
+        department.Deactivate();
+
+        var lockDescendantsResult = await departmentsRepository.LockDescendantsAsync(destinationPath, cancellationToken);
+        if (lockDescendantsResult.IsFailure)
         {
             transactionScope.Rollback();
-            return deleteLocationsResult.Error.ToErrors();
+            return lockDescendantsResult.Error.ToErrors();
+        }
+
+        var updateDescendantsPathResult = await departmentsRepository.UpdateDescendantsPathAsync(destinationPath, department.Path, cancellationToken);
+        if (updateDescendantsPathResult.IsFailure)
+        {
+            transactionScope.Rollback();
+            return updateDescendantsPathResult.Error.ToErrors();
+        }
+
+        var deactivateUnusedReferencesResult = await departmentsRepository.DeactivateUnusedReferencesAsync(departmentId, cancellationToken);
+        if (deactivateUnusedReferencesResult.IsFailure)
+        {
+            transactionScope.Rollback();
+            return deactivateUnusedReferencesResult.Error.ToErrors();
         }
 
         var saveChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
@@ -90,8 +88,8 @@ public class UpdateDepartmentLocationsHandler(
             return commitResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Success updated locations from department with id:{departmentId}",  departmentId.Value);
+        logger.LogInformation("Success soft delete department with id:{departmentId}", departmentId);
 
-        return departmentId.Value;
+        return UnitResult.Success<Errors>();
     }
 }
