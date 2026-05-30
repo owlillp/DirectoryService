@@ -1,22 +1,30 @@
 ﻿using Dapper;
 using DirectoryService.Application.Abstractions.Database;
+using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
 
 public class DepartmentsCleanupService(
     ILogger<DepartmentsCleanupService> logger,
+    IOptions<DepartmentsCleanupOptions> options,
     IDbConnectionFactory connectionFactory)
+    : CleanupServiceBase(logger, options.Value)
 {
     private const string THRESHOLD_DAYS_PARAMETER = "threshold_days";
+    private const string BATCH_SIZE_PARAMETER = "batch_size";
 
-    public async Task<int> CleanupAsync(int thresholdDays, CancellationToken cancellationToken)
+    public override string Name => nameof(DepartmentsCleanupService);
+
+    protected override async Task<int> CleanupBatchAsync(int thresholdDays, int batchSize, CancellationToken cancellationToken)
     {
         using var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
         using var transaction = connection.BeginTransaction();
 
         var parameters = new DynamicParameters();
         parameters.Add(THRESHOLD_DAYS_PARAMETER, thresholdDays);
+        parameters.Add(BATCH_SIZE_PARAMETER, batchSize);
 
         string sql = $"""
                       CREATE TEMP TABLE tmp_delete_candidates AS
@@ -27,8 +35,9 @@ public class DepartmentsCleanupService(
                       FROM departments d
                       WHERE d.is_active = FALSE
                         AND d.deleted_at IS NOT NULL
-                        AND d.deleted_at < NOW() - make_interval(days => @{THRESHOLD_DAYS_PARAMETER});
-                        
+                        AND d.deleted_at < NOW() - make_interval(days => @{THRESHOLD_DAYS_PARAMETER})
+                      LIMIT @{BATCH_SIZE_PARAMETER};
+                      
                       CREATE TEMP TABLE tmp_reparent AS
                       WITH RECURSIVE parents AS (
                           SELECT child.id AS child_id,
@@ -114,11 +123,9 @@ public class DepartmentsCleanupService(
 
             return deletedCount;
         }
-        catch (Exception ex)
+        catch
         {
             transaction.Rollback();
-
-            logger.LogError(ex, "Error occurred while executing cleanup department.");
             throw;
         }
     }

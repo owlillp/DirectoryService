@@ -685,6 +685,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await using var scope = Services.CreateAsyncScope();
 
         var sut = scope.ServiceProvider.GetRequiredService<DepartmentsCleanupService>();
-        return await sut.CleanupAsync(thresholdDays, cancellationToken);
+        return await sut.CleanupAsync(cancellationToken);
     }
 }
