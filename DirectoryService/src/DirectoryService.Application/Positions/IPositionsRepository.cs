@@ -12,4 +12,8 @@ public interface IPositionsRepository
     Task<Result<Position, Error>> GetByAsync(Expression<Func<Position, bool>> expression, CancellationToken cancellationToken);
 
     Task<Result<bool, Error>> IsNameUniqueAsync(PositionName positionName, CancellationToken cancellationToken);
+
+    Task<Result<Position, Error>> GetByIdWithLockAsync(PositionId positionId, CancellationToken cancellationToken);
+
+    Task<Result<Position, Error>> GetByIdWithLock(PositionId positionId, CancellationToken cancellationToken);
 }

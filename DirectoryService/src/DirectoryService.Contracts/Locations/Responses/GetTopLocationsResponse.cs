@@ -2,4 +2,4 @@
 
 namespace DirectoryService.Contracts.Locations.Responses;
 
-public record GetLocationsResponse(IReadOnlyList<LocationDto> Locations, long TotalCount);
+public record GetTopLocationsResponse(IReadOnlyList<TopLocationDto> Locations, int Count);

@@ -20,15 +20,33 @@ public class DirectoryServiceDbContext(DbContextOptions<DirectoryServiceDbContex
 
     public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
 
-    public IQueryable<Department> DepartmentsRead => Set<Department>().AsQueryable().AsNoTracking();
+    public IQueryable<Department> DepartmentsRead
+        => Set<Department>()
+            .Where(d => d.IsActive)
+            .AsQueryable()
+            .AsNoTracking();
 
-    public IQueryable<DepartmentLocation> DepartmentLocationsRead => Set<DepartmentLocation>().AsQueryable().AsNoTracking();
+    public IQueryable<DepartmentLocation> DepartmentLocationsRead
+        => Set<DepartmentLocation>()
+            .AsQueryable()
+            .AsNoTracking();
 
-    public IQueryable<DepartmentPosition> DepartmentPositionsRead => Set<DepartmentPosition>().AsQueryable().AsNoTracking();
+    public IQueryable<DepartmentPosition> DepartmentPositionsRead
+        => Set<DepartmentPosition>()
+            .AsQueryable()
+            .AsNoTracking();
 
-    public IQueryable<Location> LocationsRead => Set<Location>().AsQueryable().AsNoTracking();
+    public IQueryable<Location> LocationsRead
+        => Set<Location>()
+            .Where(l => l.IsActive)
+            .AsQueryable()
+            .AsNoTracking();
 
-    public IQueryable<Position> PositionsRead => Set<Position>().AsQueryable().AsNoTracking();
+    public IQueryable<Position> PositionsRead
+        => Set<Position>()
+            .Where(p => p.IsActive)
+            .AsQueryable()
+            .AsNoTracking();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -4,8 +4,8 @@ using Dapper;
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Validation;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations.Dtos;
-using DirectoryService.Contracts.Locations.Responses;
 using FluentValidation;
 using Shared.Failures;
 
@@ -14,7 +14,7 @@ namespace DirectoryService.Application.Locations.Queries.GetLocations;
 public class GetLocationsHandler(
     IValidator<GetLocationsQuery> validator,
     IDbConnectionFactory connectionFactory)
-    : IQueryHandler<GetLocationsResponse, GetLocationsQuery>
+    : IQueryHandler<PagedResult<LocationDto>, GetLocationsQuery>
 {
     private const string SEARCH_PARAMETER = "search";
     private const string IS_ACTIVE_PARAMETER = "is_active";
@@ -22,7 +22,7 @@ public class GetLocationsHandler(
     private const string OFFSET_PARAMETER = "offset";
     private const string PAGE_SIZE_PARAMETER = "page_size";
 
-    public async Task<Result<GetLocationsResponse, Errors>> Handle(GetLocationsQuery query, CancellationToken cancellationToken)
+    public async Task<Result<PagedResult<LocationDto>, Errors>> Handle(GetLocationsQuery query, CancellationToken cancellationToken)
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
         if (!validationResult.IsValid)
@@ -154,6 +154,6 @@ public class GetLocationsHandler(
                 return locationDto;
             });
 
-        return new GetLocationsResponse(locationsDtoMap.Values.ToList(), totalCount ?? 0);
+        return new PagedResult<LocationDto>(locationsDtoMap.Values.ToList(), totalCount ?? 0);
     }
 }

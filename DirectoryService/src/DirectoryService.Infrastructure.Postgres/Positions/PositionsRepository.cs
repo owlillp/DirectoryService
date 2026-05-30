@@ -73,4 +73,52 @@ public class PositionsRepository(ILogger<PositionsRepository> logger, DirectoryS
             return GeneralErrors.Failure();
         }
     }
+
+    public async Task<Result<Position, Error>> GetByIdWithLockAsync(PositionId positionId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var position = await dbContext.Positions
+                .FromSql($"SELECT * FROM positions WHERE id = {positionId.Value} FOR UPDATE")
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return position != null
+                ? position
+                : GeneralErrors.NotFound(nameof(Position));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting position");
+            return GeneralErrors.Canceled("Process get position");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting position");
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<Result<Position, Error>> GetByIdWithLock(PositionId positionId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var position = await dbContext.Positions
+                .FromSql($"SELECT * FROM positions WHERE id = {positionId.Value} FOR UPDATE")
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return position != null
+                ? position
+                : GeneralErrors.NotFound(nameof(Position));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting position");
+            return GeneralErrors.Canceled("Process get position");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting position");
+            return GeneralErrors.Failure();
+        }
+    }
 }

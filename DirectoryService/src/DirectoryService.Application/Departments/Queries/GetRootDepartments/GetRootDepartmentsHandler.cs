@@ -4,8 +4,8 @@ using Dapper;
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Validation;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
-using DirectoryService.Contracts.Departments.Responses;
 using FluentValidation;
 using Shared.Failures;
 
@@ -14,13 +14,13 @@ namespace DirectoryService.Application.Departments.Queries.GetRootDepartments;
 public class GetRootDepartmentsHandler(
     IValidator<GetRootDepartmentsQuery> validator,
     IDbConnectionFactory connectionFactory)
-    : IQueryHandler<GetRootDepartmentsResponse, GetRootDepartmentsQuery>
+    : IQueryHandler<PagedResult<DepartmentWithChildrenDto>, GetRootDepartmentsQuery>
 {
     private const string ROOT_LIMIT_PARAMETER = "root_limit";
     private const string ROOT_OFFSET_PARAMETER = "root_offset";
     private const string CHILD_LIMIT_PARAMETER = "child_limit";
 
-    public async Task<Result<GetRootDepartmentsResponse, Errors>> Handle(
+    public async Task<Result<PagedResult<DepartmentWithChildrenDto>, Errors>> Handle(
         GetRootDepartmentsQuery query,
         CancellationToken cancellationToken)
     {
@@ -42,9 +42,9 @@ public class GetRootDepartmentsHandler(
         parameters.Add(CHILD_LIMIT_PARAMETER, request.Prefetch, DbType.Int32);
 
         long? rootsCount = null;
-        Dictionary<Guid, DepartmentDto> departmentDtoMap = [];
+        Dictionary<Guid, DepartmentWithChildrenDto> departmentDtoMap = [];
 
-        await connection.QueryAsync<DepartmentDto, long, DepartmentDto>(
+        await connection.QueryAsync<DepartmentWithChildrenDto, long, DepartmentWithChildrenDto>(
             $"""
             WITH roots AS (
                             SELECT   r.id,
@@ -110,6 +110,6 @@ public class GetRootDepartmentsHandler(
                 return departmentDto;
             });
 
-        return new GetRootDepartmentsResponse(departmentDtoMap.Values.ToList(), rootsCount ?? 0);
+        return new PagedResult<DepartmentWithChildrenDto>(departmentDtoMap.Values.ToList(), rootsCount ?? 0);
     }
 }

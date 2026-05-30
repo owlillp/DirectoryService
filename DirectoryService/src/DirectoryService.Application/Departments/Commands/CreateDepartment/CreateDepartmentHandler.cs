@@ -65,7 +65,7 @@ public class CreateDepartmentHandler(
             return addResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Success created department with id: {departmentId}", addResult.Value.Value);
+        logger.LogInformation("Success created department with id [{departmentId}]", addResult.Value.Value);
 
         return addResult.Value.Value;
 

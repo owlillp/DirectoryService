@@ -2,6 +2,7 @@
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Locations;
+using DirectoryService.Domain.Positions;
 using Shared.Failures;
 
 namespace DirectoryService.Domain.Departments;
@@ -152,6 +153,28 @@ public sealed class Department
         Path = Path.AddSoftDeletePrefix();
 
         DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Rename(DepartmentName name)
+    {
+        Name = name;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void LinkPosition(PositionId positionId)
+    {
+        var departmentPosition = new DepartmentPosition(Id, positionId);
+        _positions.Add(departmentPosition);
+
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void LinkLocation(LocationId locationId)
+    {
+        var departmentLocation = new DepartmentLocation(Id, locationId);
+        _locations.Add(departmentLocation);
+
         UpdatedAt = DateTime.UtcNow;
     }
 }

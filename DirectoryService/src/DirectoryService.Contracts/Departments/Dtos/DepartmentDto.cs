@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Contracts.Departments.Dtos;
+namespace DirectoryService.Contracts.Departments.Dtos;
 
 public record DepartmentDto
 {
@@ -10,7 +10,6 @@ public record DepartmentDto
     public int Depth { get; init; }
     public bool IsActive { get; init; }
     public DateTime CreatedAt { get; init; }
-    public DateTime UpdatedAt { get; init; }
-    public List<DepartmentDto> Children { get; set; } = [];
-    public bool HasMoreChildren { get; init; }
+    public List<Guid> LocationIds { get; init; } = [];
+    public List<Guid> PositionIds { get; init; } = [];
 }
