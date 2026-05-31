@@ -108,13 +108,13 @@ public class UpdateDepartmentParentHandler(
         if (parentDepartment == null)
         {
             logger.LogInformation(
-                "Success updated parent from department with id:{departmentId} to root",
+                "Success updated parent from department with id [{departmentId}] to root",
                 departmentId.Value);
         }
         else
         {
             logger.LogInformation(
-                "Success updated parent from department with id:{departmentId} to parent id: {parentId} ",
+                "Success updated parent from department with id [{departmentId}] to parent with id [{parentId}] ",
                 departmentId.Value,
                 parentDepartment.Id.Value);
         }

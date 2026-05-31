@@ -13,6 +13,15 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
 
         builder.HasKey(p => p.Id).HasName("pk_positions");
 
+        builder.HasIndex(d => d.Name)
+            .HasDatabaseName("ix_positions_name")
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
+        builder.HasIndex(p => p.DeletedAt)
+            .HasFilter("is_active = FALSE")
+            .HasDatabaseName("ix_positions_deleted_at");
+
         builder.Property(p => p.Id)
             .HasColumnName("id")
             .HasConversion(pi => pi.Value, guid => new PositionId(guid))

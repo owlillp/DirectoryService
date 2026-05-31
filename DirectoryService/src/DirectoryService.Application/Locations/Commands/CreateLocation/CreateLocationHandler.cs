@@ -48,7 +48,7 @@ public class CreateLocationHandler(
             return addResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Success created location with id: {locationId}", addResult.Value.Value);
+        logger.LogInformation("Success created location with id [{locationId}]", addResult.Value.Value);
 
         return addResult.Value.Value;
     }

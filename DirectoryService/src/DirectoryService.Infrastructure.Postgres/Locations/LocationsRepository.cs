@@ -110,4 +110,28 @@ public class LocationsRepository(ILogger<LocationsRepository> logger, DirectoryS
             return GeneralErrors.Failure();
         }
     }
+
+    public async Task<Result<Location, Error>> GetByIdWithLock(LocationId locationId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var location = await dbContext.Locations
+                .FromSql($"SELECT * FROM locations WHERE id = {locationId.Value} FOR UPDATE")
+                .FirstOrDefaultAsync(cancellationToken);
+
+            return location != null
+                ? location
+                : GeneralErrors.NotFound(nameof(Location));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting location");
+            return GeneralErrors.Canceled("Process get location");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting location");
+            return GeneralErrors.Failure();
+        }
+    }
 }

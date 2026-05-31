@@ -1,4 +1,6 @@
+using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Positions;
 
@@ -60,6 +62,12 @@ public class Position
 
         IsActive = false;
         DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Rename(PositionName name)
+    {
+        Name = name;
         UpdatedAt = DateTime.UtcNow;
     }
 }

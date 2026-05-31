@@ -12,8 +12,8 @@ namespace DirectoryService.Application.Departments.Queries.GetTopDepartmentsByPo
 
 public class GetTopDepartmentsByPositionsHandler(
     IValidator<GetTopDepartmentsByPositionQuery> validator,
-    IDbConnectionFactory connectionFactory) :
-    IQueryHandler<GetTopDepartmentsByPositionsResponse, GetTopDepartmentsByPositionQuery>
+    IDbConnectionFactory connectionFactory)
+    : IQueryHandler<GetTopDepartmentsByPositionsResponse, GetTopDepartmentsByPositionQuery>
 {
     public async Task<Result<GetTopDepartmentsByPositionsResponse, Errors>> Handle(
         GetTopDepartmentsByPositionQuery query,
@@ -36,10 +36,12 @@ public class GetTopDepartmentsByPositionsHandler(
                     d.path,
                     COUNT(dp.position_id)::int AS positions_count
                 FROM departments d 
-                JOIN department_positions dp ON dp.department_id = d.id
-                WHERE d.is_active = true
+                LEFT JOIN department_positions dp ON dp.department_id = d.id
+                JOIN positions p ON dp.position_id = p.id
+                WHERE d.is_active = TRUE
+                    AND p.is_active = TRUE
                 GROUP BY d.id, d.name
-                ORDER BY positions_count DESC, d.name ASC 
+                ORDER BY positions_count DESC, d.name ASC
                 LIMIT {query.TopCount}
                 """,
                 splitOn: "positions_count",

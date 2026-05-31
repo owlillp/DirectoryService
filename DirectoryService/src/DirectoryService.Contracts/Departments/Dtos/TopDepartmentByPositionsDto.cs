@@ -1,6 +1,6 @@
 ﻿namespace DirectoryService.Contracts.Departments.Dtos;
 
-public record TopDepartmentByPositionsDto()
+public record TopDepartmentByPositionsDto
 {
     public Guid Id { get; init; }
     public string Name { get; init; } = null!;

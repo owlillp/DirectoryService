@@ -76,7 +76,7 @@ public class CreatePositionHandler(
             return addResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Success created position with id: {positionId}", addResult.Value.Value);
+        logger.LogInformation("Success created position with id [{positionId}]", addResult.Value.Value);
 
         return addResult.Value.Value;
     }

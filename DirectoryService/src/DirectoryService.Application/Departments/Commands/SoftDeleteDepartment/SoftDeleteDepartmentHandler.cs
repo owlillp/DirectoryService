@@ -88,7 +88,7 @@ public class SoftDeleteDepartmentHandler(
             return commitResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Success soft delete department with id:{departmentId}", departmentId);
+        logger.LogInformation("Success soft delete department with id [{departmentId}]", departmentId.Value);
 
         return UnitResult.Success<Errors>();
     }

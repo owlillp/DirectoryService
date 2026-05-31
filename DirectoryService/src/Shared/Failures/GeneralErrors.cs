@@ -6,7 +6,7 @@ public static class GeneralErrors
     {
         string message = id == null
             ? $"Record of {name} not found"
-            : $"Record of {name} with id: {id.ToString()} not found";
+            : $"Record of {name} with id [{id.ToString()}] not found";
 
         return Error.NotFound("record.not.found", message);
     }

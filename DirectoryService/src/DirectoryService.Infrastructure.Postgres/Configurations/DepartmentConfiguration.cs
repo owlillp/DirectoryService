@@ -13,9 +13,28 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
 
         builder.HasKey(d => d.Id).HasName("pk_departments");
 
+        builder.HasIndex(d => d.Identifier)
+            .IsUnique()
+            .HasDatabaseName("idx_departments_identifier");
+
         builder.HasIndex(d => d.Path)
             .HasMethod("gist")
             .HasDatabaseName("ix_departments_path");
+
+        builder.HasIndex(d => d.CreatedAt)
+            .HasDatabaseName("ix_departments_created_at");
+
+        builder.HasIndex(d => d.ParentId)
+            .HasDatabaseName("ix_departments_parent_id");
+
+        builder.HasIndex(d => d.DeletedAt)
+            .HasFilter("is_active = FALSE")
+            .HasDatabaseName("ix_departments_deleted_at");
+
+        builder.HasIndex(d => d.Name)
+            .HasDatabaseName("ix_departments_name")
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
 
         builder.Property(d => d.Id)
             .HasColumnName("id")

@@ -90,7 +90,7 @@ public class UpdateDepartmentLocationsHandler(
             return commitResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Success updated locations from department with id:{departmentId}",  departmentId.Value);
+        logger.LogInformation("Success updated locations from department with id [{departmentId}]",  departmentId.Value);
 
         return departmentId.Value;
     }

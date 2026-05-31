@@ -2,11 +2,14 @@ using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
+using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
 using DirectoryService.Infrastructure.Postgres.Database;
 using DirectoryService.Infrastructure.Postgres.Departments;
 using DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
 using DirectoryService.Infrastructure.Postgres.Locations;
+using DirectoryService.Infrastructure.Postgres.Locations.Cleanup;
 using DirectoryService.Infrastructure.Postgres.Positions;
+using DirectoryService.Infrastructure.Postgres.Positions.Cleanup;
 using DirectoryService.Infrastructure.Postgres.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +31,7 @@ public static class DependencyInjectionExtensions
         services.AddScoped<ITransactionManager, TransactionManager>();
         services.AddSeeders();
 
-        AddBackgroundServices(services);
+        AddBackgroundCleanupServices(services);
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -79,14 +82,29 @@ public static class DependencyInjectionExtensions
         return services;
     }
 
-    private static IServiceCollection AddBackgroundServices(IServiceCollection services)
+    private static IServiceCollection AddBackgroundCleanupServices(IServiceCollection services)
     {
-        services.AddOptions<DepartmentsCleanupOptions>()
-            .BindConfiguration(Constants.DEPARTMENT_CLEANUP_OPTIONS_SECTION)
+        services.AddOptions<BackgroundCleanupServiceOptions>()
+            .BindConfiguration(Constants.BACKGROUND_CLEANUP_SERVICE_OPTIONS_SECTION)
             .ValidateOnStart();
 
-        services.AddScoped<DepartmentsCleanupService>();
-        services.AddHostedService<DepartmentsCleanupBackgroundService>();
+        services.AddOptions<DepartmentsCleanupOptions>()
+            .BindConfiguration(Constants.DEPARTMENTS_CLEANUP_OPTIONS_SECTION)
+            .ValidateOnStart();
+
+        services.AddOptions<LocationsCleanupOptions>()
+            .BindConfiguration(Constants.LOCATIONS_CLEANUP_OPTIONS_SECTION)
+            .ValidateOnStart();
+
+        services.AddOptions<PositionsCleanupOptions>()
+            .BindConfiguration(Constants.POSITIONS_CLEANUP_OPTIONS_SECTION)
+            .ValidateOnStart();
+
+        services.AddScoped<ICleanupService, DepartmentsCleanupService>();
+        services.AddScoped<ICleanupService, LocationsCleanupService>();
+        services.AddScoped<ICleanupService, PositionsCleanupService>();
+
+        services.AddHostedService<BackgroundCleanupService>();
 
         return services;
     }

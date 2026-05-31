@@ -9,70 +9,69 @@ namespace Shared.HttpCommunication;
 
 public static class HttpResponseMessageExtensions
 {
-    public static async Task<Result<TResponse, Errors>> HandleResponseAsync<TResponse>(
-        this HttpResponseMessage httpResponse,
-        CancellationToken cancellationToken = default)
+    extension(HttpResponseMessage httpResponse)
     {
-        try
+        public async Task<Result<TResponse, Errors>> HandleResponseAsync<TResponse>(CancellationToken cancellationToken = default)
         {
-            var response = await httpResponse.Content.ReadFromJsonAsync<Envelope<TResponse>>(JsonOptionsProvider.Options, cancellationToken);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            try
             {
-                return response?.Errors ?? Error.Failure("http.error", "Error while reading http response");
-            }
+                var response = await httpResponse.Content.ReadFromJsonAsync<Envelope<TResponse>>(JsonOptionsProvider.Options, cancellationToken);
 
-            if (response == null)
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    return response?.Errors ?? Error.Failure("http.error", "Error while reading http response");
+                }
+
+                if (response == null)
+                {
+                    return Error.Failure("http.error", "Error while reading http response").ToErrors();
+                }
+
+                if (response is { IsFailure: true, Errors: not null })
+                {
+                    return response.Errors;
+                }
+
+                if (response.Result == null)
+                {
+                    return Error.Failure("http.error", "Error while reading http response").ToErrors();
+                }
+
+                return response.Result;
+            }
+            catch(Exception ex)
             {
-                return Error.Failure("http.error", "Error while reading http response").ToErrors();
+                return Error.Failure("http.error", $"Unexpected error while reading http response: {ex.Message}").ToErrors();
             }
-
-            if (response is { IsFailure: true, Errors: not null })
-            {
-                return response.Errors;
-            }
-
-            if (response.Result == null)
-            {
-                return Error.Failure("http.error", "Error while reading http response").ToErrors();
-            }
-
-            return response.Result;
         }
-        catch(Exception ex)
+
+        public async Task<UnitResult<Errors>> HandleResponseAsync(CancellationToken cancellationToken = default)
         {
-            return Error.Failure("http.error", $"Unexpected error while reading http response: {ex.Message}").ToErrors();
-        }
-    }
-
-    public static async Task<UnitResult<Errors>> HandleResponseAsync(
-        this HttpResponseMessage httpResponse,
-        CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var response = await httpResponse.Content.ReadFromJsonAsync<Envelope>(JsonOptionsProvider.Options, cancellationToken);
-
-            if (!httpResponse.IsSuccessStatusCode)
+            try
             {
-                return response?.Errors ?? Error.Failure("http.error", "Error while reading http response");
-            }
+                var response = await httpResponse.Content.ReadFromJsonAsync<Envelope>(JsonOptionsProvider.Options, cancellationToken);
 
-            if (response == null)
+                if (!httpResponse.IsSuccessStatusCode)
+                {
+                    return response?.Errors ?? Error.Failure("http.error", "Error while reading http response");
+                }
+
+                if (response == null)
+                {
+                    return Error.Failure("http.error", "Error while reading http response").ToErrors();
+                }
+
+                if (response is { IsFailure: true, Errors: not null })
+                {
+                    return response.Errors;
+                }
+
+                return UnitResult.Success<Errors>();
+            }
+            catch(Exception ex)
             {
-                return Error.Failure("http.error", "Error while reading http response").ToErrors();
+                return Error.Failure("http.error", $"Unexpected error while reading http response: {JsonSerializer.Serialize(ex)}").ToErrors();
             }
-
-            if (response is { IsFailure: true, Errors: not null })
-            {
-                return response.Errors;
-            }
-
-            return UnitResult.Success<Errors>();
-        }
-        catch(Exception ex)
-        {
-            return Error.Failure("http.error", $"Unexpected error while reading http response: {JsonSerializer.Serialize(ex)}").ToErrors();
         }
     }
 }

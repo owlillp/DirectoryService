@@ -1,4 +1,6 @@
+using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
+using Shared.Failures;
 
 namespace DirectoryService.Domain.Locations;
 
@@ -64,6 +66,24 @@ public sealed class Location
 
         IsActive = false;
         DeletedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void Rename(LocationName name)
+    {
+        Name = name;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateAddress(LocationAddress address)
+    {
+        Address = address;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdateTimezone(LocationTimezone timezone)
+    {
+        Timezone = timezone;
         UpdatedAt = DateTime.UtcNow;
     }
 }

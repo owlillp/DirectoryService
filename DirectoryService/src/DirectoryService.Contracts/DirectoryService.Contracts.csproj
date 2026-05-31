@@ -7,9 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Locations\Dtos\" />
-      <Folder Include="Positions\Dtos\" />
-      <Folder Include="Positions\Requests\" />
       <Folder Include="Positions\Responses\" />
     </ItemGroup>
 

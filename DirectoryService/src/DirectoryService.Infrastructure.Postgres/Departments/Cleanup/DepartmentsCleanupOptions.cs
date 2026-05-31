@@ -1,10 +1,6 @@
-﻿namespace DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
+using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
 
-public class DepartmentsCleanupOptions
-{
-    public bool Enabled { get; set; }
+namespace DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
 
-    public int InactiveDaysThreshold { get; set; } = 30;
-
-    public TimeOnly ExecutionTime { get; set; } = new (1, 0);
-}
+public class DepartmentsCleanupOptions : CleanupServiceOptions
+{ }

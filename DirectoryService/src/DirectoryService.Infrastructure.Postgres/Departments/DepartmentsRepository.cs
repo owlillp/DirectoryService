@@ -2,6 +2,8 @@
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments;
 using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Locations;
+using DirectoryService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -24,12 +26,12 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
         }
         catch (OperationCanceledException ex)
         {
-            logger.LogError(ex, "Operation was canceled while creating department with name: {name}", department.Name.Value);
+            logger.LogError(ex, "Operation was canceled while creating department with name [{name}]", department.Name.Value);
             return GeneralErrors.Canceled("Process create department");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error while creating department with name: {name}", department.Name.Value);
+            logger.LogError(ex, "Unexpected error while creating department with name [{name}]", department.Name.Value);
             return GeneralErrors.Failure();
         }
     }
@@ -68,6 +70,11 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
 
             return existCount == departmentIds.Count();
         }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while checking exist department");
+            return GeneralErrors.Canceled("Process check exist department");
+        }
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error while check of exist departments");
@@ -85,20 +92,60 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
 
             return UnitResult.Success<Error>();
         }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while delete all locations from department with id [{departmentId}]", departmentId.Value);
+            return GeneralErrors.Canceled("Process deleting all locations from department");
+        }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unexpected error while deleting locations from department with id: {departmentId}", departmentId.Value);
+            logger.LogError(ex, "Unexpected error while deleting locations from department with id [{departmentId}]", departmentId.Value);
             return GeneralErrors.Failure();
         }
     }
 
-    public async Task<Result<Department, Error>> GetByIdWithLockAsync(DepartmentId departmentId, CancellationToken cancellationToken)
+    public async Task<Result<Department, Error>> GetByIdWithLockAsync(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken,
+        bool isActive = true,
+        bool includePositions = false,
+        bool includeLocations = false)
     {
+        string isActiveClause = isActive
+            ? "AND d.is_active = TRUE"
+            : string.Empty;
+
+        var departmentIdParam = new NpgsqlParameter("departmentId", departmentId.Value);
+
+        string sql = $"""
+                      SELECT d.* 
+                      FROM departments d 
+                      WHERE d.id = @departmentId
+                      {isActiveClause}
+                      FOR UPDATE
+                      """;
         try
         {
             var department = await dbContext.Departments
-                .FromSql($"SELECT * FROM departments WHERE id = {departmentId.Value} FOR UPDATE")
+                .FromSqlRaw(sql, [departmentIdParam])
                 .FirstOrDefaultAsync(cancellationToken);
+
+            if (department != null)
+            {
+                if (includeLocations)
+                {
+                    await dbContext.Entry(department)
+                        .Collection(d => d.Locations)
+                        .LoadAsync(cancellationToken);
+                }
+
+                if (includePositions)
+                {
+                    await dbContext.Entry(department)
+                        .Collection(d => d.Positions)
+                        .LoadAsync(cancellationToken);
+                }
+            }
 
             return department != null
                 ? department
@@ -232,11 +279,83 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
 
             return UnitResult.Success<Error>();
         }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(
+                ex,
+                "Operation was cancelled while deactivating unused references for department with id [{DepartmentId}]",
+                departmentId.Value);
+            return GeneralErrors.Canceled("Process deleting all locations from department");
+        }
         catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "Unexpected error while while deactivating unused references for department {DepartmentId}",
+                "Unexpected error while deactivating unused references for department with id [{DepartmentId}]",
+                departmentId.Value);
+
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<UnitResult<Error>> UnlinkLocationAsync(DepartmentId departmentId, LocationId locationId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await dbContext
+                .DepartmentLocations
+                .Where(dl => dl.DepartmentId == departmentId && dl.LocationId == locationId)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(
+                ex,
+                "Operation was cancelled while unlink location with id [{locationId}] from department with id [{DepartmentId}]",
+                locationId.Value,
+                departmentId.Value);
+            return GeneralErrors.Canceled("Process unlink location from department");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Unexpected error while unlink location with id [{locationId}] from department with id [{DepartmentId}]",
+                locationId.Value,
+                departmentId.Value);
+
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<UnitResult<Error>> UnlinkPositionAsync(DepartmentId departmentId, PositionId positionId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await dbContext
+                .DepartmentPositions
+                .Where(dl => dl.DepartmentId == departmentId && dl.PositionId == positionId)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(
+                ex,
+                "Operation was cancelled while unlink position with id [{positionId}] from department with id [{DepartmentId}]",
+                positionId.Value,
+                departmentId.Value);
+            return GeneralErrors.Canceled("Process unlink position from department");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Unexpected error while unlink position with id [{positionId}] department with id [{DepartmentId}]",
+                positionId.Value,
                 departmentId.Value);
 
             return GeneralErrors.Failure();

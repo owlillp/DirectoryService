@@ -4,15 +4,19 @@ using Dapper;
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Validation;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Responses;
+using DirectoryService.Domain.Departments;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Shared.Failures;
 
 namespace DirectoryService.Application.Departments.Queries.GetChildDepartments;
 
 public class GetChildDepartmentsHandler(
     IValidator<GetChildDepartmentsQuery> validator,
+    IReadDbContext readDbContext,
     IDbConnectionFactory connectionFactory)
     : IQueryHandler<GetChildDepartmentsResponse, GetChildDepartmentsQuery>
 {
@@ -34,16 +38,28 @@ public class GetChildDepartmentsHandler(
 
         var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
 
-        int offset = (request.Page - 1) * request.Size;
+        var parentId = new DepartmentId(query.ParentId);
+        bool existParent = await readDbContext
+            .DepartmentsRead
+            .AnyAsync(d => d.Id == parentId, cancellationToken);
+
+        var lis = await readDbContext.DepartmentsRead.ToListAsync(cancellationToken);
+
+        if (!existParent)
+        {
+            return GeneralErrors.NotFound(nameof(Department), parentId.Value).ToErrors();
+        }
+
+        int offset = (request.Page - 1) * request.PageSize;
 
         var parameters = new DynamicParameters();
-        parameters.Add(CHILD_LIMIT_PARAMETER, request.Size, DbType.Int32);
+        parameters.Add(CHILD_LIMIT_PARAMETER, request.PageSize, DbType.Int32);
         parameters.Add(CHILD_OFFSET_PARAMETER, offset, DbType.Int32);
         parameters.Add(ROOT_ID_PARAMETER, query.ParentId, DbType.Guid);
 
         long? childCount = null;
 
-        var departmentDtoList = (await connection.QueryAsync<DepartmentDto, long, DepartmentDto>(
+        var departmentDtoList = (await connection.QueryAsync<DepartmentWithChildrenDto, long, DepartmentWithChildrenDto>(
             $"""
              SELECT  d.id,
                      d.name,
@@ -70,6 +86,8 @@ public class GetChildDepartmentsHandler(
                 return departmentDto;
             })).ToList();
 
-        return new GetChildDepartmentsResponse(query.ParentId, departmentDtoList, childCount ?? 0);
+        return new GetChildDepartmentsResponse(
+            query.ParentId,
+            new PagedResult<DepartmentWithChildrenDto>(departmentDtoList, childCount ?? 0));
     }
 }

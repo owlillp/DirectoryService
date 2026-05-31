@@ -1,4 +1,5 @@
 ﻿using DirectoryService.Application.Validation;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Requests;
 using FluentValidation;
 using Shared.Failures;
@@ -20,10 +21,10 @@ public class GetChildDepartmentsValidator : AbstractValidator<GetChildDepartment
 
         RuleFor(q => q.Request.Page)
             .GreaterThan(0)
-            .WithError(GeneralErrors.ValueIsInvalid(nameof(GetChildDepartmentsRequest.Page), "Value must be greater than zero."));
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(PaginationRequest.Page), "Value must be greater than zero."));
 
-        RuleFor(q => q.Request.Size)
+        RuleFor(q => q.Request.PageSize)
             .GreaterThan(0)
-            .WithError(GeneralErrors.ValueIsInvalid(nameof(GetChildDepartmentsRequest.Size), "Value must be greater than zero."));
+            .WithError(GeneralErrors.ValueIsInvalid(nameof(PaginationRequest.PageSize), "Value must be greater than zero."));
     }
 }
