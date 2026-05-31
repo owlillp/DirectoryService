@@ -19,7 +19,7 @@ public class DepartmentsCleanupService(
 
     protected override async Task<int> CleanupBatchAsync(int thresholdDays, int batchSize, CancellationToken cancellationToken)
     {
-        using var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
+        var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
         using var transaction = connection.BeginTransaction();
 
         var parameters = new DynamicParameters();
@@ -27,6 +27,9 @@ public class DepartmentsCleanupService(
         parameters.Add(BATCH_SIZE_PARAMETER, batchSize);
 
         string sql = $"""
+                      DROP TABLE IF EXISTS tmp_delete_candidates;
+                      DROP TABLE IF EXISTS tmp_reparent;
+
                       CREATE TEMP TABLE tmp_delete_candidates AS
                       SELECT d.id,
                              d.parent_id,

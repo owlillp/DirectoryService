@@ -1,11 +1,18 @@
 ﻿using System.Data.Common;
+using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Infrastructure.Postgres;
+using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
+using DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
+using DirectoryService.Infrastructure.Postgres.Locations.Cleanup;
+using DirectoryService.Infrastructure.Postgres.Positions.Cleanup;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
@@ -55,6 +62,14 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
     {
         builder.ConfigureTestServices(services =>
         {
+            var backgroundServiceDescriptor = services.FirstOrDefault(s =>
+                s.ServiceType == typeof(IHostedService) &&
+                s.ImplementationType == typeof(BackgroundCleanupService));
+            if (backgroundServiceDescriptor != null)
+            {
+                services.Remove(backgroundServiceDescriptor);
+            }
+
             services.RemoveAll<DirectoryServiceDbContext>();
             services.AddScoped<DirectoryServiceDbContext>(_ =>
             {
@@ -62,6 +77,54 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
                 optionsBuilder.UseNpgsql(_dbContainer.GetConnectionString());
                 return new DirectoryServiceDbContext(optionsBuilder.Options);
             });
+
+            services.RemoveAll<IReadDbContext>();
+            services.AddScoped<IReadDbContext>(sp => sp.GetRequiredService<DirectoryServiceDbContext>());
+
+            services.RemoveAll<IOptions<DepartmentsCleanupOptions>>();
+            services.AddOptions<DepartmentsCleanupOptions>()
+                .Configure(options =>
+                {
+                    options.InactiveDaysThreshold = 30;
+                    options.BatchSize = 1000;
+                    options.RetryDelay = TimeSpan.FromSeconds(5);
+                });
+
+            services.RemoveAll<IOptions<LocationsCleanupOptions>>();
+            services.AddOptions<LocationsCleanupOptions>()
+                .Configure(options =>
+                {
+                    options.InactiveDaysThreshold = 30;
+                    options.BatchSize = 1000;
+                    options.RetryDelay = TimeSpan.FromSeconds(5);
+                });
+
+            services.RemoveAll<IOptions<PositionsCleanupOptions>>();
+            services.AddOptions<PositionsCleanupOptions>()
+                .Configure(options =>
+                {
+                    options.InactiveDaysThreshold = 30;
+                    options.BatchSize = 1000;
+                    options.RetryDelay = TimeSpan.FromSeconds(5);
+                });
+
+            services.RemoveAll<DepartmentsCleanupService>();
+            services.AddScoped<DepartmentsCleanupService>(sp =>
+                sp.GetRequiredService<IEnumerable<ICleanupService>>()
+                    .OfType<DepartmentsCleanupService>()
+                    .Single());
+
+            services.RemoveAll<LocationsCleanupService>();
+            services.AddScoped<LocationsCleanupService>(sp =>
+                sp.GetRequiredService<IEnumerable<ICleanupService>>()
+                    .OfType<LocationsCleanupService>()
+                    .Single());
+
+            services.RemoveAll<PositionsCleanupService>();
+            services.AddScoped<PositionsCleanupService>(sp =>
+                sp.GetRequiredService<IEnumerable<ICleanupService>>()
+                    .OfType<PositionsCleanupService>()
+                    .Single());
         });
     }
 
@@ -76,3 +139,4 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
             });
     }
 }
+

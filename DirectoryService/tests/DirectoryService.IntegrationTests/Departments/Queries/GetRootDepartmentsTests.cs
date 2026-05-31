@@ -1,9 +1,10 @@
-﻿using DirectoryService.Contracts.Departments.Responses;
+﻿using DirectoryService.Contracts.Common;
+using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Shared.Failures;
 using Shared.HttpCommunication;
 
-namespace DirectoryService.IntegrationTests.Departments;
+namespace DirectoryService.IntegrationTests.Departments.Queries;
 
 public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {
@@ -13,12 +14,12 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Empty(result.Value.Departments);
-        Assert.Equal(0L, result.Value.Count);
+        Assert.Empty(result.Value.Records);
+        Assert.Equal(0L, result.Value.TotalCount);
     }
 
     [Fact]
@@ -30,13 +31,13 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var root = await CreateDepartmentAsync([location.Id.Value], "root_only", "rootonly");
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 10, prefetch: 5), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(1L, result.Value.Count);
+        Assert.Equal(1L, result.Value.TotalCount);
 
-        var dto = Assert.Single(result.Value.Departments);
+        var dto = Assert.Single(result.Value.Records);
         Assert.Equal(root.Id.Value, dto.Id);
         Assert.Equal("root_only", dto.Name);
         Assert.Null(dto.ParentId);
@@ -54,13 +55,13 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var childB = await CreateDepartmentAsync([location.Id.Value], "child_b", "childb", parent: root);
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 10, prefetch: 10), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(1L, result.Value.Count);
+        Assert.Equal(1L, result.Value.TotalCount);
 
-        var rootDto = Assert.Single(result.Value.Departments);
+        var rootDto = Assert.Single(result.Value.Records);
         Assert.Equal(root.Id.Value, rootDto.Id);
         Assert.Equal(2, rootDto.Children.Count);
 
@@ -82,11 +83,11 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         await CreateDepartmentAsync([location.Id.Value], "child_three", "childthree", parent: root);
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 10, prefetch: 2), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        var rootDto = Assert.Single(result.Value.Departments);
+        var rootDto = Assert.Single(result.Value.Records);
         Assert.Equal(2, rootDto.Children.Count);
     }
 
@@ -101,25 +102,25 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var third = await CreateDepartmentAsync([location.Id.Value], "root_third", "rootthird");
 
         var pageOneResponse = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 1, prefetch: 0), cancellationToken);
-        var pageOne = await pageOneResponse.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var pageOne = await pageOneResponse.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
         Assert.True(pageOne.IsSuccess);
         Assert.NotNull(pageOne.Value);
-        Assert.Equal(3L, pageOne.Value.Count);
-        var firstPageRoot = Assert.Single(pageOne.Value.Departments);
+        Assert.Equal(3L, pageOne.Value.TotalCount);
+        var firstPageRoot = Assert.Single(pageOne.Value.Records);
 
         var pageTwoResponse = await AppHttpClient.GetAsync(BuildRootsUrl(page: 2, size: 1, prefetch: 0), cancellationToken);
-        var pageTwo = await pageTwoResponse.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var pageTwo = await pageTwoResponse.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
         Assert.True(pageTwo.IsSuccess);
         Assert.NotNull(pageTwo.Value);
-        Assert.Equal(3L, pageTwo.Value.Count);
-        var secondPageRoot = Assert.Single(pageTwo.Value.Departments);
+        Assert.Equal(3L, pageTwo.Value.TotalCount);
+        var secondPageRoot = Assert.Single(pageTwo.Value.Records);
 
         var pageThreeResponse = await AppHttpClient.GetAsync(BuildRootsUrl(page: 3, size: 1, prefetch: 0), cancellationToken);
-        var pageThree = await pageThreeResponse.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var pageThree = await pageThreeResponse.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
         Assert.True(pageThree.IsSuccess);
         Assert.NotNull(pageThree.Value);
-        Assert.Equal(3L, pageThree.Value.Count);
-        var thirdPageRoot = Assert.Single(pageThree.Value.Departments);
+        Assert.Equal(3L, pageThree.Value.TotalCount);
+        var thirdPageRoot = Assert.Single(pageThree.Value.Records);
 
         var distinctIds = new[] { firstPageRoot.Id, secondPageRoot.Id, thirdPageRoot.Id }.Distinct().ToList();
         Assert.Equal(3, distinctIds.Count);
@@ -138,13 +139,13 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         await CreateDepartmentAsync([location.Id.Value], "nested", "nested", parent: root);
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>>(cancellationToken);
 
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(1L, result.Value.Count);
-        Assert.Equal(root.Id.Value, result.Value.Departments[0].Id);
-        Assert.Single(result.Value.Departments[0].Children);
+        Assert.Equal(1L, result.Value.TotalCount);
+        Assert.Equal(root.Id.Value, result.Value.Records[0].Id);
+        Assert.Single(result.Value.Records[0].Children);
     }
 
     [Fact]
@@ -153,7 +154,7 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 0, size: 10, prefetch: 3), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>?>(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -166,7 +167,7 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 0, prefetch: 3), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>?>(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -179,7 +180,7 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 10, prefetch: -1), cancellationToken);
-        var result = await response.HandleResponseAsync<GetRootDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>?>(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);

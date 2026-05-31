@@ -1,5 +1,6 @@
+using Dapper;
+using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -8,45 +9,64 @@ namespace DirectoryService.Infrastructure.Postgres.Locations.Cleanup;
 public class LocationsCleanupService(
     ILogger<LocationsCleanupService> logger,
     IOptions<LocationsCleanupOptions> options,
-    DirectoryServiceDbContext dbContext)
+    IDbConnectionFactory connectionFactory)
     : CleanupServiceBase(logger, options.Value)
 {
+    private const string INACTIVE_DAYS_THRESHOLD_PARAMETER = "threshold_days";
+    private const string BATCH_SIZE_PARAMETER = "batch_size";
+
     public override string Name => nameof(LocationsCleanupService);
 
     protected override async Task<int> CleanupBatchAsync(int thresholdDays, int batchSize, CancellationToken cancellationToken)
     {
-        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+        var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
+        using var transaction = connection.BeginTransaction();
+
+        var parameters = new DynamicParameters();
+        parameters.Add(INACTIVE_DAYS_THRESHOLD_PARAMETER, thresholdDays);
+        parameters.Add(BATCH_SIZE_PARAMETER, batchSize);
+
+        string sql = $"""
+                      DELETE FROM department_locations
+                      WHERE location_id IN (
+                          SELECT l.id
+                          FROM locations l
+                          WHERE l.is_active = FALSE
+                            AND l.deleted_at IS NOT NULL
+                            AND l.deleted_at < NOW() - make_interval(days => @{INACTIVE_DAYS_THRESHOLD_PARAMETER})
+                          LIMIT @{BATCH_SIZE_PARAMETER}
+                      );
+
+                      WITH deleted AS (
+                          DELETE FROM locations
+                          WHERE id IN (
+                              SELECT l.id
+                              FROM locations l
+                              WHERE l.is_active = FALSE
+                                AND l.deleted_at IS NOT NULL
+                                AND l.deleted_at < NOW() - make_interval(days => @{INACTIVE_DAYS_THRESHOLD_PARAMETER})
+                              LIMIT @{BATCH_SIZE_PARAMETER}
+                          )
+                          RETURNING id
+                      )
+                      SELECT COUNT(*)
+                      FROM deleted;
+                      """;
 
         try
         {
-            var locationIds = await dbContext.Locations
-                .Where(l => !l.IsActive)
-                .OrderBy(l => l.Id)
-                .Take(batchSize)
-                .Select(l => l.Id)
-                .ToListAsync(cancellationToken);
+            int deletedCount = await connection.ExecuteScalarAsync<int>(
+                sql,
+                parameters,
+                transaction);
 
-            if (locationIds.Count == 0)
-            {
-                await transaction.CommitAsync(cancellationToken);
-                return 0;
-            }
-
-            await dbContext.DepartmentLocations
-                .Where(dl => locationIds.Contains(dl.LocationId))
-                .ExecuteDeleteAsync(cancellationToken);
-
-            int deletedCount = await dbContext.Locations
-                .Where(l => locationIds.Contains(l.Id))
-                .ExecuteDeleteAsync(cancellationToken);
-
-            await transaction.CommitAsync(cancellationToken);
+            transaction.Commit();
 
             return deletedCount;
         }
         catch
         {
-            await transaction.RollbackAsync(cancellationToken);
+            transaction.Rollback();
             throw;
         }
     }

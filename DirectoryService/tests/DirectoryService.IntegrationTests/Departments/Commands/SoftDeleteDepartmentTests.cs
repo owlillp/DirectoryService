@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Failures;
 using Shared.HttpCommunication;
 
-namespace DirectoryService.IntegrationTests.Departments;
+namespace DirectoryService.IntegrationTests.Departments.Commands;
 
 public class SoftDeleteDepartmentTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {

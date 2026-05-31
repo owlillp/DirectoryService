@@ -7,13 +7,16 @@ using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Responses;
+using DirectoryService.Domain.Departments;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Shared.Failures;
 
 namespace DirectoryService.Application.Departments.Queries.GetChildDepartments;
 
 public class GetChildDepartmentsHandler(
     IValidator<GetChildDepartmentsQuery> validator,
+    IReadDbContext readDbContext,
     IDbConnectionFactory connectionFactory)
     : IQueryHandler<GetChildDepartmentsResponse, GetChildDepartmentsQuery>
 {
@@ -34,6 +37,18 @@ public class GetChildDepartmentsHandler(
         var request = query.Request;
 
         var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
+
+        var parentId = new DepartmentId(query.ParentId);
+        bool existParent = await readDbContext
+            .DepartmentsRead
+            .AnyAsync(d => d.Id == parentId, cancellationToken);
+
+        var lis = await readDbContext.DepartmentsRead.ToListAsync(cancellationToken);
+
+        if (!existParent)
+        {
+            return GeneralErrors.NotFound(nameof(Department), parentId.Value).ToErrors();
+        }
 
         int offset = (request.Page - 1) * request.PageSize;
 

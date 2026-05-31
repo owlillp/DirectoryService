@@ -3,7 +3,7 @@ using DirectoryService.IntegrationTests.Infrastructure;
 using Shared.Failures;
 using Shared.HttpCommunication;
 
-namespace DirectoryService.IntegrationTests.Departments;
+namespace DirectoryService.IntegrationTests.Departments.Queries;
 
 public class GetTopDepartmentsByPositionsTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {

@@ -25,4 +25,14 @@
       <ProjectReference Include="..\..\src\DirectoryService.Presentation\DirectoryService.Presentation.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Departments\Commands\" />
+      <Folder Include="Departments\Queries\" />
+      <Folder Include="Departments\Services\" />
+      <Folder Include="Locations\Commands\" />
+      <Folder Include="Locations\Queries\" />
+      <Folder Include="Positions\Commands\" />
+      <Folder Include="Positions\Queries\" />
+    </ItemGroup>
+
 </Project>

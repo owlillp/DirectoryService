@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.Domain.Locations;
 using DirectoryService.IntegrationTests.Infrastructure;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Failures;
 using Shared.HttpCommunication;
 
-namespace DirectoryService.IntegrationTests.Departments;
+namespace DirectoryService.IntegrationTests.Departments.Commands;
 
 public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {

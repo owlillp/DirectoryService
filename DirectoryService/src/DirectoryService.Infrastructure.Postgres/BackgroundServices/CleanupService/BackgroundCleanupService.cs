@@ -21,13 +21,13 @@ public class BackgroundCleanupService(
 
         logger.LogInformation("Starting cleanup background service...");
 
-        await using var scope = scopeFactory.CreateAsyncScope();
-        var cleanupServices = scope.ServiceProvider.GetServices<ICleanupService>().ToArray();
-
         while (!cancellationToken.IsCancellationRequested)
         {
             try
             {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var cleanupServices = scope.ServiceProvider.GetServices<ICleanupService>().ToArray();
+
                 foreach (var service in cleanupServices.Where(cs => cs.Enabled))
                 {
                     int deleted = await service.CleanupAsync(cancellationToken);

@@ -1,5 +1,4 @@
 using System.Net.Http.Json;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.Domain.Departments;
 using DirectoryService.IntegrationTests.Infrastructure;
@@ -7,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared.Failures;
 using Shared.HttpCommunication;
 
-namespace DirectoryService.IntegrationTests.Departments;
+namespace DirectoryService.IntegrationTests.Departments.Commands;
 
 public class UpdateDepartmentParentTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {
@@ -67,7 +66,6 @@ public class UpdateDepartmentParentTests(IntegrationTestsWebFactory factory) : D
         var request = new UpdateDepartmentParentRequest(null);
 
         const int targetMovedDepth = 0;
-        const int targetParentDepth = 0;
 
         // act
         var updateDepartmentParentResponse = await AppHttpClient.PutAsJsonAsync($"/api/Departments/{departmentToMove.Id.Value}/parent", request, cancellationToken);

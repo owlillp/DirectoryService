@@ -1,9 +1,10 @@
-﻿using DirectoryService.Contracts.Locations.Responses;
+﻿using DirectoryService.Contracts.Common;
+using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Shared.Failures;
 using Shared.HttpCommunication;
 
-namespace DirectoryService.IntegrationTests.Locations;
+namespace DirectoryService.IntegrationTests.Locations.Queries;
 
 public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {
@@ -21,14 +22,14 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
         Assert.True(result.Value.TotalCount >= 2);
 
-        var byId = result.Value.Locations.ToDictionary(l => l.Id);
+        var byId = result.Value.Records.ToDictionary(l => l.Id);
         Assert.True(byId.ContainsKey(orphanedLocation.Id.Value));
         Assert.True(byId.ContainsKey(linkedLocation.Id.Value));
 
@@ -51,13 +52,13 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
 
-        var dto = Assert.Single(result.Value.Locations, l => l.Id == location.Id.Value);
+        var dto = Assert.Single(result.Value.Records, l => l.Id == location.Id.Value);
         Assert.Equal(2, dto.DepartmentIds.Count);
         Assert.Contains(departmentFirst.Id.Value, dto.DepartmentIds);
         Assert.Contains(departmentSecond.Id.Value, dto.DepartmentIds);
@@ -80,18 +81,18 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
 
-        var ids = result.Value.Locations.Select(l => l.Id).ToHashSet();
+        var ids = result.Value.Records.Select(l => l.Id).ToHashSet();
         Assert.Contains(locationOnlyDeptOne.Id.Value, ids);
         Assert.DoesNotContain(locationOnlyDeptTwo.Id.Value, ids);
         Assert.DoesNotContain(orphan.Id.Value, ids);
 
-        Assert.Single(result.Value.Locations);
+        Assert.Single(result.Value.Records);
         Assert.Equal(1, result.Value.TotalCount);
         Assert.NotEqual(departmentOne.Id.Value, departmentTwo.Id.Value);
     }
@@ -109,13 +110,13 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
 
-        var dto = Assert.Single(result.Value.Locations);
+        var dto = Assert.Single(result.Value.Records);
         Assert.Equal("alpha_unique_xyz", dto.Name);
         Assert.Equal(1, result.Value.TotalCount);
     }
@@ -133,14 +134,14 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
 
-        Assert.All(result.Value.Locations, l => Assert.True(l.IsActive));
-        Assert.Contains(activeLocation.Id.Value, result.Value.Locations.Select(l => l.Id));
+        Assert.All(result.Value.Records, l => Assert.True(l.IsActive));
+        Assert.Contains(activeLocation.Id.Value, result.Value.Records.Select(l => l.Id));
     }
 
     [Fact]
@@ -159,20 +160,20 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var pageOneResponse = await AppHttpClient.GetAsync(pageOneUrl, cancellationToken);
-        var pageOneResult = await pageOneResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var pageOneResult = await pageOneResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         var pageThreeResponse = await AppHttpClient.GetAsync(pageThreeUrl, cancellationToken);
-        var pageThreeResult = await pageThreeResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var pageThreeResult = await pageThreeResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(pageOneResult.IsSuccess);
         Assert.True(pageThreeResult.IsSuccess);
 
         Assert.Equal(5, pageOneResult.Value!.TotalCount);
-        Assert.Equal(2, pageOneResult.Value.Locations.Count);
+        Assert.Equal(2, pageOneResult.Value.Records.Count);
 
         Assert.Equal(5, pageThreeResult.Value!.TotalCount);
-        Assert.Single(pageThreeResult.Value.Locations);
+        Assert.Single(pageThreeResult.Value.Records);
     }
 
     [Fact]
@@ -188,13 +189,13 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
 
-        var orderedNames = result.Value.Locations
+        var orderedNames = result.Value.Records
             .Where(l => l.Name is "aaa_sort" or "zzz_sort")
             .Select(l => l.Name)
             .ToList();
@@ -212,7 +213,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(BuildLocationsUrl(includePagination: false), cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -230,7 +231,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -249,7 +250,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -268,7 +269,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetLocationsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

@@ -112,25 +112,27 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
     {
         string? includePositionsClause = includePositions
             ? "JOIN department_positions ON department_id = d.id"
-            : null;
+            : string.Empty;
 
         string? includeLocationsClause = includePositions
             ? "JOIN department_locations ON department_id = d.id"
-            : null;
+            : string.Empty;
 
-        FormattableString sql = $"""
-                                 SELECT * 
-                                 FROM departments 
+        var departmentIdParam = new NpgsqlParameter("departmentId", departmentId.Value);
+
+        string sql = $"""
+                                 SELECT d.* 
+                                 FROM departments d 
                                  {includePositionsClause}
                                  {includeLocationsClause}
-                                 WHERE id = {departmentId.Value}
+                                 WHERE id = @departmentId
                                  FOR UPDATE
                                  """;
 
         try
         {
             var department = await dbContext.Departments
-                .FromSql(sql)
+                .FromSqlRaw(sql, [departmentIdParam])
                 .FirstOrDefaultAsync(cancellationToken);
 
             return department != null

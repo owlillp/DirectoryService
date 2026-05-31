@@ -49,7 +49,7 @@ public abstract class CleanupServiceBase(
                     break;
                 }
 
-                await Task.Delay(options.ConsecutiveErrorsLimit, cancellationToken);
+                await Task.Delay(options.RetryDelay, cancellationToken);
             }
         }
 

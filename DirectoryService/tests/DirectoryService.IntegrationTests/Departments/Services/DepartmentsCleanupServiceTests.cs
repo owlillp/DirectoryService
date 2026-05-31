@@ -5,7 +5,7 @@ using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace DirectoryService.IntegrationTests.Departments;
+namespace DirectoryService.IntegrationTests.Departments.Services;
 
 public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {
@@ -14,7 +14,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var department = await CreateDepartmentAsync([location.Id.Value]);
@@ -24,7 +23,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deletedCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(1, deletedCount);
@@ -41,7 +40,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var department = await CreateDepartmentAsync([location.Id.Value]);
@@ -50,7 +48,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deletedCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(0, deletedCount);
@@ -69,7 +67,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var department = await CreateDepartmentAsync([location.Id.Value]);
@@ -78,7 +75,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deletedCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(1, deletedCount);
@@ -95,7 +92,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var locations = new List<Location>();
         for (int i = 0; i < 5; i++)
@@ -109,7 +105,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -125,7 +121,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var department = await CreateDepartmentAsync([location.Id.Value]);
@@ -139,7 +134,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -155,7 +150,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var department = await CreateDepartmentAsync([location.Id.Value]);
@@ -165,7 +159,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -181,7 +175,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var locations = new List<Location>();
         for (int i = 0; i < 5; i++)
@@ -201,7 +194,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -226,7 +219,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var parentDepartment = await CreateDepartmentAsync([location.Id.Value], name: "parent", identifier: "parent");
@@ -245,7 +237,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(parentDepartment.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -269,7 +261,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var parentDepartment = await CreateDepartmentAsync([location.Id.Value], name: "parent", identifier: "parent");
@@ -286,7 +277,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(parentDepartment.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -306,7 +297,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var grandparentDepartment = await CreateDepartmentAsync([location.Id.Value], name: "grandparent", identifier: "grandparent");
@@ -325,7 +315,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(parentDepartment.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -343,7 +333,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
 
@@ -376,7 +365,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(deptToDelete.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -409,7 +398,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
 
@@ -426,7 +414,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(deptC.Id, disableDateC);
 
         // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deletedCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(2, deletedCount);
@@ -463,7 +451,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var departments = new List<Department>();
@@ -491,7 +478,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         }
 
         // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deletedCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(10, deletedCount);
@@ -510,10 +497,9 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deletedCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(0, deletedCount);
@@ -524,7 +510,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var department = await CreateDepartmentAsync([location.Id.Value]);
@@ -532,8 +517,8 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(department.Id, disableDate);
 
         // act
-        int firstRunCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
-        int secondRunCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int firstRunCount = await ExecuteCleanupAsync(cancellationToken);
+        int secondRunCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(1, firstRunCount);
@@ -545,7 +530,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
         var parentDepartment = await CreateDepartmentAsync([location.Id.Value], name: "parent", identifier: "parent");
@@ -563,7 +547,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(parentDepartment.Id, disableDate);
 
         // act
-        await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         await ExecuteInDb(async dbContext =>
@@ -581,7 +565,6 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
     {
         // arrange
         var cancellationToken = CancellationToken.None;
-        int thresholdDays = 30;
 
         var location = await CreateLocationAsync();
 
@@ -595,7 +578,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         await DisableDepartmentAtDateAsync(dept1.Id, disableDate);
 
         // act
-        int deleteCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
+        int deleteCount = await ExecuteCleanupAsync(cancellationToken);
 
         // assert
         Assert.Equal(1, deleteCount);
@@ -622,65 +605,7 @@ public class DepartmentsCleanupServiceTests(IntegrationTestsWebFactory factory) 
         });
     }
 
-    [Fact]
-    public async Task DepartmentsCleanupService_delete_department_with_threshold_zero_should_delete_all_inactive()
-    {
-        // arrange
-        var cancellationToken = CancellationToken.None;
-        int thresholdDays = 0;
-
-        var location = await CreateLocationAsync();
-        var department1 = await CreateDepartmentAsync([location.Id.Value], name: "dept1");
-        var department2 = await CreateDepartmentAsync([location.Id.Value], name: "dept2");
-
-        var disableDate1 = DateTime.UtcNow - TimeSpan.FromDays(1);
-        var disableDate2 = DateTime.UtcNow - TimeSpan.FromHours(1);
-
-        await DisableDepartmentAtDateAsync(department1.Id, disableDate1);
-        await DisableDepartmentAtDateAsync(department2.Id, disableDate2);
-
-        // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
-
-        // assert
-        Assert.Equal(2, deletedCount);
-        await ExecuteInDb(async dbContext =>
-        {
-            bool dept1Exists = await dbContext.Departments.AnyAsync(d => d.Id == department1.Id, cancellationToken);
-            bool dept2Exists = await dbContext.Departments.AnyAsync(d => d.Id == department2.Id, cancellationToken);
-
-            Assert.False(dept1Exists);
-            Assert.False(dept2Exists);
-        });
-    }
-
-    [Fact]
-    public async Task DepartmentsCleanupService_delete_department_with_large_threshold_should_not_delete_any()
-    {
-        // arrange
-        var cancellationToken = CancellationToken.None;
-        int thresholdDays = 365;
-
-        var location = await CreateLocationAsync();
-        var department = await CreateDepartmentAsync([location.Id.Value]);
-
-        var disableDate = DateTime.UtcNow - TimeSpan.FromDays(100);
-        await DisableDepartmentAtDateAsync(department.Id, disableDate);
-
-        // act
-        int deletedCount = await ExecuteCleanupAsync(thresholdDays, cancellationToken);
-
-        // assert
-        Assert.Equal(0, deletedCount);
-        await ExecuteInDb(async dbContext =>
-        {
-            var existingDepartment = await dbContext.Departments
-                .FirstOrDefaultAsync(d => d.Id == department.Id, cancellationToken);
-            Assert.NotNull(existingDepartment);
-        });
-    }
-
-    private async Task<int> ExecuteCleanupAsync(int thresholdDays, CancellationToken cancellationToken)
+    private async Task<int> ExecuteCleanupAsync(CancellationToken cancellationToken)
     {
         await using var scope = Services.CreateAsyncScope();
 
