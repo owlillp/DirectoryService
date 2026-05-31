@@ -27,7 +27,7 @@ public class UpdateDepartmentHandler(
         var departmentId = new DepartmentId(command.DepartmentId);
         var departmentName = DepartmentName.Create(command.Request.Name).Value;
 
-        var getResult = await departmentsRepository.GetByAsync(d => d.Id == departmentId, cancellationToken);
+        var getResult = await departmentsRepository.GetByAsync(d => d.Id == departmentId && d.IsActive, cancellationToken);
         if (getResult.IsFailure)
         {
             return getResult.Error.ToErrors();

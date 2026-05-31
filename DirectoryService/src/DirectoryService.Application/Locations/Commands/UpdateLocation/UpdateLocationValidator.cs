@@ -19,13 +19,13 @@ public class UpdateLocationValidator : AbstractValidator<UpdateLocationCommand>
 
         When(c => c.Request != null!, () =>
         {
-            When(c => string.IsNullOrWhiteSpace(c.Request.Name), () =>
+            When(c => c.Request.Name != null, () =>
             {
                 RuleFor(c => c.Request.Name)
                     .MustBeValueObject(LocationName.Create!);
             });
 
-            When(c => string.IsNullOrWhiteSpace(c.Request.TimeZone), () =>
+            When(c => c.Request.TimeZone != null, () =>
             {
                 RuleFor(c => c.Request.TimeZone)
                     .MustBeValueObject(LocationTimezone.Create!);

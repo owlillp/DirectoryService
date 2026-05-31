@@ -25,7 +25,7 @@ public class UpdateLocationHandler (
         }
 
         var locationId = new LocationId(command.LocationId);
-        var getLocationResult = await repository.GetByAsync(l => l.Id == locationId, cancellationToken);
+        var getLocationResult = await repository.GetByAsync(l => l.Id == locationId && l.IsActive, cancellationToken);
         if (getLocationResult.IsFailure)
         {
             return getLocationResult.Error.ToErrors();

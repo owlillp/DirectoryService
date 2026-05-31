@@ -107,33 +107,45 @@ public class DepartmentsRepository(ILogger<DepartmentsRepository> logger, Direct
     public async Task<Result<Department, Error>> GetByIdWithLockAsync(
         DepartmentId departmentId,
         CancellationToken cancellationToken,
+        bool isActive = true,
         bool includePositions = false,
         bool includeLocations = false)
     {
-        string? includePositionsClause = includePositions
-            ? "JOIN department_positions ON department_id = d.id"
-            : string.Empty;
-
-        string? includeLocationsClause = includePositions
-            ? "JOIN department_locations ON department_id = d.id"
+        string isActiveClause = isActive
+            ? "AND d.is_active = TRUE"
             : string.Empty;
 
         var departmentIdParam = new NpgsqlParameter("departmentId", departmentId.Value);
 
         string sql = $"""
-                                 SELECT d.* 
-                                 FROM departments d 
-                                 {includePositionsClause}
-                                 {includeLocationsClause}
-                                 WHERE id = @departmentId
-                                 FOR UPDATE
-                                 """;
-
+                      SELECT d.* 
+                      FROM departments d 
+                      WHERE d.id = @departmentId
+                      {isActiveClause}
+                      FOR UPDATE
+                      """;
         try
         {
             var department = await dbContext.Departments
                 .FromSqlRaw(sql, [departmentIdParam])
                 .FirstOrDefaultAsync(cancellationToken);
+
+            if (department != null)
+            {
+                if (includeLocations)
+                {
+                    await dbContext.Entry(department)
+                        .Collection(d => d.Locations)
+                        .LoadAsync(cancellationToken);
+                }
+
+                if (includePositions)
+                {
+                    await dbContext.Entry(department)
+                        .Collection(d => d.Positions)
+                        .LoadAsync(cancellationToken);
+                }
+            }
 
             return department != null
                 ? department

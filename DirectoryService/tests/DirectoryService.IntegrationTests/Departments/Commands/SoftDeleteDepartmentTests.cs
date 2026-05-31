@@ -217,7 +217,7 @@ public class SoftDeleteDepartmentTests(IntegrationTestsWebFactory factory) : Dir
         // assert
         Assert.True(secondDeleteResult.IsFailure);
         Assert.NotNull(secondDeleteResult.Error);
-        Assert.Contains(secondDeleteResult.Error, e => e.Type == ErrorType.VALIDATION);
+        Assert.Contains(secondDeleteResult.Error, e => e.Type == ErrorType.NOT_FOUND);
 
         await ExecuteInDb(async dbContext =>
         {

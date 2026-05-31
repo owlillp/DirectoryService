@@ -39,7 +39,7 @@ public class LocationsController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpDelete]
+    [HttpDelete("{locationId:guid}")]
     public async Task<EndpointResult> SoftDelete(
         [FromServices] ICommandHandler<SoftDeleteLocationCommand> handler,
         [FromRoute] Guid locationId,

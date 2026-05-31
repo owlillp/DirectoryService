@@ -46,8 +46,8 @@ public class GetDepartmentHandler(
             Depth = department.Depth,
             IsActive = department.IsActive,
             CreatedAt = department.CreatedAt,
-            LocationIds = department.Locations.Select(l => l.Id.Value).ToList(),
-            PositionIds = department.Positions.Select(l => l.Id.Value).ToList(),
+            LocationIds = department.Locations.Select(l => l.LocationId.Value).ToList(),
+            PositionIds = department.Positions.Select(l => l.PositionId.Value).ToList(),
         };
     }
 }

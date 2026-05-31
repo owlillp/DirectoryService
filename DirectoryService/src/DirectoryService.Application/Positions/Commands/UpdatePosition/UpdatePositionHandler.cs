@@ -26,7 +26,7 @@ public class UpdatePositionHandler(
         var positionId = new PositionId(command.PositionId);
         var positionName = PositionName.Create(command.Request.Name).Value;
 
-        var getResult = await positionRepository.GetByAsync(p => p.Id == positionId, cancellationToken);
+        var getResult = await positionRepository.GetByAsync(p => p.Id == positionId && p.IsActive, cancellationToken);
         if (getResult.IsFailure)
         {
             return getResult.Error.ToErrors();

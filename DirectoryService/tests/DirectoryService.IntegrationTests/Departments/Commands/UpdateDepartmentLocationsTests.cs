@@ -134,7 +134,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
         Assert.NotNull(updateDepartmentLocationsResult.Error);
-        Assert.Contains(updateDepartmentLocationsResult.Error, e => e.Type == ErrorType.VALIDATION);
+        Assert.Contains(updateDepartmentLocationsResult.Error, e => e.Type == ErrorType.NOT_FOUND);
     }
 
     [Fact]

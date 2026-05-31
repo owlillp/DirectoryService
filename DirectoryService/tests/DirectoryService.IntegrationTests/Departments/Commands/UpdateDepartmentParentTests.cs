@@ -306,7 +306,7 @@ public class UpdateDepartmentParentTests(IntegrationTestsWebFactory factory) : D
         // assert
         Assert.True(updateDepartmentParentResult.IsFailure);
         Assert.NotNull(updateDepartmentParentResult.Error);
-        Assert.Contains(updateDepartmentParentResult.Error, e => e.Type == ErrorType.VALIDATION);
+        Assert.Contains(updateDepartmentParentResult.Error, e => e.Type == ErrorType.NOT_FOUND);
     }
 
     [Fact]
@@ -351,6 +351,6 @@ public class UpdateDepartmentParentTests(IntegrationTestsWebFactory factory) : D
         // assert
         Assert.True(updateDepartmentParentResult.IsFailure);
         Assert.NotNull(updateDepartmentParentResult.Error);
-        Assert.Contains(updateDepartmentParentResult.Error, e => e.Type == ErrorType.VALIDATION);
+        Assert.Contains(updateDepartmentParentResult.Error, e => e.Type == ErrorType.NOT_FOUND);
     }
 }

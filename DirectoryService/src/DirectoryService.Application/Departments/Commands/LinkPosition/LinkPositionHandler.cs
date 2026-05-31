@@ -5,6 +5,7 @@ using DirectoryService.Application.Validation;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Positions;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Failures;
 
@@ -14,6 +15,7 @@ public class LinkPositionHandler(
     ILogger<LinkPositionHandler> logger,
     IValidator<LinkPositionCommand> validator,
     IDepartmentsRepository departmentsRepository,
+    IReadDbContext readDbContext,
     ITransactionManager transactionManager)
     : ICommandHandler<LinkPositionCommand>
 {
@@ -28,6 +30,22 @@ public class LinkPositionHandler(
         var departmentId = new DepartmentId(command.DepartmentId);
         var positionId = new PositionId(command.PositionId);
 
+        bool positionExist = await readDbContext.PositionsRead.AnyAsync(p => p.Id == positionId, cancellationToken: cancellationToken);
+        if (!positionExist)
+        {
+            return GeneralErrors.NotFound(nameof(Position), positionId.Value).ToErrors();
+        }
+
+        bool alreadyLinked = await readDbContext.DepartmentPositionsRead.AnyAsync(
+            dp => dp.DepartmentId == departmentId && dp.PositionId == positionId, cancellationToken);
+
+        if (alreadyLinked)
+        {
+            return GeneralErrors
+                .Conflict(positionId.Value.ToString(), nameof(LinkPositionCommand.PositionId))
+                .ToErrors();
+        }
+
         var getResult = await departmentsRepository.GetByIdWithLockAsync(departmentId, cancellationToken);
         if (getResult.IsFailure)
         {
@@ -35,13 +53,6 @@ public class LinkPositionHandler(
         }
 
         var department = getResult.Value;
-
-        if (department.Positions.Any(dl => dl.PositionId == positionId))
-        {
-            return GeneralErrors
-                .Conflict(positionId.Value.ToString(), nameof(LinkPositionCommand.PositionId))
-                .ToErrors();
-        }
 
         department.LinkPosition(positionId);
 

@@ -5,6 +5,7 @@ using DirectoryService.Application.Validation;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.Failures;
 
@@ -14,6 +15,7 @@ public class LinkLocationHandler(
     ILogger<LinkLocationHandler> logger,
     IValidator<LinkLocationCommand> validator,
     IDepartmentsRepository departmentsRepository,
+    IReadDbContext readDbContext,
     ITransactionManager transactionManager)
     : ICommandHandler<LinkLocationCommand>
 {
@@ -28,20 +30,30 @@ public class LinkLocationHandler(
         var departmentId = new DepartmentId(command.DepartmentId);
         var locationId = new LocationId(command.LocationId);
 
-        var getResult = await departmentsRepository.GetByIdWithLockAsync(departmentId, cancellationToken, includeLocations: true);
+        bool locationExist = await readDbContext.LocationsRead.AnyAsync(
+            l => l.Id == locationId, cancellationToken: cancellationToken);
+        if (!locationExist)
+        {
+            return GeneralErrors.NotFound(nameof(Location), locationId.Value).ToErrors();
+        }
+
+        bool alreadyLinked = await readDbContext.DepartmentLocationsRead.AnyAsync(
+            dl => dl.DepartmentId == departmentId && dl.LocationId == locationId, cancellationToken);
+
+        if (alreadyLinked)
+        {
+            return GeneralErrors
+                .Conflict(locationId.Value.ToString(), nameof(LinkLocationCommand.LocationId))
+                .ToErrors();
+        }
+
+        var getResult = await departmentsRepository.GetByIdWithLockAsync(departmentId, cancellationToken);
         if (getResult.IsFailure)
         {
             return getResult.Error.ToErrors();
         }
 
         var department = getResult.Value;
-
-        if (department.Locations.Any(dl => dl.LocationId == locationId))
-        {
-            return GeneralErrors
-                .Conflict(locationId.Value.ToString(), nameof(LinkLocationCommand.LocationId))
-                .ToErrors();
-        }
 
         department.LinkLocation(locationId);
 

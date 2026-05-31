@@ -6,13 +6,16 @@ using DirectoryService.Application.Abstractions.Database;
 using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Responses;
+using DirectoryService.Domain.Departments;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Shared.Failures;
 
 namespace DirectoryService.Application.Departments.Queries.GetDepartmentAncestors;
 
 public class GetDepartmentAncestorsHandler(
     IValidator<GetDepartmentAncestorsQuery> validator,
+    IReadDbContext readDbContext,
     IDbConnectionFactory connectionFactory)
     : IQueryHandler<GetDepartmentAncestorsResponse, GetDepartmentAncestorsQuery>
 {
@@ -24,6 +27,14 @@ public class GetDepartmentAncestorsHandler(
         if (!validationResult.IsValid)
         {
             return validationResult.ToErrors();
+        }
+
+        var departmentId = new DepartmentId(query.TargetDepartmentId);
+
+        bool exist = await readDbContext.DepartmentsRead.AnyAsync(d => d.Id == departmentId, cancellationToken);
+        if (!exist)
+        {
+            return GeneralErrors.NotFound(nameof(Department), departmentId.Value).ToErrors();
         }
 
         var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);

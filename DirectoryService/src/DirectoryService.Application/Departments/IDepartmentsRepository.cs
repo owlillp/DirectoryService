@@ -17,7 +17,7 @@ public interface IDepartmentsRepository
 
     Task<UnitResult<Error>> DeleteAllLocationsAsync(DepartmentId departmentId, CancellationToken cancellationToken);
 
-    Task<Result<Department, Error>> GetByIdWithLockAsync(DepartmentId departmentId, CancellationToken cancellationToken, bool includePositions = false, bool includeLocations = false);
+    Task<Result<Department, Error>> GetByIdWithLockAsync(DepartmentId departmentId, CancellationToken cancellationToken, bool isActive = true, bool includePositions = false, bool includeLocations = false);
 
     Task<UnitResult<Error>> LockDescendantsAsync(DepartmentPath rootPath, CancellationToken cancellationToken);
 

@@ -16,13 +16,17 @@ public class SearchDepartmentsValidator : AbstractValidator<SearchDepartmentsQue
         When(q => q.Request != null!, () =>
         {
             RuleFor(q => q.Request.Name)
-                .NotNull()
-                .NotEmpty()
-                .WithError(GeneralErrors.ValueIsRequired(nameof(SearchDepartmentsQuery.Request)));
+                .NotNull().WithError(GeneralErrors.ValueIsRequired(nameof(SearchDepartmentsQuery.Request)))
+                .NotEmpty().WithError(GeneralErrors.ValueIsRequired(nameof(SearchDepartmentsQuery.Request)));
 
-            RuleFor(q => q.Request.Name)
-                .Must(name => name.Length >= 2)
-                .WithError(GeneralErrors.InvalidLength(nameof(SearchDepartmentRequest), nameof(SearchDepartmentRequest.Name)));
+            When(q => !string.IsNullOrWhiteSpace(q.Request.Name), () =>
+            {
+                RuleFor(q => q.Request.Name)
+                    .Must(name => name.Length >= 2)
+                    .WithError(GeneralErrors.InvalidLength(
+                        nameof(SearchDepartmentRequest),
+                        nameof(SearchDepartmentRequest.Name)));
+            });
 
             RuleFor(q => q.Request.Page)
                 .GreaterThan(0)

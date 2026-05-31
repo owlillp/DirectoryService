@@ -48,7 +48,7 @@ public class DepartmentsController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpPost("{departmentId:guid}/locations/{positionId:guid}")]
+    [HttpPost("{departmentId:guid}/locations/{locationId:guid}")]
     public async Task<EndpointResult> LinkLocation(
         [FromServices] ICommandHandler<LinkLocationCommand> handler,
         [FromRoute] Guid departmentId,
@@ -103,7 +103,7 @@ public class DepartmentsController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpDelete("{departmentId:guid}/locations/{positionId:guid}")]
+    [HttpDelete("{departmentId:guid}/locations/{locationId:guid}")]
     public async Task<EndpointResult> UnlinkLocation(
         [FromServices] ICommandHandler<UnlinkLocationCommand> handler,
         [FromRoute] Guid departmentId,

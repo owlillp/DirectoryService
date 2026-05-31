@@ -24,7 +24,7 @@ public class PositionsController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpPatch]
+    [HttpPatch("{positionId:guid}")]
     public async Task<EndpointResult> Update(
         [FromServices] ICommandHandler<UpdatePositionCommand> handler,
         [FromRoute] Guid positionId,
@@ -35,7 +35,7 @@ public class PositionsController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpDelete]
+    [HttpDelete("{positionId:guid}")]
     public async Task<EndpointResult> SoftDelete(
         [FromServices] ICommandHandler<SoftDeletePositionCommand> handler,
         [FromRoute] Guid positionId,
