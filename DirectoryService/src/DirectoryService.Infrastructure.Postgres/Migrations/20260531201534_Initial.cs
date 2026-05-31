@@ -12,7 +12,8 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
-                .Annotation("Npgsql:PostgresExtension:ltree", ",,");
+                .Annotation("Npgsql:PostgresExtension:ltree", ",,")
+                .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
 
             migrationBuilder.CreateTable(
                 name: "departments",
@@ -27,6 +28,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -49,6 +51,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -65,6 +68,7 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    deleted_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                 },
                 constraints: table =>
                 {
@@ -128,9 +132,10 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_department_locations_location_id",
+                name: "ix_department_locations_location_id_department_id",
                 table: "department_locations",
-                column: "location_id");
+                columns: new[] { "location_id", "department_id" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_department_positions_department_id_position_id",
@@ -139,9 +144,39 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_department_positions_position_id",
+                name: "ix_department_positions_position_id_department_id",
                 table: "department_positions",
-                column: "position_id");
+                columns: new[] { "position_id", "department_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "idx_departments_identifier",
+                table: "departments",
+                column: "identifier",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_departments_created_at",
+                table: "departments",
+                column: "created_at");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_departments_deleted_at",
+                table: "departments",
+                column: "deleted_at",
+                filter: "is_active = FALSE");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_departments_name",
+                table: "departments",
+                column: "name")
+                .Annotation("Npgsql:IndexMethod", "gin")
+                .Annotation("Npgsql:IndexOperators", new[] { "gin_trgm_ops" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_departments_parent_id",
+                table: "departments",
+                column: "parent_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_departments_path",
@@ -156,10 +191,30 @@ namespace DirectoryService.Infrastructure.Postgres.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_locations_deleted_at",
+                table: "locations",
+                column: "deleted_at",
+                filter: "is_active = FALSE");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_locations_name",
                 table: "locations",
-                column: "name",
-                unique: true);
+                column: "name")
+                .Annotation("Npgsql:IndexMethod", "gin")
+                .Annotation("Npgsql:IndexOperators", new[] { "gin_trgm_ops" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_positions_deleted_at",
+                table: "positions",
+                column: "deleted_at",
+                filter: "is_active = FALSE");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_positions_name",
+                table: "positions",
+                column: "name")
+                .Annotation("Npgsql:IndexMethod", "gin")
+                .Annotation("Npgsql:IndexOperators", new[] { "gin_trgm_ops" });
         }
 
         /// <inheritdoc />

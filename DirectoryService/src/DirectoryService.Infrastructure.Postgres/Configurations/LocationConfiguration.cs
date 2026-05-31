@@ -13,9 +13,14 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
 
         builder.HasKey(l => l.Id).HasName("pk_locations");
 
-        builder.HasIndex(l => l.Name)
-            .IsUnique()
-            .HasDatabaseName("ix_locations_name");
+        builder.HasIndex(d => d.Name)
+            .HasDatabaseName("ix_locations_name")
+            .HasMethod("gin")
+            .HasOperators("gin_trgm_ops");
+
+        builder.HasIndex(l => l.DeletedAt)
+            .HasFilter("is_active = FALSE")
+            .HasDatabaseName("ix_locations_deleted_at");
 
         builder.Property(l => l.Id)
             .HasColumnName("id")
