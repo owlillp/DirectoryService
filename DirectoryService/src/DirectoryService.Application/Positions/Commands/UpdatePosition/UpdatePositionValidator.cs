@@ -1,7 +1,7 @@
-using DirectoryService.Application.Validation;
+using Core.Validation;
 using DirectoryService.Domain.Positions;
 using FluentValidation;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Positions.Commands.UpdatePosition;
 

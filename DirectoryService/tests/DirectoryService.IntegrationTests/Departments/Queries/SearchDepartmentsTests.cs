@@ -1,8 +1,8 @@
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Queries;
 
@@ -99,7 +99,7 @@ public class SearchDepartmentsTests(IntegrationTestsWebFactory factory) : Direct
         var httpResponse = await AppHttpClient.GetAsync(
             "/api/Departments/tree?Name=&Page=1&PageSize=10",
             cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PagedResult<AncestorDepartmentDto>?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -117,7 +117,7 @@ public class SearchDepartmentsTests(IntegrationTestsWebFactory factory) : Direct
         var httpResponse = await AppHttpClient.GetAsync(
             "/api/Departments/tree?Name=test&Page=0&PageSize=10",
             cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PagedResult<AncestorDepartmentDto>?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

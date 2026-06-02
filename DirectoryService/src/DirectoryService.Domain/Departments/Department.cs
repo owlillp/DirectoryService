@@ -3,7 +3,7 @@ using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Positions;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Domain.Departments;
 

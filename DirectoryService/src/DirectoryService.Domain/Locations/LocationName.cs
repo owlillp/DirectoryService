@@ -1,6 +1,6 @@
+using Core.Constants;
 using CSharpFunctionalExtensions;
-using Shared.Constants;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Domain.Locations;
 

@@ -1,12 +1,12 @@
-﻿using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Abstractions.Database;
+﻿using Core.Abstractions;
+using Core.Abstractions.Database;
+using Core.Validation;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Positions.Failures;
-using DirectoryService.Application.Validation;
 using DirectoryService.Domain.Positions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Positions.Commands.SoftDelete;
 

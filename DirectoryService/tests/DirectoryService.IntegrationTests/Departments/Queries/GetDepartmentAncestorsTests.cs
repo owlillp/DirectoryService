@@ -1,7 +1,7 @@
 using DirectoryService.Contracts.Departments.Responses;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Queries;
 
@@ -95,7 +95,7 @@ public class GetDepartmentAncestorsTests(IntegrationTestsWebFactory factory) : D
         var httpResponse = await AppHttpClient.GetAsync(
             $"/api/Departments/{Guid.NewGuid()}/ancestors",
             cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetDepartmentAncestorsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -113,7 +113,7 @@ public class GetDepartmentAncestorsTests(IntegrationTestsWebFactory factory) : D
         var httpResponse = await AppHttpClient.GetAsync(
             $"/api/Departments/{Guid.Empty}/ancestors",
             cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetDepartmentAncestorsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

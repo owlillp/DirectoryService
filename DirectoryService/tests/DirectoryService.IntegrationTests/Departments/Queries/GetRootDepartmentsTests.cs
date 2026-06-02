@@ -1,8 +1,8 @@
 ﻿using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Queries;
 
@@ -154,7 +154,7 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 0, size: 10, prefetch: 3), cancellationToken);
-        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -167,7 +167,7 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 0, prefetch: 3), cancellationToken);
-        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -180,7 +180,7 @@ public class GetRootDepartmentsTests(IntegrationTestsWebFactory factory) : Direc
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildRootsUrl(page: 1, size: 10, prefetch: -1), cancellationToken);
-        var result = await response.HandleResponseAsync<PagedResult<DepartmentWithChildrenDto>?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);

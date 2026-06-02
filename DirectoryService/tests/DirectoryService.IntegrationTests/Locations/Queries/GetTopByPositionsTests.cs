@@ -1,7 +1,7 @@
 using DirectoryService.Contracts.Locations.Responses;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Locations.Queries;
 
@@ -54,7 +54,7 @@ public class GetTopByPositionsTests(IntegrationTestsWebFactory factory) : Direct
 
         // act
         var httpResponse = await AppHttpClient.GetAsync("/api/Locations/top?topCount=0", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<GetTopLocationsResponse?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

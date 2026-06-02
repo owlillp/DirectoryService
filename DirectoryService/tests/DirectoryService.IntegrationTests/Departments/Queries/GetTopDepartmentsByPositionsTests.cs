@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Contracts.Departments.Responses;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Queries;
 
@@ -154,7 +154,7 @@ public class GetTopDepartmentsByPositionsTests(IntegrationTestsWebFactory factor
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildTopPositionsUrl(0), cancellationToken);
-        var result = await response.HandleResponseAsync<GetTopDepartmentsByPositionsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -167,7 +167,7 @@ public class GetTopDepartmentsByPositionsTests(IntegrationTestsWebFactory factor
         var cancellationToken = new CancellationTokenSource().Token;
 
         var response = await AppHttpClient.GetAsync(BuildTopPositionsUrl(1001), cancellationToken);
-        var result = await response.HandleResponseAsync<GetTopDepartmentsByPositionsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);

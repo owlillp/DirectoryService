@@ -1,12 +1,12 @@
-﻿using DirectoryService.Application.Abstractions;
+﻿using Core.Abstractions;
 using DirectoryService.Application.Positions.Commands.CreatePosition;
 using DirectoryService.Application.Positions.Commands.SoftDelete;
 using DirectoryService.Application.Positions.Commands.UpdatePosition;
 using DirectoryService.Application.Positions.Queries.GetPosition;
 using DirectoryService.Contracts.Positions.Dtos;
 using DirectoryService.Contracts.Positions.Requests;
+using Framework.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
-using Shared.EndpointResults;
 
 namespace DirectoryService.Presentation.Positions;
 

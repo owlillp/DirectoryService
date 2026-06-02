@@ -1,5 +1,5 @@
 ﻿using System.Data.Common;
-using DirectoryService.Application.Abstractions.Database;
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Infrastructure.Postgres;
 using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
 using DirectoryService.Infrastructure.Postgres.Departments.Cleanup;
@@ -139,4 +139,3 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
             });
     }
 }
-

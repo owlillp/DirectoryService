@@ -1,18 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
-
     <ItemGroup>
       <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
+      <PackageReference Include="Owlip.Core" Version="0.0.2" />
+      <PackageReference Include="Owlip.SharedKernel" Version="0.0.2" />
       <PackageReference Include="TimeZoneConverter" Version="7.2.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Shared\Shared.csproj" />
     </ItemGroup>
 
 </Project>

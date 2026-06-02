@@ -3,8 +3,8 @@ using DirectoryService.Contracts.Positions.Requests;
 using DirectoryService.Domain.Positions;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Positions.Commands;
 
@@ -120,7 +120,7 @@ public class CreatePositionTests(IntegrationTestsWebFactory factory) : Directory
 
         // act
         var createResponse = await AppHttpClient.PostAsJsonAsync("/api/Positions", request, cancellationToken);
-        var createResult = await createResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createResult = await createResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createResult.IsFailure);
@@ -141,7 +141,7 @@ public class CreatePositionTests(IntegrationTestsWebFactory factory) : Directory
 
         // act
         var createResponse = await AppHttpClient.PostAsJsonAsync("/api/Positions", request, cancellationToken);
-        var createResult = await createResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createResult = await createResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createResult.IsFailure);
@@ -159,7 +159,7 @@ public class CreatePositionTests(IntegrationTestsWebFactory factory) : Directory
 
         // act
         var createResponse = await AppHttpClient.PostAsJsonAsync("/api/Positions", request, cancellationToken);
-        var createResult = await createResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createResult = await createResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createResult.IsFailure);
@@ -183,7 +183,7 @@ public class CreatePositionTests(IntegrationTestsWebFactory factory) : Directory
 
         // act
         var createResponse = await AppHttpClient.PostAsJsonAsync("/api/Positions", request, cancellationToken);
-        var createResult = await createResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createResult = await createResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createResult.IsFailure);
@@ -204,7 +204,7 @@ public class CreatePositionTests(IntegrationTestsWebFactory factory) : Directory
 
         // act
         var createResponse = await AppHttpClient.PostAsJsonAsync("/api/Positions", request, cancellationToken);
-        var createResult = await createResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createResult = await createResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createResult.IsFailure);
@@ -222,7 +222,7 @@ public class CreatePositionTests(IntegrationTestsWebFactory factory) : Directory
 
         // act
         var createResponse = await AppHttpClient.PostAsJsonAsync("/api/Positions", request, cancellationToken);
-        var createResult = await createResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createResult = await createResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createResult.IsFailure);

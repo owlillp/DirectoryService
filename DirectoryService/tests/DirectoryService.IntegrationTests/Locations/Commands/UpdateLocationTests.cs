@@ -3,8 +3,8 @@ using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Locations.Requests;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Locations.Commands;
 

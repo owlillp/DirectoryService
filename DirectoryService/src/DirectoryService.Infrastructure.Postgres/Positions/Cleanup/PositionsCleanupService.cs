@@ -1,5 +1,5 @@
-﻿using Dapper;
-using DirectoryService.Application.Abstractions.Database;
+﻿using Core.Abstractions.Database;
+using Dapper;
 using DirectoryService.Infrastructure.Postgres.BackgroundServices.CleanupService;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

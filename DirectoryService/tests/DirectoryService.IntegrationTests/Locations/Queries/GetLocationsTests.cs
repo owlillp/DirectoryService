@@ -1,8 +1,8 @@
 ﻿using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Locations.Queries;
 
@@ -213,7 +213,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(BuildLocationsUrl(includePagination: false), cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -231,7 +231,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -250,7 +250,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -269,7 +269,7 @@ public class GetLocationsTests(IntegrationTestsWebFactory factory) : DirectorySe
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PagedResult<LocationDto>?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

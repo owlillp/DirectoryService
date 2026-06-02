@@ -4,8 +4,8 @@ using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Commands;
 
@@ -234,7 +234,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -266,7 +266,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -298,7 +298,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -332,7 +332,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -371,7 +371,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -410,7 +410,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -444,7 +444,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -478,7 +478,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -512,7 +512,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -546,7 +546,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);
@@ -580,7 +580,7 @@ public class CreateDepartmentTests(IntegrationTestsWebFactory factory) : Directo
 
         // act
         var createDepartmentResponse = await AppHttpClient.PostAsJsonAsync("/api/Departments", request, cancellationToken);
-        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var createDepartmentResult = await createDepartmentResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(createDepartmentResult.IsFailure);

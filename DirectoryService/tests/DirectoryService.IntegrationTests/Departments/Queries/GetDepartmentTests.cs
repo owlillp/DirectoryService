@@ -1,7 +1,7 @@
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Queries;
 
@@ -77,7 +77,7 @@ public class GetDepartmentTests(IntegrationTestsWebFactory factory) : DirectoryS
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Departments/{Guid.NewGuid()}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<DepartmentDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -99,7 +99,7 @@ public class GetDepartmentTests(IntegrationTestsWebFactory factory) : DirectoryS
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Departments/{department.Id.Value}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<DepartmentDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -113,7 +113,7 @@ public class GetDepartmentTests(IntegrationTestsWebFactory factory) : DirectoryS
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Departments/{Guid.Empty}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<DepartmentDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

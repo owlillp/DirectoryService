@@ -3,8 +3,8 @@ using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.Domain.Locations;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Commands;
 
@@ -106,7 +106,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{departmentIdValue}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
@@ -129,7 +129,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{department.Id.Value}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
@@ -151,7 +151,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{department.Id.Value}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
@@ -173,7 +173,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{department.Id.Value}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
@@ -196,7 +196,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{department.Id.Value}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
@@ -219,7 +219,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{department.Id.Value}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);
@@ -242,7 +242,7 @@ public class UpdateDepartmentLocationsTests(IntegrationTestsWebFactory factory) 
 
         // act
         var updateDepartmentLocationsResponse = await AppHttpClient.PatchAsJsonAsync($"/api/Departments/{department.Id.Value}/locations", request, cancellationToken);
-        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync<Guid?>(cancellationToken);
+        var updateDepartmentLocationsResult = await updateDepartmentLocationsResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(updateDepartmentLocationsResult.IsFailure);

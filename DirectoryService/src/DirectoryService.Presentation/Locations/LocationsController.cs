@@ -1,4 +1,4 @@
-﻿using DirectoryService.Application.Abstractions;
+﻿using Core.Abstractions;
 using DirectoryService.Application.Locations.Commands.CreateLocation;
 using DirectoryService.Application.Locations.Commands.SoftDelete;
 using DirectoryService.Application.Locations.Commands.UpdateLocation;
@@ -9,8 +9,8 @@ using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Locations.Requests;
 using DirectoryService.Contracts.Locations.Responses;
+using Framework.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
-using Shared.EndpointResults;
 
 namespace DirectoryService.Presentation.Locations;
 

@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+    <ItemGroup>
+      <ProjectReference Include="..\Shared.SharedKernel\Shared.SharedKernel.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="12.1.1" />
+      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+      <PackageReference Include="Scrutor" Version="7.0.0" />
+    </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Owlip.Core</PackageId>
+    <Version>0.0.2</Version>
+    <Authors>owlillp</Authors>
+    <Company>owlillp</Company>
+    <PackageDescription>Core</PackageDescription>
+    <RepositoryUrl>https://github.com/owlillp/DirectoryService</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>

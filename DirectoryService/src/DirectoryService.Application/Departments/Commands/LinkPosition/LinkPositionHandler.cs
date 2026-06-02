@@ -1,13 +1,14 @@
-﻿using CSharpFunctionalExtensions;
+﻿using Core.Abstractions;
+using Core.Abstractions.Database;
+using Core.Validation;
+using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Validation;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Positions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Departments.Commands.LinkPosition;
 
