@@ -1,7 +1,7 @@
 ﻿using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Positions.Commands;
 
@@ -79,7 +79,7 @@ public class SoftDeletePositionTests(IntegrationTestsWebFactory factory) : Direc
 
         // remove position from department1 only
         var deleteResponse = await AppHttpClient.DeleteAsync($"/api/Positions/{position.Id.Value}", cancellationToken);
-        var deleteResult = await deleteResponse.HandleResponseAsync(cancellationToken);
+        await deleteResponse.HandleResponseAsync(cancellationToken);
 
         // act
         await ExecuteInDb(async dbContext =>

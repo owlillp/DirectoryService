@@ -1,13 +1,13 @@
 ﻿using System.Data;
+using Core.Abstractions;
+using Core.Abstractions.Database;
+using Core.Validation;
 using CSharpFunctionalExtensions;
 using Dapper;
-using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations.Dtos;
 using FluentValidation;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Locations.Queries.GetLocations;
 

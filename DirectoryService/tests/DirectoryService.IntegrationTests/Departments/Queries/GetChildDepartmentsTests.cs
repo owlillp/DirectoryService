@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Contracts.Departments.Responses;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Queries;
 
@@ -188,7 +188,7 @@ public class GetChildDepartmentsTests(IntegrationTestsWebFactory factory) : Dire
         var parentId = Guid.NewGuid();
 
         var response = await AppHttpClient.GetAsync(BuildChildUrl(parentId, page: 0, size: 10), cancellationToken);
-        var result = await response.HandleResponseAsync<GetChildDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -202,7 +202,7 @@ public class GetChildDepartmentsTests(IntegrationTestsWebFactory factory) : Dire
         var parentId = Guid.NewGuid();
 
         var response = await AppHttpClient.GetAsync(BuildChildUrl(parentId, page: 1, size: 0), cancellationToken);
-        var result = await response.HandleResponseAsync<GetChildDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -216,7 +216,7 @@ public class GetChildDepartmentsTests(IntegrationTestsWebFactory factory) : Dire
         var parentId = Guid.NewGuid();
 
         var response = await AppHttpClient.GetAsync(BuildChildUrl(parentId, page: -1, size: 10), cancellationToken);
-        var result = await response.HandleResponseAsync<GetChildDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);
@@ -230,7 +230,7 @@ public class GetChildDepartmentsTests(IntegrationTestsWebFactory factory) : Dire
         var parentId = Guid.NewGuid();
 
         var response = await AppHttpClient.GetAsync(BuildChildUrl(parentId, page: 1, size: -5), cancellationToken);
-        var result = await response.HandleResponseAsync<GetChildDepartmentsResponse?>(cancellationToken);
+        var result = await response.HandleResponseAsync(cancellationToken);
 
         Assert.True(result.IsFailure);
         Assert.NotNull(result.Error);

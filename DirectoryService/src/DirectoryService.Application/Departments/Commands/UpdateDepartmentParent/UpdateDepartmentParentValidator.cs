@@ -1,9 +1,8 @@
+using Core.Validation;
 using DirectoryService.Application.Departments.Failures;
-using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Departments;
 using DirectoryService.Contracts.Departments.Requests;
 using FluentValidation;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Departments.Commands.UpdateDepartmentParent;
 

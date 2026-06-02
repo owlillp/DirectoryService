@@ -1,5 +1,5 @@
 using System.Data;
-using DirectoryService.Application.Abstractions.Database;
+using Core.Abstractions.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace DirectoryService.Infrastructure.Postgres.Database;

@@ -1,16 +1,17 @@
 ﻿using System.Data;
+using Core.Abstractions;
+using Core.Abstractions.Database;
+using Core.Validation;
 using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Responses;
 using DirectoryService.Domain.Departments;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Departments.Queries.GetChildDepartments;
 
@@ -42,8 +43,6 @@ public class GetChildDepartmentsHandler(
         bool existParent = await readDbContext
             .DepartmentsRead
             .AnyAsync(d => d.Id == parentId, cancellationToken);
-
-        var lis = await readDbContext.DepartmentsRead.ToListAsync(cancellationToken);
 
         if (!existParent)
         {

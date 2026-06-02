@@ -2,8 +2,8 @@ using System.Net.Http.Json;
 using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.IntegrationTests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Departments.Commands;
 

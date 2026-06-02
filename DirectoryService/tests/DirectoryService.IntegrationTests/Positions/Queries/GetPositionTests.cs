@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Contracts.Positions.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Positions.Queries;
 
@@ -84,7 +84,7 @@ public class GetPositionTests(IntegrationTestsWebFactory factory) : DirectorySer
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Positions/{Guid.NewGuid()}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PositionDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -108,7 +108,7 @@ public class GetPositionTests(IntegrationTestsWebFactory factory) : DirectorySer
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Positions/{position.Id.Value}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PositionDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -124,7 +124,7 @@ public class GetPositionTests(IntegrationTestsWebFactory factory) : DirectorySer
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Positions/{Guid.Empty}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<PositionDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);

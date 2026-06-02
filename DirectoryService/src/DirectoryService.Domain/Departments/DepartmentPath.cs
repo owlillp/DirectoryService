@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Domain.Departments;
 

@@ -1,6 +1,6 @@
-﻿using DirectoryService.Application.Validation;
+﻿using Core.Validation;
 using FluentValidation;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Positions.Queries.GetPosition;
 

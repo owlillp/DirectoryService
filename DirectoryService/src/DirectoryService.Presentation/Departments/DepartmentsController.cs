@@ -1,4 +1,4 @@
-﻿using DirectoryService.Application.Abstractions;
+﻿using Core.Abstractions;
 using DirectoryService.Application.Departments.Commands.CreateDepartment;
 using DirectoryService.Application.Departments.Commands.LinkLocation;
 using DirectoryService.Application.Departments.Commands.LinkPosition;
@@ -18,8 +18,8 @@ using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.Contracts.Departments.Responses;
+using Framework.EndpointResults;
 using Microsoft.AspNetCore.Mvc;
-using Shared.EndpointResults;
 
 namespace DirectoryService.Presentation.Departments;
 

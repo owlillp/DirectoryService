@@ -1,5 +1,5 @@
 ﻿using DirectoryService.Infrastructure.Postgres.Seeding;
-using DirectoryService.Presentation.Middlewares;
+using Framework.Middlewares;
 using Serilog;
 
 namespace DirectoryService.Presentation.Configuration;

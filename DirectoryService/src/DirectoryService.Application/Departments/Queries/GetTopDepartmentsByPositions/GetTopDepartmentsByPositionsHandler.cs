@@ -1,12 +1,12 @@
-﻿using CSharpFunctionalExtensions;
+﻿using Core.Abstractions;
+using Core.Abstractions.Database;
+using Core.Validation;
+using CSharpFunctionalExtensions;
 using Dapper;
-using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Abstractions.Database;
-using DirectoryService.Application.Validation;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Responses;
 using FluentValidation;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Departments.Queries.GetTopDepartmentsByPositions;
 

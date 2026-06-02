@@ -1,7 +1,7 @@
+using Core.Constants;
 using DirectoryService.Domain.Locations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shared.Constants;
 
 namespace DirectoryService.Infrastructure.Postgres.Configurations;
 

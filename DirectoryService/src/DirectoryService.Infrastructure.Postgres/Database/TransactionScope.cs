@@ -1,8 +1,8 @@
 ﻿using System.Data;
+using Core.Abstractions.Database;
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions.Database;
 using Microsoft.Extensions.Logging;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Infrastructure.Postgres.Database;
 

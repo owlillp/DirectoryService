@@ -1,4 +1,4 @@
-﻿using DirectoryService.Application.Abstractions.Database;
+﻿using DirectoryService.Application.Abstractions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;

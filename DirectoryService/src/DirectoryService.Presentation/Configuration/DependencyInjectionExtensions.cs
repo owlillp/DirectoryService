@@ -1,11 +1,9 @@
-﻿using System.Text.Json.Serialization;
-using DirectoryService.Application;
+﻿using DirectoryService.Application;
 using DirectoryService.Infrastructure.Postgres;
-using DirectoryService.Infrastructure.Postgres.Seeding;
+using Framework.Logging;
+using Framework.Serializations;
+using Framework.Swagger;
 using Microsoft.AspNetCore.Mvc;
-using NJsonSchema;
-using Serilog;
-using Shared.Serializations;
 
 namespace DirectoryService.Presentation.Configuration;
 
@@ -15,28 +13,15 @@ public static class DependencyInjectionExtensions
     {
         public IServiceCollection AddDependency(IConfiguration configuration)
         {
-            services.ConfigureSerilog(configuration);
             services.AddControllers();
-            services.ConfigureOpenApi();
+            services.AddOpenApi("DirectoryServiceApi", "v1");
+            services.AddSerilogLogging(configuration, "DirectoryService");
             services.ConfigureApiBehaviorOptions();
-            services.ConfigureJsonOptions();
+            services.AddJsonOptions();
 
             services.AddApplication();
             services.AddInfrastructurePostgres(configuration);
 
-            return services;
-        }
-
-        private IServiceCollection ConfigureOpenApi()
-        {
-            services.AddOpenApiDocument(settings =>
-            {
-                settings.Title = "DirectoryServiceApi";
-                settings.Version = "v1";
-                settings.SchemaSettings.SchemaType = SchemaType.OpenApi3;
-                settings.SchemaSettings.GenerateEnumMappingDescription = true;
-                settings.SchemaSettings.SchemaProcessors.Add(new EnvelopeSchemaProcessor());
-            });
             return services;
         }
 
@@ -46,27 +31,6 @@ public static class DependencyInjectionExtensions
             {
                 opt.SuppressModelStateInvalidFilter = true;
             });
-            return services;
-        }
-
-        private IServiceCollection ConfigureJsonOptions()
-        {
-            services.ConfigureHttpJsonOptions(options =>
-            {
-                options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.SerializerOptions.Converters.Add(new ErrorsJsonConverter());
-            });
-            return services;
-        }
-
-        private IServiceCollection ConfigureSerilog(IConfiguration configuration)
-        {
-            services.AddSerilog((sp, lc) => lc
-                 .ReadFrom.Configuration(configuration)
-                 .ReadFrom.Services(sp)
-                 .Enrich.FromLogContext()
-                 .Enrich.WithProperty("ServiceName", "DirectoryService"));
-
             return services;
         }
     }

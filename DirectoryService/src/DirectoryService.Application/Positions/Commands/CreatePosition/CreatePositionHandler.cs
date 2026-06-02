@@ -1,13 +1,13 @@
+using Core.Abstractions;
+using Core.Validation;
 using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Departments;
-using DirectoryService.Application.Validation;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Positions;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared.Failures;
+using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Positions.Commands.CreatePosition;
 

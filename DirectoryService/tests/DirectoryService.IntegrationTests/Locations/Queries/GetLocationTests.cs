@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.IntegrationTests.Infrastructure;
-using Shared.Failures;
-using Shared.HttpCommunication;
+using Shared.SharedKernel.Failures;
+using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Locations.Queries;
 
@@ -86,7 +86,7 @@ public class GetLocationTests(IntegrationTestsWebFactory factory) : DirectorySer
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Locations/{Guid.NewGuid()}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<LocationDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -107,7 +107,7 @@ public class GetLocationTests(IntegrationTestsWebFactory factory) : DirectorySer
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Locations/{location.Id.Value}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<LocationDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
@@ -123,7 +123,7 @@ public class GetLocationTests(IntegrationTestsWebFactory factory) : DirectorySer
 
         // act
         var httpResponse = await AppHttpClient.GetAsync($"/api/Locations/{Guid.Empty}", cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<LocationDto?>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync(cancellationToken);
 
         // assert
         Assert.True(result.IsFailure);
