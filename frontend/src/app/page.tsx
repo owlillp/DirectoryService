@@ -1,12 +1,7 @@
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 sm:items-start">
-        <div>
-          <span>Directory Service </span>
-          <span>Тут будут разделы </span>
-        </div>
-      </main>
+    <div className="flex flex-col flex-1 items-center justify-center p-8">
+      <main className="flex flex-col w-full max-w-2xl gap-8"></main>
     </div>
   );
 }
