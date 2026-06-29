@@ -7,7 +7,7 @@ import { SidebarTrigger } from "@/src/shared/components/ui/sidebar";
 export default function Header() {
   return (
     <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border bg-background/95 backdrop-blur-sm px-4 lg:px-6">
-      <SidebarTrigger className="lg:hidden" />
+      <SidebarTrigger className="md:hidden" />
 
       <Link
         href={routes.home}
