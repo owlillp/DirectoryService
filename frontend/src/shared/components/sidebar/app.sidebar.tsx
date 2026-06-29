@@ -48,7 +48,7 @@ function NavLink({
 
 export default function AppSidebar() {
   const pathname = usePathname();
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon">
@@ -83,7 +83,7 @@ export default function AppSidebar() {
                   asChild
                   tooltip={{
                     children: "Развернуть",
-                    hidden: state !== "collapsed",
+                    hidden: state !== "collapsed" || isMobile,
                   }}
                 >
                   <SidebarTrigger className="w-full justify-start gap-2 group-data-[collapsible=icon]:justify-center">
