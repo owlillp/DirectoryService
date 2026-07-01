@@ -13,6 +13,7 @@ public static class DependencyInjectionExtensions
     {
         public IServiceCollection AddDependency(IConfiguration configuration)
         {
+            services.AddCors();
             services.AddControllers();
             services.AddOpenApi("DirectoryServiceApi", "v1");
             services.AddSerilogLogging(configuration, "DirectoryService");
