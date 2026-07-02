@@ -3,8 +3,8 @@ import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider } from "@/src/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/src/shared/components/ui/tooltip";
-import AppSidebar from "@/src/shared/components/sidebar/app.sidebar";
-import Header from "@/src/shared/components/header/header";
+import AppSidebar from "../features/sidebar/app-sidebar";
+import Header from "../features/header/header";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",

@@ -2,8 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { Home, PanelLeft } from "lucide-react";
-import { routes, navItems } from "@/src/shared/routes";
+import { PanelLeft } from "lucide-react";
+import { navItems } from "@/src/shared/routes";
 import {
   Sidebar,
   SidebarContent,
@@ -103,20 +103,6 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               <div className="mx-2 mb-2 h-0.5 rounded-full bg-sidebar-accent/70" />
-
-              {/* Главная */}
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname === routes.home}
-                  tooltip="Главная"
-                >
-                  <NavLink href={routes.home}>
-                    <Home className="h-4 w-4 shrink-0" />
-                    <span>Главная</span>
-                  </NavLink>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
 
               {navItems.map((item) => {
                 const isActive = pathname === item.href;

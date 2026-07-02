@@ -10,6 +10,14 @@ public static class AppConfigurationExtensions
 
     public static async Task<IApplicationBuilder> Configure(this WebApplication app, string[] args)
     {
+        app.UseCors(builder =>
+        {
+            builder.WithOrigins("http://localhost:3000", "http://localhost:3001")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+
         app.UseExceptionMiddleware();
         app.UseSerilogRequestLogging();
 
