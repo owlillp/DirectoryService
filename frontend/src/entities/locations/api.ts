@@ -1,41 +1,43 @@
 import { apiClient } from "@/src/shared/api/axios-instance";
+import { Location } from "./types";
 
 export type GetLocationsRequest = {
-  DepartmentIds?: string[];
-  Search?: string;
-  IsActive?: boolean;
-  SortBy?: string;
-  SortDirection?: string;
-  Pagination?: PaginationRequest;
+  departmentIds?: string[];
+  search?: string;
+  isActive?: boolean;
+  sortBy?: string;
+  sortDirection?: string;
+  pagination?: PaginationRequest;
+  signal?: AbortSignal;
 };
 
 export type PaginationRequest = {
-  Page: number;
-  PageSize: number;
+  page: number;
+  pageSize: number;
 };
 
 export type ErrorItem = {
-  Code: string;
-  Message: string;
-  Type: ErrorType;
-  InvalidField?: string | null;
+  code: string;
+  message: string;
+  type: ErrorType;
+  invalidField?: string | null;
 };
 
 export type Errors = {
-  Errors: ErrorItem[];
+  errors: ErrorItem[];
 };
 
 export type Envelope<T = unknown> = {
-  Result?: T | null;
-  Errors?: Errors | null;
-  TimeGenerated: string;
-  IsFailure: boolean;
-  IsSuccess: boolean;
+  result?: T | null;
+  errors?: Errors | null;
+  timeGenerated: string;
+  isFailure: boolean;
+  isSuccess: boolean;
 };
 
 export type PagedResult<T> = {
-  Records: T[];
-  TotalCount: number;
+  records: T[];
+  totalCount: number;
 };
 
 export type ErrorType =
@@ -47,10 +49,11 @@ export type ErrorType =
 
 export const locationsApi = {
   getLocations: async (request: GetLocationsRequest) => {
+    const { signal, ...params } = request;
     const response = await apiClient.get<Envelope<PagedResult<Location>>>(
       "/Locations",
-      { params: request },
+      { params, signal },
     );
-    return response.data.Result;
+    return response.data.result;
   },
 };

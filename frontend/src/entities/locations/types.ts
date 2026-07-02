@@ -1,18 +1,18 @@
 export type Location = {
-  Id: string;
-  Name: string;
-  TimeZone: string;
-  IsActive: boolean;
-  CreatedAt: Date;
-  DepartmentIds: string[];
-  Address: LocationAdress;
+  id: string;
+  name: string;
+  timeZone: string;
+  isActive: boolean;
+  createdAt: string;
+  departmentIds: string[];
+  address: LocationAddress;
 };
 
-export type LocationAdress = {
-  Country: string;
-  City: string;
-  Street: string;
-  Apartment?: string;
-  PostalCode: number;
-  BuildingNumber: number;
+export type LocationAddress = {
+  country: string;
+  city: string;
+  street: string;
+  apartment?: string | null;
+  postalCode: number;
+  buildingNumber: number;
 };
