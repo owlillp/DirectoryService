@@ -28,6 +28,7 @@ export function useLocations(pageSize = 10): UseLocationsResult {
       })
       .catch((err) => {
         if (axios.isCancel(err)) return;
+        setIsLoading(false);
         setError(err instanceof Error ? err.message : "Неизвестная ошибка");
         setLocations([]);
       });
