@@ -3,22 +3,11 @@
 import Link from "next/link";
 import { routes } from "@/src/shared/routes";
 import { useLocations } from "@/src/shared/hooks/use-locations";
+import { LocationCard } from "@/src/entities/locations/ui/location-card";
 import { Button } from "@/src/shared/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/shared/components/ui/card";
-import { Badge } from "@/src/shared/components/ui/badge";
+import { Card, CardContent } from "@/src/shared/components/ui/card";
 import { Spinner } from "@/src/shared/components/ui/spinner";
-import {
-  MapPinIcon,
-  AlertCircleIcon,
-  BuildingIcon,
-  GlobeIcon,
-  RefreshCwIcon,
-} from "lucide-react";
+import { MapPinIcon, AlertCircleIcon, RefreshCwIcon } from "lucide-react";
 
 export default function LocationsPage() {
   const { locations, totalCount, isLoading, error, refetch } = useLocations();
@@ -95,36 +84,7 @@ export default function LocationsPage() {
 
             <div className="flex flex-col gap-3">
               {locations.map((location) => (
-                <Card key={location.id} size="sm">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MapPinIcon className="size-4 text-muted-foreground shrink-0" />
-                      <span>{location.name}</span>
-                      <Badge
-                        variant={location.isActive ? "default" : "secondary"}
-                        className="ml-auto"
-                      >
-                        {location.isActive ? "Активна" : "Неактивна"}
-                      </Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-col gap-1.5 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <BuildingIcon className="size-3.5 shrink-0" />
-                      <span>
-                        {location.address.country}, {location.address.city},{" "}
-                        {location.address.street},{" "}
-                        {location.address.buildingNumber}
-                        {location.address.apartment &&
-                          `, ${location.address.apartment}`}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <GlobeIcon className="size-3.5 shrink-0" />
-                      <span>Часовой пояс: {location.timeZone}</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                <LocationCard key={location.id} location={location} />
               ))}
             </div>
           </>

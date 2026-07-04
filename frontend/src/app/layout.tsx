@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/src/shared/components/ui/sidebar";
-import { TooltipProvider } from "@/src/shared/components/ui/tooltip";
-import AppSidebar from "../features/sidebar/app-sidebar";
-import Header from "../features/header/header";
+import Layout from "../features/layout/app-layout";
 
 const dmSans = DM_Sans({
   variable: "--font-sans",
@@ -32,17 +29,7 @@ export default function RootLayout({
       <body
         className={`${dmSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
       >
-        <TooltipProvider>
-          <SidebarProvider defaultOpen={true}>
-            <div className="flex min-h-svh w-full">
-              <AppSidebar />
-              <div className="flex flex-1 flex-col">
-                <Header />
-                <main className="flex flex-1 flex-col">{children}</main>
-              </div>
-            </div>
-          </SidebarProvider>
-        </TooltipProvider>
+        <Layout>{children}</Layout>
       </body>
     </html>
   );
