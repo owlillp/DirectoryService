@@ -8,7 +8,6 @@ export type GetLocationsRequest = {
   sortBy?: string;
   sortDirection?: string;
   pagination?: PaginationRequest;
-  signal?: AbortSignal;
 };
 
 export type PaginationRequest = {
@@ -49,10 +48,9 @@ export type ErrorType =
 
 export const locationsApi = {
   getLocations: async (request: GetLocationsRequest) => {
-    const { signal, ...params } = request;
     const response = await apiClient.get<Envelope<PagedResult<Location>>>(
       "/Locations",
-      { params, signal },
+      { params: request },
     );
     return response.data.result;
   },
