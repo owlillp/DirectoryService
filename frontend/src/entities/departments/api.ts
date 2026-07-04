@@ -8,7 +8,7 @@ export type GetRootDepartmentsRequest = {
   prefetch: number;
 };
 
-export const deprtmentsApi = {
+export const departmentsApi = {
   getRoots: async (request: GetRootDepartmentsRequest) => {
     const response = await apiClient.get<
       Envelope<PagedResult<DepartmentWithChildren>>

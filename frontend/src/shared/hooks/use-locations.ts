@@ -10,11 +10,11 @@ type UseLocationsResult = {
   refetch: () => void;
 };
 
-export function useLocations(pageSize = 10): UseLocationsResult {
+export function useLocations(page = 1, pageSize = 10): UseLocationsResult {
   const { data, isLoading, error, refetch } = useQuery({
     queryFn: () =>
-      locationsApi.getLocations({ pagination: { page: 1, pageSize } }),
-    queryKey: ["locations"],
+      locationsApi.getLocations({ pagination: { page, pageSize } }),
+    queryKey: ["locations", { page, pageSize }],
   });
 
   return {

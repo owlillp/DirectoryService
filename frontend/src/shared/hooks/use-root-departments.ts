@@ -1,4 +1,4 @@
-import { deprtmentsApi } from "@/src/entities/departments/api";
+import { departmentsApi } from "@/src/entities/departments/api";
 import { DepartmentWithChildren } from "@/src/entities/departments/types";
 import { useQuery } from "@tanstack/react-query";
 
@@ -13,10 +13,10 @@ type UseRootDepartmentsResult = {
 export function useRootDepartments(
   page = 1,
   size = 10,
-  prefetch = 1,
+  prefetch = 3,
 ): UseRootDepartmentsResult {
   const { data, isLoading, error, refetch } = useQuery({
-    queryFn: () => deprtmentsApi.getRoots({ page, size, prefetch }),
+    queryFn: () => departmentsApi.getRoots({ page, size, prefetch }),
     queryKey: ["root-departments", page, size, prefetch],
   });
 
