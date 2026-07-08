@@ -2,15 +2,19 @@
 
 import Link from "next/link";
 import { routes } from "@/src/shared/routes";
-import { useLocations } from "@/src/shared/hooks/use-locations";
+import { useLocationsList } from "@/src/features/locations/model/use-locations-list";
 import { LocationCard } from "@/src/entities/locations/ui/location-card";
 import { Button } from "@/src/shared/components/ui/button";
 import { Card, CardContent } from "@/src/shared/components/ui/card";
 import { Spinner } from "@/src/shared/components/ui/spinner";
 import { MapPinIcon, AlertCircleIcon, RefreshCwIcon } from "lucide-react";
+import { useState } from "react";
+import { CreateLocationDialog } from "@/src/features/locations/create-location-dialog";
 
 export default function LocationsPage() {
-  const { locations, totalCount, isLoading, error, refetch } = useLocations();
+  const { locations, totalCount, isPending, error, refetch } =
+    useLocationsList();
+  const [open, setOpen] = useState(false);
 
   return (
     <div className="flex flex-col flex-1 items-center p-8">
@@ -23,16 +27,19 @@ export default function LocationsPage() {
               Управление списком локаций
             </p>
           </div>
-          <Link
-            href={routes.home}
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-          >
-            ← На главную
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href={routes.home}
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            >
+              ← На главную
+            </Link>
+            <CreateLocationDialog open={open} onOpenChange={setOpen} />
+          </div>
         </div>
 
         {/* Загрузка */}
-        {isLoading && (
+        {isPending && (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-32 gap-4">
             <Spinner className="size-8 text-muted-foreground" />
             <p className="text-sm text-muted-foreground">Загрузка локаций...</p>
@@ -40,7 +47,7 @@ export default function LocationsPage() {
         )}
 
         {/* Ошибка */}
-        {!isLoading && error && (
+        {!isPending && error && (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16 gap-4">
               <div className="flex size-12 items-center justify-center rounded-full bg-destructive/10">
@@ -61,7 +68,7 @@ export default function LocationsPage() {
         )}
 
         {/* Пусто */}
-        {!isLoading && !error && locations.length === 0 && (
+        {!isPending && !error && locations.length === 0 && (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-32 gap-4">
             <div className="flex size-12 items-center justify-center rounded-full bg-muted">
               <MapPinIcon className="size-6 text-muted-foreground" />
@@ -76,7 +83,7 @@ export default function LocationsPage() {
         )}
 
         {/* Список */}
-        {!isLoading && !error && locations.length > 0 && (
+        {!isPending && !error && locations.length > 0 && (
           <>
             <p className="text-sm text-muted-foreground">
               Всего локаций: {totalCount}
