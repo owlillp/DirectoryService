@@ -11,8 +11,41 @@ import {
 import { Input } from "@/src/shared/components/ui/input";
 import { PlusIcon } from "lucide-react";
 import { useCrateLocation } from "./model/use-create-location";
-import { useState } from "react";
-import { CreateLocationsRequest } from "@/src/entities/locations/api";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const knownTimeZones =
+  typeof window !== "undefined" ? Intl.supportedValuesOf("timeZone") : [];
+
+const createLocationSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Название локации обязательно")
+    .min(3, "Название должно содержать минимум 3 символа")
+    .max(120, "Название не должно превышать 120 символов"),
+  timeZone: z
+    .string()
+    .min(1, "Часовой пояс обязателен")
+    .refine(
+      (val) => knownTimeZones.includes(val),
+      "Указан некорректный часовой пояс",
+    ),
+  address: z.object({
+    country: z.string().min(1, "Страна обязательна"),
+    city: z.string().min(1, "Город обязателен"),
+    street: z.string().min(1, "Улица обязательна"),
+    buildingNumber: z
+      .number({ message: "Номер дома должен быть числом" })
+      .min(1, "Номер дома обязателен"),
+    apartment: z.string().optional().or(z.literal("")),
+    postalCode: z
+      .number({ message: "Почтовый индекс должен быть числом" })
+      .min(1, "Почтовый индекс обязателен"),
+  }),
+});
+
+type CreateLocationData = z.infer<typeof createLocationSchema>;
 
 type Props = {
   open: boolean;
@@ -20,28 +53,35 @@ type Props = {
 };
 
 export function CreateLocationDialog({ open, onOpenChange }: Props) {
-  const initialData: CreateLocationsRequest = {
+  const initialData: CreateLocationData = {
     name: "",
     timeZone: "",
     address: {
       country: "",
       city: "",
       street: "",
-      buildingNumber: 0,
-      apartment: null,
-      postalCode: 0,
+      buildingNumber: undefined as unknown as number,
+      apartment: "",
+      postalCode: undefined as unknown as number,
     },
   };
 
-  const [createFormData, setCreateFormData] = useState(initialData);
   const { createLocation, isPending } = useCrateLocation();
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<CreateLocationData>({
+    defaultValues: initialData,
+    resolver: zodResolver(createLocationSchema),
+  });
 
-    createLocation(createFormData, {
+  const onSubmit = (data: CreateLocationData) => {
+    createLocation(data, {
       onSuccess: () => {
-        setCreateFormData(initialData);
+        reset(initialData);
         onOpenChange(false);
       },
     });
@@ -63,7 +103,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-col gap-4 py-2">
             {/* Название локации */}
             <div className="flex flex-col gap-2">
@@ -76,14 +116,14 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
               <Input
                 id="name"
                 placeholder="Например: Главный офис"
-                value={createFormData.name}
-                onChange={(e) =>
-                  setCreateFormData((prev) => ({
-                    ...prev,
-                    name: e.target.value,
-                  }))
-                }
+                aria-invalid={!!errors.name}
+                {...register("name")}
               />
+              {errors.name?.message && (
+                <p className="text-sm text-destructive">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
 
             {/* Часовой пояс */}
@@ -97,14 +137,14 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
               <Input
                 id="timezone"
                 placeholder="Например: Europe/Moscow"
-                value={createFormData.timeZone}
-                onChange={(e) =>
-                  setCreateFormData((prev) => ({
-                    ...prev,
-                    timeZone: e.target.value,
-                  }))
-                }
+                aria-invalid={!!errors.timeZone}
+                {...register("timeZone")}
               />
+              {errors.timeZone?.message && (
+                <p className="text-sm text-destructive">
+                  {errors.timeZone.message}
+                </p>
+              )}
             </div>
 
             {/* Адрес */}
@@ -123,14 +163,14 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                 <Input
                   id="country"
                   placeholder="Россия"
-                  value={createFormData.address.country}
-                  onChange={(e) =>
-                    setCreateFormData((prev) => ({
-                      ...prev,
-                      address: { ...prev.address, country: e.target.value },
-                    }))
-                  }
+                  aria-invalid={!!errors.address?.country}
+                  {...register("address.country")}
                 />
+                {errors.address?.country?.message && (
+                  <p className="text-sm text-destructive">
+                    {errors.address.country.message}
+                  </p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -144,14 +184,14 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                   <Input
                     id="city"
                     placeholder="Москва"
-                    value={createFormData.address.city}
-                    onChange={(e) =>
-                      setCreateFormData((prev) => ({
-                        ...prev,
-                        address: { ...prev.address, city: e.target.value },
-                      }))
-                    }
+                    aria-invalid={!!errors.address?.city}
+                    {...register("address.city")}
                   />
+                  {errors.address?.city?.message && (
+                    <p className="text-sm text-destructive">
+                      {errors.address.city.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -164,14 +204,14 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                   <Input
                     id="street"
                     placeholder="Тверская"
-                    value={createFormData.address.street}
-                    onChange={(e) =>
-                      setCreateFormData((prev) => ({
-                        ...prev,
-                        address: { ...prev.address, street: e.target.value },
-                      }))
-                    }
+                    aria-invalid={!!errors.address?.street}
+                    {...register("address.street")}
                   />
+                  {errors.address?.street?.message && (
+                    <p className="text-sm text-destructive">
+                      {errors.address.street.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -187,17 +227,16 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                     id="buildingNumber"
                     type="number"
                     placeholder="1"
-                    value={createFormData.address.buildingNumber}
-                    onChange={(e) =>
-                      setCreateFormData((prev) => ({
-                        ...prev,
-                        address: {
-                          ...prev.address,
-                          buildingNumber: Number(e.target.value),
-                        },
-                      }))
-                    }
+                    aria-invalid={!!errors.address?.buildingNumber}
+                    {...register("address.buildingNumber", {
+                      valueAsNumber: true,
+                    })}
                   />
+                  {errors.address?.buildingNumber?.message && (
+                    <p className="text-sm text-destructive">
+                      {errors.address.buildingNumber.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex flex-col gap-2">
@@ -210,16 +249,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                   <Input
                     id="apartment"
                     placeholder="Офис 101"
-                    value={createFormData.address.apartment ?? ""}
-                    onChange={(e) =>
-                      setCreateFormData((prev) => ({
-                        ...prev,
-                        address: {
-                          ...prev.address,
-                          apartment: e.target.value,
-                        },
-                      }))
-                    }
+                    {...register("address.apartment")}
                   />
                 </div>
               </div>
@@ -235,17 +265,16 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                   id="postalCode"
                   type="number"
                   placeholder="101000"
-                  value={createFormData.address.postalCode}
-                  onChange={(e) =>
-                    setCreateFormData((prev) => ({
-                      ...prev,
-                      address: {
-                        ...prev.address,
-                        postalCode: Number(e.target.value),
-                      },
-                    }))
-                  }
+                  aria-invalid={!!errors.address?.postalCode}
+                  {...register("address.postalCode", {
+                    valueAsNumber: true,
+                  })}
                 />
+                {errors.address?.postalCode?.message && (
+                  <p className="text-sm text-destructive">
+                    {errors.address.postalCode.message}
+                  </p>
+                )}
               </div>
             </div>
           </div>
