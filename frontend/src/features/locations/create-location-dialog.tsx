@@ -10,7 +10,7 @@ import {
 } from "@/src/shared/components/ui/dialog";
 import { Input } from "@/src/shared/components/ui/input";
 import { PlusIcon } from "lucide-react";
-import { useCrateLocation } from "./model/use-create-location";
+import { useCreateLocation } from "./model/use-create-location";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -66,7 +66,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
     },
   };
 
-  const { createLocation, isPending } = useCrateLocation();
+  const { createLocation, isPending } = useCreateLocation();
 
   const {
     register,

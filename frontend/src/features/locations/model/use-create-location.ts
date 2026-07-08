@@ -5,7 +5,7 @@ import {
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-export function useCrateLocation() {
+export function useCreateLocation() {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
