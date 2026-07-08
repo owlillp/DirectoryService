@@ -16,4 +16,6 @@ public interface ILocationsRepository
     Task<Result<bool, Error>> ExistAndActiveAsync(IEnumerable<LocationId> locationIds, CancellationToken cancellationToken);
 
     Task<Result<Location, Error>> GetByIdWithLock(LocationId locationId, CancellationToken cancellationToken);
+
+    Task<Result<bool, Error>> IsNameUniqueAsync(LocationName locationName, CancellationToken cancellationToken);
 }

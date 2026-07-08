@@ -25,6 +25,16 @@ public class CreateLocationHandler(
         var request = command.Request;
 
         var locationName = LocationName.Create(request.Name).Value;
+        var nameValidationResult = await locationsRepository.IsNameUniqueAsync(locationName, cancellationToken);
+        if (nameValidationResult.IsFailure)
+        {
+            return nameValidationResult.Error.ToErrors();
+        }
+
+        if (!nameValidationResult.Value)
+        {
+            return GeneralErrors.Conflict(nameof(Location), nameof(Location.Name)).ToErrors();
+        }
 
         var locationAddress = LocationAddress.Create(
             request.Address.Country,

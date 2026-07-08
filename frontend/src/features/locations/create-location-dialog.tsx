@@ -45,8 +45,6 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
         onOpenChange(false);
       },
     });
-
-    onOpenChange(false);
   };
 
   return (

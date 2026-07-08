@@ -134,4 +134,22 @@ public class LocationsRepository(ILogger<LocationsRepository> logger, DirectoryS
             return GeneralErrors.Failure();
         }
     }
+
+    public async Task<Result<bool, Error>> IsNameUniqueAsync(LocationName locationName, CancellationToken cancellationToken)
+    {
+        try
+        {
+            bool exists = await dbContext.Locations
+                .Where(p => p.IsActive)
+                .Select(p => p.Name)
+                .ContainsAsync(locationName, cancellationToken);
+
+            return !exists;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while check of unique location name: {name}", locationName.Value);
+            return GeneralErrors.Failure();
+        }
+    }
 }

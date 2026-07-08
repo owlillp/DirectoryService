@@ -62,9 +62,10 @@ export const locationsApi = {
     return response.data.result;
   },
   createLocation: async (request: CreateLocationsRequest) => {
-    const response = await apiClient.post<Envelope<string>>("/Locations", {
-      params: request,
-    });
+    const response = await apiClient.post<Envelope<string>>(
+      "/Locations",
+      request,
+    );
     return response.data.result;
   },
 };
@@ -80,7 +81,11 @@ export const locationsQueryOptions = {
   }) => {
     return queryOptions({
       queryFn: () =>
-        locationsApi.getLocations({ pagination: { page, pageSize } }),
+        locationsApi.getLocations({
+          pagination: { page, pageSize },
+          sortBy: "created_at",
+          sortDirection: "desc",
+        }),
       queryKey: [locationsQueryOptions.baseKey, { page, pageSize }],
     });
   },

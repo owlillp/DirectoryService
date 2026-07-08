@@ -14,7 +14,8 @@ export function useCrateLocation() {
       queryClient.invalidateQueries({
         queryKey: [locationsQueryOptions.baseKey],
       }),
-    onError: () => {
+    onError: (e) => {
+      console.log(e);
       toast.error("Ошибка при создании локации");
     },
     onSuccess: () => {
