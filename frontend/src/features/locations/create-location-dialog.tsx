@@ -36,11 +36,11 @@ const createLocationSchema = z.object({
     city: z.string().min(1, "Город обязателен"),
     street: z.string().min(1, "Улица обязательна"),
     buildingNumber: z
-      .number({ message: "Номер дома должен быть числом" })
+      .number("Номер дома должен быть числом")
       .min(1, "Номер дома обязателен"),
     apartment: z.string().optional().or(z.literal("")),
     postalCode: z
-      .number({ message: "Почтовый индекс должен быть числом" })
+      .number("Почтовый индекс обязателен")
       .min(1, "Почтовый индекс обязателен"),
   }),
 });
