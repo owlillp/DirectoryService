@@ -17,7 +17,7 @@ export function useCreateLocation() {
       }),
     onError: (error) => {
       const errorMessage = isEnvelopeError(error)
-        ? error.firstMessage
+        ? error.message
         : "Ошибка при создании локации";
 
       toast.error(errorMessage);

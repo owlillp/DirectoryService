@@ -3,6 +3,10 @@
 import { queryClient } from "@/src/shared/api/query-client";
 import { SidebarProvider } from "@/src/shared/components/ui/sidebar";
 import { TooltipProvider } from "@/src/shared/components/ui/tooltip";
+import {
+  ErrorBoundary,
+  DefaultFallback,
+} from "@/src/shared/components/errorBoundary/error-boundary";
 import { QueryClientProvider } from "@tanstack/react-query";
 import Header from "../header/header";
 import AppSidebar from "../sidebar/app-sidebar";
@@ -21,7 +25,20 @@ export default function Layout({
             <AppSidebar />
             <div className="flex flex-1 flex-col">
               <Header />
-              <main className="flex flex-1 flex-col">{children}</main>
+              <main className="flex flex-1 flex-col">
+                <ErrorBoundary
+                  FallbackComponent={DefaultFallback}
+                  onError={(error, info) => {
+                    console.error(
+                      "[ErrorBoundary] Caught an error:",
+                      error,
+                      info,
+                    );
+                  }}
+                >
+                  {children}
+                </ErrorBoundary>
+              </main>
               <Toaster
                 position="top-center"
                 duration={3000}

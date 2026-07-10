@@ -28,8 +28,8 @@ export class EnvelopeError extends Error {
     Object.setPrototypeOf(this, EnvelopeError.prototype);
   }
 
-  get firstMessage(): string {
-    return this.errors[0].message ?? "Нетзвестная ошибка";
+  get firstError(): ErrorMessage {
+    return this.errors[0];
   }
 
   get allMessages(): string[] {
