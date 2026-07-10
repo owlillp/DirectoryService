@@ -14,10 +14,6 @@ export function useCreateLocation() {
       queryClient.invalidateQueries({
         queryKey: [locationsQueryOptions.baseKey],
       }),
-    onError: (e) => {
-      console.log(e);
-      toast.error("Ошибка при создании локации");
-    },
     onSuccess: () => {
       toast.success("Локация успешно создана");
     },

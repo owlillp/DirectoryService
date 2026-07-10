@@ -1,6 +1,8 @@
 import { apiClient } from "@/src/shared/api/axios-instance";
 import { Location, LocationAddress } from "./types";
 import { queryOptions } from "@tanstack/react-query";
+import { PagedResult, PaginationRequest } from "@/src/shared/api/types";
+import { Envelope } from "@/src/shared/api/envelope";
 
 export type GetLocationsRequest = {
   departmentIds?: string[];
@@ -16,42 +18,6 @@ export type CreateLocationsRequest = {
   address: LocationAddress;
   timeZone: string;
 };
-
-export type PaginationRequest = {
-  page: number;
-  pageSize: number;
-};
-
-export type ErrorItem = {
-  code: string;
-  message: string;
-  type: ErrorType;
-  invalidField?: string | null;
-};
-
-export type Errors = {
-  errors: ErrorItem[];
-};
-
-export type Envelope<T = unknown> = {
-  result?: T | null;
-  errors?: Errors | null;
-  timeGenerated: string;
-  isFailure: boolean;
-  isSuccess: boolean;
-};
-
-export type PagedResult<T> = {
-  records: T[];
-  totalCount: number;
-};
-
-export type ErrorType =
-  | "validation"
-  | "not_found"
-  | "failure"
-  | "conflict"
-  | "canceled";
 
 export const locationsApi = {
   getLocations: async (request: GetLocationsRequest) => {

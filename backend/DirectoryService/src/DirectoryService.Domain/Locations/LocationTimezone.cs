@@ -16,12 +16,12 @@ public record LocationTimezone
     {
         if(string.IsNullOrWhiteSpace(value))
         {
-            return GeneralErrors.ValueIsRequired(nameof(LocationTimezone));
+            return GeneralErrors.ValueIsRequired("timeZone");
         }
 
         if (!TZConvert.KnownIanaTimeZoneNames.Contains(value))
         {
-            return GeneralErrors.InvalidIANACode(nameof(LocationTimezone));
+            return GeneralErrors.InvalidIANACode("timeZone");
         }
 
         return new LocationTimezone(value);

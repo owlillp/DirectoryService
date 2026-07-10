@@ -11,6 +11,7 @@ import {
 import { Input } from "@/src/shared/components/ui/input";
 import { PlusIcon } from "lucide-react";
 import { useCreateLocation } from "./model/use-create-location";
+import { handleLocationSubmitError } from "./model/location-error-map";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,12 +37,12 @@ const createLocationSchema = z.object({
     city: z.string().min(1, "Город обязателен"),
     street: z.string().min(1, "Улица обязательна"),
     buildingNumber: z
-      .number({ message: "Номер дома должен быть числом" })
-      .min(1, "Номер дома обязателен"),
+      .number({ error: "Номер дома должен быть числом" })
+      .positive("Номер дома должен быть положительным числом"),
     apartment: z.string().optional().or(z.literal("")),
     postalCode: z
-      .number({ message: "Почтовый индекс должен быть числом" })
-      .min(1, "Почтовый индекс обязателен"),
+      .number({ error: "Почтовый индекс должен быть числом" })
+      .positive("Почтовый индекс должен быть положительным числом"),
   }),
 });
 
@@ -72,6 +73,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
     reset,
   } = useForm<CreateLocationData>({
     defaultValues: initialData,
@@ -84,6 +86,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
         reset(initialData);
         onOpenChange(false);
       },
+      onError: (error) => handleLocationSubmitError(error, setError),
     });
   };
 
@@ -225,7 +228,8 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                   </label>
                   <Input
                     id="buildingNumber"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="1"
                     aria-invalid={!!errors.address?.buildingNumber}
                     {...register("address.buildingNumber", {
@@ -263,7 +267,8 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                 </label>
                 <Input
                   id="postalCode"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="101000"
                   aria-invalid={!!errors.address?.postalCode}
                   {...register("address.postalCode", {

@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { routes } from "@/src/shared/routes";
-import { useRootDepartments } from "@/src/shared/hooks/use-root-departments";
 import { DepartmentCard } from "@/src/entities/departments/ui/department-card";
 import { Button } from "@/src/shared/components/ui/button";
 import { Card, CardContent } from "@/src/shared/components/ui/card";
 import { Spinner } from "@/src/shared/components/ui/spinner";
 import { AlertCircleIcon, RefreshCwIcon, FolderTreeIcon } from "lucide-react";
+import { useRootDepartments } from "@/src/features/departments/model/use-root-departments";
 
 export default function DepartmentsPage() {
   const { departments, totalCount, isLoading, error, refetch } =
