@@ -46,27 +46,27 @@ public record LocationAddress
     {
         if (string.IsNullOrWhiteSpace(country))
         {
-            return GeneralErrors.FieldIsRequired(nameof(LocationAddress), nameof(Country));
+            return GeneralErrors.FieldIsRequired("address", "country");
         }
 
         if (string.IsNullOrWhiteSpace(city))
         {
-            return GeneralErrors.FieldIsRequired(nameof(LocationAddress), nameof(City));
+            return GeneralErrors.FieldIsRequired("address", "city");
         }
 
         if (string.IsNullOrWhiteSpace(street))
         {
-            return GeneralErrors.FieldIsRequired(nameof(LocationAddress), nameof(Street));
+            return GeneralErrors.FieldIsRequired("address", "street");
         }
 
         if (postalCode < 0)
         {
-            return GeneralErrors.NegativeValue(nameof(LocationAddress), nameof(PostalCode));
+            return GeneralErrors.NegativeValue("address", "postalCode");
         }
 
         if (buildingNumber < 0)
         {
-            return GeneralErrors.NegativeValue(nameof(LocationAddress), nameof(buildingNumber));
+            return GeneralErrors.NegativeValue("address", "buildingNumber");
         }
 
         return new LocationAddress(

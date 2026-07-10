@@ -2,7 +2,6 @@ import {
   locationsApi,
   locationsQueryOptions,
 } from "@/src/entities/locations/api";
-import { isEnvelopeError } from "@/src/shared/api/errors";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -15,13 +14,6 @@ export function useCreateLocation() {
       queryClient.invalidateQueries({
         queryKey: [locationsQueryOptions.baseKey],
       }),
-    onError: (error) => {
-      const errorMessage = isEnvelopeError(error)
-        ? error.message
-        : "Ошибка при создании локации";
-
-      toast.error(errorMessage);
-    },
     onSuccess: () => {
       toast.success("Локация успешно создана");
     },

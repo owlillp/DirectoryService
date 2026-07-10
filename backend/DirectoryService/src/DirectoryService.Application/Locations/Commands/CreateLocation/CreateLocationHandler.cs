@@ -33,7 +33,7 @@ public class CreateLocationHandler(
 
         if (!nameValidationResult.Value)
         {
-            return GeneralErrors.Conflict(nameof(Location), nameof(Location.Name)).ToErrors();
+            return GeneralErrors.Conflict("location", "name").ToErrors();
         }
 
         var locationAddress = LocationAddress.Create(

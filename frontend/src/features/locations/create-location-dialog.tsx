@@ -11,6 +11,7 @@ import {
 import { Input } from "@/src/shared/components/ui/input";
 import { PlusIcon } from "lucide-react";
 import { useCreateLocation } from "./model/use-create-location";
+import { handleLocationSubmitError } from "./model/location-error-map";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -72,6 +73,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
     reset,
   } = useForm<CreateLocationData>({
     defaultValues: initialData,
@@ -84,6 +86,7 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
         reset(initialData);
         onOpenChange(false);
       },
+      onError: (error) => handleLocationSubmitError(error, setError),
     });
   };
 
