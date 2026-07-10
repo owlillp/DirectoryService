@@ -37,12 +37,12 @@ const createLocationSchema = z.object({
     city: z.string().min(1, "Город обязателен"),
     street: z.string().min(1, "Улица обязательна"),
     buildingNumber: z
-      .number("Номер дома должен быть числом")
-      .min(1, "Номер дома обязателен"),
+      .number({ error: "Номер дома обязателен" })
+      .positive("Номер дома должен быть положительным числом"),
     apartment: z.string().optional().or(z.literal("")),
     postalCode: z
-      .number("Почтовый индекс обязателен")
-      .min(1, "Почтовый индекс обязателен"),
+      .number({ error: "Почтовый индекс обязателен" })
+      .positive("Почтовый индекс должен быть положительным числом"),
   }),
 });
 
