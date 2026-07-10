@@ -37,11 +37,11 @@ const createLocationSchema = z.object({
     city: z.string().min(1, "Город обязателен"),
     street: z.string().min(1, "Улица обязательна"),
     buildingNumber: z
-      .number({ error: "Номер дома обязателен" })
+      .number({ error: "Номер дома должен быть числом" })
       .positive("Номер дома должен быть положительным числом"),
     apartment: z.string().optional().or(z.literal("")),
     postalCode: z
-      .number({ error: "Почтовый индекс обязателен" })
+      .number({ error: "Почтовый индекс должен быть числом" })
       .positive("Почтовый индекс должен быть положительным числом"),
   }),
 });
@@ -228,7 +228,8 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                   </label>
                   <Input
                     id="buildingNumber"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
                     placeholder="1"
                     aria-invalid={!!errors.address?.buildingNumber}
                     {...register("address.buildingNumber", {
@@ -266,7 +267,8 @@ export function CreateLocationDialog({ open, onOpenChange }: Props) {
                 </label>
                 <Input
                   id="postalCode"
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="101000"
                   aria-invalid={!!errors.address?.postalCode}
                   {...register("address.postalCode", {
