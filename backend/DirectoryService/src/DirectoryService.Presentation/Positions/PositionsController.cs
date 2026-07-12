@@ -2,8 +2,8 @@
 using DirectoryService.Application.Positions.Commands.CreatePosition;
 using DirectoryService.Application.Positions.Commands.SoftDelete;
 using DirectoryService.Application.Positions.Commands.UpdatePosition;
-using DirectoryService.Application.Positions.Queries.GetCursorPositions;
 using DirectoryService.Application.Positions.Queries.GetPosition;
+using DirectoryService.Application.Positions.Queries.GetPositionsInfinite;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Positions.Dtos;
 using DirectoryService.Contracts.Positions.Requests;
@@ -48,12 +48,12 @@ public class PositionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<EndpointResult<CursorPagedResult<PositionDto>>> GetCursor(
-        [FromServices] IQueryHandler<CursorPagedResult<PositionDto>, GetCursorPositionsQuery> handler,
-        [FromQuery] GetCursorPositionsRequest request,
+    public async Task<EndpointResult<InfinitePagedResult<PositionDto>>> GetInfinite(
+        [FromServices] IQueryHandler<InfinitePagedResult<PositionDto>, GetPositionsInfiniteQuery> handler,
+        [FromQuery] GetPositionsInfiniteRequest request,
         CancellationToken cancellationToken)
     {
-        var query = new GetCursorPositionsQuery(request);
+        var query = new GetPositionsInfiniteQuery(request);
         return await handler.Handle(query, cancellationToken);
     }
 

@@ -6,10 +6,10 @@ using Shared.SharedKernel.HttpCommunications;
 
 namespace DirectoryService.IntegrationTests.Positions.Queries;
 
-public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
+public class GetPositionsInfiniteTests(IntegrationTestsWebFactory factory) : DirectoryServiceTestsBase(factory)
 {
     [Fact]
-    public async Task GetCursorPositions_empty_database_should_return_empty()
+    public async Task GetPositionsInfinite_empty_database_should_return_empty()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -18,7 +18,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -29,7 +29,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_return_all_positions_within_limit()
+    public async Task GetPositionsInfinite_should_return_all_positions_within_limit()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -44,7 +44,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -58,7 +58,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_respect_limit()
+    public async Task GetPositionsInfinite_should_respect_limit()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -84,7 +84,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -95,7 +95,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_support_cursor_pagination()
+    public async Task GetPositionsInfinite_should_support_cursor_pagination()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -113,7 +113,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act - first page
         var firstResponse = await AppHttpClient.GetAsync(firstPageUrl, cancellationToken);
-        var firstResult = await firstResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var firstResult = await firstResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert - first page
         Assert.True(firstResult.IsSuccess);
@@ -126,7 +126,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
         var nextCursor = firstResult.Value.NextCursor;
         string secondPageUrl = BuildUrl(limit: 2, cursorId: nextCursor.Id, cursorValue: nextCursor.Value);
         var secondResponse = await AppHttpClient.GetAsync(secondPageUrl, cancellationToken);
-        var secondResult = await secondResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var secondResult = await secondResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert - second page
         Assert.True(secondResult.IsSuccess);
@@ -144,7 +144,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
         nextCursor = secondResult.Value.NextCursor;
         string thirdPageUrl = BuildUrl(limit: 2, cursorId: nextCursor.Id, cursorValue: nextCursor.Value);
         var thirdResponse = await AppHttpClient.GetAsync(thirdPageUrl, cancellationToken);
-        var thirdResult = await thirdResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var thirdResult = await thirdResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert - third page
         Assert.True(thirdResult.IsSuccess);
@@ -155,7 +155,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_return_department_ids()
+    public async Task GetPositionsInfinite_should_return_department_ids()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -170,7 +170,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -183,7 +183,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_filter_by_is_active()
+    public async Task GetPositionsInfinite_should_filter_by_is_active()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -202,7 +202,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -211,7 +211,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_filter_by_search()
+    public async Task GetPositionsInfinite_should_filter_by_search()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -227,7 +227,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -238,7 +238,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_should_sort_by_name_descending()
+    public async Task GetPositionsInfinite_should_sort_by_name_descending()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -253,7 +253,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -268,7 +268,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_with_zero_limit_should_fail_validation()
+    public async Task GetPositionsInfinite_with_zero_limit_should_fail_validation()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -286,7 +286,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_with_negative_limit_should_fail_validation()
+    public async Task GetPositionsInfinite_with_negative_limit_should_fail_validation()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -304,7 +304,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_with_search_exceeding_max_length_should_fail_validation()
+    public async Task GetPositionsInfinite_with_search_exceeding_max_length_should_fail_validation()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -323,7 +323,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     }
 
     [Fact]
-    public async Task GetCursorPositions_deleted_position_should_not_appear_when_filtering_active()
+    public async Task GetPositionsInfinite_deleted_position_should_not_appear_when_filtering_active()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -342,7 +342,7 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
 
         // act
         var httpResponse = await AppHttpClient.GetAsync(url, cancellationToken);
-        var result = await httpResponse.HandleResponseAsync<CursorPagedResult<PositionDto>>(cancellationToken);
+        var result = await httpResponse.HandleResponseAsync<InfinitePagedResult<PositionDto>>(cancellationToken);
 
         // assert
         Assert.True(result.IsSuccess);
@@ -361,17 +361,17 @@ public class GetCursorPositionsTests(IntegrationTestsWebFactory factory) : Direc
     {
         var parts = new List<string>
         {
-            $"CursorRequest.Limit={limit}"
+            $"InfiniteRequest.Limit={limit}",
         };
 
         if (cursorId.HasValue)
         {
-            parts.Add($"CursorRequest.Cursor.Id={cursorId.Value}");
+            parts.Add($"InfiniteRequest.Cursor.Id={cursorId.Value}");
         }
 
         if (cursorValue != null)
         {
-            parts.Add($"CursorRequest.Cursor.Value={Uri.EscapeDataString(cursorValue)}");
+            parts.Add($"InfiniteRequest.Cursor.Value={Uri.EscapeDataString(cursorValue)}");
         }
 
         if (search != null)

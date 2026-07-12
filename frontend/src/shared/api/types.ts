@@ -8,12 +8,12 @@ export type PagedResult<T> = {
   totalCount: number;
 };
 
-export type CursorPaginationRequest = {
-  cursor?: Cursor;
+export type InfinitePaginationRequest = {
+  cursor?: Cursor | null;
   limit: number;
 };
 
-export type CursorPagedResult<T> = {
+export type InfinitePagedResult<T> = {
   records: T[];
   nextCursor?: Cursor;
   hasNextPage: boolean;
