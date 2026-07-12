@@ -19,7 +19,8 @@ public class GetCursorPositionsHandler(
     private const string SEARCH_PARAMETER = "search";
     private const string IS_ACTIVE_PARAMETER = "is_active";
     private const string LIMIT_PARAMETER = "limit";
-    private const string CURSOR_PARAMETER = "cursor";
+    private const string CURSOR_ID_PARAMETER = "cursor_id";
+    private const string CURSOR_VALUE_PARAMETER = "cursor_value";
 
     public async Task<Result<CursorPagedResult<PositionDto>, Errors>> Handle(GetCursorPositionsQuery query, CancellationToken cancellationToken)
     {
@@ -48,17 +49,7 @@ public class GetCursorPositionsHandler(
             parameters.Add(IS_ACTIVE_PARAMETER, request.IsActive, DbType.Boolean);
         }
 
-        if (request.CursorRequest.Cursor.HasValue)
-        {
-            conditions.Add($"p.id > @{CURSOR_PARAMETER}");
-            parameters.Add(CURSOR_PARAMETER, request.CursorRequest.Cursor, DbType.Guid);
-        }
-
         parameters.Add(LIMIT_PARAMETER, request.CursorRequest.Limit + 1, DbType.Int32);
-
-        string whereClause = conditions.Any()
-            ? $"WHERE {string.Join(" AND ", conditions)}"
-            : string.Empty;
 
         string orderByField = query.Request.SortBy?.ToLower() switch
         {
@@ -67,26 +58,59 @@ public class GetCursorPositionsHandler(
             _ => "name",
         };
 
+        if (request.CursorRequest.Cursor != null)
+        {
+            parameters.Add(CURSOR_ID_PARAMETER, request.CursorRequest.Cursor.Id, DbType.Guid);
+            switch(orderByField)
+            {
+                case "created_at":
+                    parameters.Add(CURSOR_VALUE_PARAMETER, DateTime.Parse(request.CursorRequest.Cursor.Value!), DbType.DateTime);
+                    break;
+                default:
+                    parameters.Add(CURSOR_VALUE_PARAMETER, request.CursorRequest.Cursor.Value, DbType.String);
+                    break;
+            }
+
+            conditions.Add(string.Equals(query.Request.SortDirection, "asc")
+                ? $"(p.{orderByField}, p.id) > (@{CURSOR_VALUE_PARAMETER}, @{CURSOR_ID_PARAMETER})"
+                : $"(p.{orderByField}, p.id) < (@{CURSOR_VALUE_PARAMETER}, @{CURSOR_ID_PARAMETER})");
+        }
+
+        string whereClause = conditions.Any()
+            ? $"WHERE {string.Join(" AND ", conditions)}"
+            : string.Empty;
+
         string orderByClauseFormat = string.Equals(query.Request.SortDirection, "asc")
-            ? $"ORDER BY {{0}}.{orderByField} ASC"
-            : $"ORDER BY {{0}}.{orderByField} DESC";
+            ? $"ORDER BY {{0}}.{orderByField} ASC, {{0}}.id ASC"
+            : $"ORDER BY {{0}}.{orderByField} DESC, {{0}}.id DESC";
 
         var positionsDtoMap = new Dictionary<Guid, PositionDto>();
         await connection.QueryAsync<PositionDto, Guid?, PositionDto>(
             $"""
-             SELECT
-                 p.id,
-                 p.name,
-                 p.description,
-                 p.is_active,
-                 p.created_at,
-                 dp.department_id
-             FROM positions p
-             LEFT JOIN department_positions dp ON dp.position_id = p.id
-             {whereClause}
-             {string.Format(orderByClauseFormat, "p")}
-             LIMIT @{LIMIT_PARAMETER}
-             """,
+              WITH filtered_positions AS (
+                 SELECT
+                     p.id,
+                     p.name,
+                     p.description,
+                     p.is_active,
+                     p.created_at
+                 FROM positions p
+                 {whereClause}
+                 {string.Format(orderByClauseFormat, "p")}
+                 LIMIT @{LIMIT_PARAMETER}
+              )
+              SELECT
+                  fp.id,
+                  fp.name,
+                  fp.description,
+                  fp.is_active,
+                  fp.created_at,
+                  dp.department_id
+              FROM filtered_positions fp
+              LEFT JOIN department_positions dp
+                  ON dp.position_id = fp.id
+              {string.Format(orderByClauseFormat, "fp")}
+              """,
             param: parameters,
             splitOn: "department_id",
             map: (positionDto, departmentId) =>
@@ -110,8 +134,19 @@ public class GetCursorPositionsHandler(
 
         bool hasNextPage = positionsDtoMap.Count > request.CursorRequest.Limit;
         var records = positionsDtoMap.Values.Take(request.CursorRequest.Limit).ToList();
-        Guid? nextCursor = hasNextPage ? records.Last().Id : null;
+        Cursor? nextCursor = hasNextPage
+            ? GetNextCursor(records.Last(), orderByField)
+            : null;
 
         return new CursorPagedResult<PositionDto>(records, nextCursor, hasNextPage);
     }
+
+    private Cursor GetNextCursor(PositionDto lastDto, string sortField) =>
+        new (
+            lastDto.Id,
+            sortField switch
+            {
+                "created_at" => lastDto.CreatedAt.ToString("O"),
+                _ => lastDto.Name,
+            });
 }
