@@ -2,7 +2,9 @@
 using DirectoryService.Application.Positions.Commands.CreatePosition;
 using DirectoryService.Application.Positions.Commands.SoftDelete;
 using DirectoryService.Application.Positions.Commands.UpdatePosition;
+using DirectoryService.Application.Positions.Queries.GetCursorPositions;
 using DirectoryService.Application.Positions.Queries.GetPosition;
+using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Positions.Dtos;
 using DirectoryService.Contracts.Positions.Requests;
 using Framework.EndpointResults;
@@ -43,6 +45,16 @@ public class PositionsController : ControllerBase
     {
         var command = new SoftDeletePositionCommand(positionId);
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpGet]
+    public async Task<EndpointResult<CursorPagedResult<PositionDto>>> GetCursor(
+        [FromServices] IQueryHandler<CursorPagedResult<PositionDto>, GetCursorPositionsQuery> handler,
+        [FromQuery] GetCursorPositionsRequest request,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetCursorPositionsQuery(request);
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpGet("{positionId:guid}")]
