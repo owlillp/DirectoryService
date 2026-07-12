@@ -10,7 +10,14 @@ import { Spinner } from "@/src/shared/components/ui/spinner";
 import { BriefcaseIcon, AlertCircleIcon, RefreshCwIcon } from "lucide-react";
 
 export default function PositionsPage() {
-  const { positions, isPending, error, refetch } = usePositionsList();
+  const {
+    positions,
+    isPending,
+    error,
+    refetch,
+    isFetchingNextPage,
+    cursorRef,
+  } = usePositionsList();
 
   return (
     <div className="flex flex-col flex-1 items-center p-8">
@@ -89,6 +96,9 @@ export default function PositionsPage() {
             </div>
           </>
         )}
+        <div ref={cursorRef} className="flex justify-center py-4">
+          {isFetchingNextPage && <Spinner />}
+        </div>
       </main>
     </div>
   );
