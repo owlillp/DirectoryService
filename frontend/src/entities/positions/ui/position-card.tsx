@@ -45,10 +45,10 @@ export function PositionCard({ position }: PositionCardProps) {
         </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-2 text-muted-foreground">
-        {position.descroption && (
+        {position.description && (
           <div className="flex items-start gap-2 rounded-md bg-muted/50 px-3 py-2">
             <FileTextIcon className="size-3.5 shrink-0 text-foreground/60 mt-0.5" />
-            <span>{position.descroption}</span>
+            <span>{position.description}</span>
           </div>
         )}
         {position.departmentIds.length > 0 && (

@@ -1,7 +1,7 @@
 export type Position = {
   id: string;
   name: string;
-  descroption?: string;
+  description?: string;
   departmentIds: string[];
   isActive: boolean;
   createdAt: string;

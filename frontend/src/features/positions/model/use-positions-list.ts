@@ -1,7 +1,7 @@
 import { positionsQueryOptions } from "@/src/entities/positions/api";
 import { Position } from "@/src/entities/positions/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { RefCallback, useCallback } from "react";
+import { RefCallback, useCallback, useEffect, useRef } from "react";
 
 type UsePositionsResult = {
   positions: Position[];
@@ -28,23 +28,28 @@ export function usePositionsList(limit = 10): UsePositionsResult {
     }),
   });
 
-  const cursorRef: RefCallback<HTMLDivElement> = useCallback(
-    (el) => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage)
-            fetchNextPage();
-        },
-        { threshold: 0.5 },
-      );
+  const targetRef = useRef<HTMLDivElement | null>(null);
 
-      if (el) {
-        observer.observe(el);
-        return () => observer.disconnect();
-      }
-    },
-    [fetchNextPage, hasNextPage, isFetchingNextPage],
-  );
+  const cursorRef: RefCallback<HTMLDivElement> = useCallback((el) => {
+    targetRef.current = el;
+  }, []);
+
+  useEffect(() => {
+    const el = targetRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage)
+          fetchNextPage();
+      },
+      { threshold: 0.5 },
+    );
+
+    observer.observe(el);
+
+    return () => observer.disconnect();
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return {
     positions: data?.records ?? [],
