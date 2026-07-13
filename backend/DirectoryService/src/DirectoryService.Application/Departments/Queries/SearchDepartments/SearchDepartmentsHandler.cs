@@ -72,6 +72,10 @@ public class SearchDepartmentsHandler(
             }))
             .ToList();
 
-        return new PagedResult<AncestorDepartmentDto>(departmentDtos, totalCount ?? 0);
+        return new PagedResult<AncestorDepartmentDto>(
+            departmentDtos,
+            totalCount ?? 0,
+            request.Page,
+            request.Page);
     }
 }

@@ -8,15 +8,20 @@ import {
   CardTitle,
 } from "@/src/shared/components/ui/card";
 import { Badge } from "@/src/shared/components/ui/badge";
+import { Button } from "@/src/shared/components/ui/button";
 import {
   MapPinIcon,
   BuildingIcon,
   GlobeIcon,
   CalendarDaysIcon,
+  Trash2Icon,
+  PencilIcon,
 } from "lucide-react";
 
 type LocationCardProps = {
   location: Location;
+  onDelete: () => void;
+  onEdit: () => void;
 };
 
 function formatDate(dateString: string) {
@@ -29,7 +34,11 @@ function formatDate(dateString: string) {
   });
 }
 
-export function LocationCard({ location }: LocationCardProps) {
+export function LocationCard({
+  location,
+  onDelete,
+  onEdit,
+}: LocationCardProps) {
   return (
     <Card size="sm">
       <CardHeader>
@@ -60,6 +69,27 @@ export function LocationCard({ location }: LocationCardProps) {
         <div className="flex items-center gap-2 rounded-md bg-muted/50 px-3 py-2">
           <CalendarDaysIcon className="size-3.5 shrink-0 text-foreground/60" />
           <span>Создана: {formatDate(location.createdAt)}</span>
+        </div>
+
+        <div className="flex justify-end gap-2 pt-2 border-t border-border/50 mt-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onEdit}
+            className="text-muted-foreground/50 hover:text-foreground hover:bg-muted [&_svg]:hover:text-foreground"
+          >
+            <PencilIcon />
+            Изменить
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onDelete}
+            className="text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 [&_svg]:hover:text-destructive"
+          >
+            <Trash2Icon />
+            Удалить
+          </Button>
         </div>
       </CardContent>
     </Card>

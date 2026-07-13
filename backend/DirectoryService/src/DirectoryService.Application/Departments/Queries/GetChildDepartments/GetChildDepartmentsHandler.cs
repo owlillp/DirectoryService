@@ -87,6 +87,10 @@ public class GetChildDepartmentsHandler(
 
         return new GetChildDepartmentsResponse(
             query.ParentId,
-            new PagedResult<DepartmentWithChildrenDto>(departmentDtoList, childCount ?? 0));
+            new PagedResult<DepartmentWithChildrenDto>(
+                departmentDtoList,
+                childCount ?? 0,
+                request.Page,
+                request.PageSize));
     }
 }

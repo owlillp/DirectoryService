@@ -69,6 +69,10 @@ public class GetLocationsHandler(
             parameters.Add(DEPARTMENT_IDS_PARAMETER, request.DepartmentIds);
         }
 
+        conditions.Add("""
+                        l.deleted_at IS NULL
+                        """);
+
         string whereClause = conditions.Any()
             ? $"WHERE {string.Join(" AND ", conditions)}"
             : string.Empty;
@@ -100,7 +104,8 @@ public class GetLocationsHandler(
                     l.city,
                     l.street,
                     l.apartment,
-                    l.postal_code
+                    l.postal_code,
+                    l.building_number
                 FROM locations l
                 {whereClause}
             ),
@@ -124,6 +129,7 @@ public class GetLocationsHandler(
                 pl.street,
                 pl.apartment,
                 pl.postal_code,
+                pl.building_number,
                 
                 dl.department_id,
                 pl.total_count
@@ -154,6 +160,10 @@ public class GetLocationsHandler(
                 return locationDto;
             });
 
-        return new PagedResult<LocationDto>(locationsDtoMap.Values.ToList(), totalCount ?? 0);
+        return new PagedResult<LocationDto>(
+            locationsDtoMap.Values.ToList(),
+            totalCount ?? 0,
+            request.Pagination.Page,
+            request.Pagination.PageSize);
     }
 }

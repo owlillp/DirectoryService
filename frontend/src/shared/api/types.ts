@@ -6,6 +6,9 @@ export type PaginationRequest = {
 export type PagedResult<T> = {
   records: T[];
   totalCount: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 };
 
 export type InfinitePaginationRequest = {

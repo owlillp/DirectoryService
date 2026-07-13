@@ -110,6 +110,10 @@ public class GetRootDepartmentsHandler(
                 return departmentDto;
             });
 
-        return new PagedResult<DepartmentWithChildrenDto>(departmentDtoMap.Values.ToList(), rootsCount ?? 0);
+        return new PagedResult<DepartmentWithChildrenDto>(
+            departmentDtoMap.Values.ToList(),
+            rootsCount ?? 0,
+            request.Page,
+            request.Size);
     }
 }
