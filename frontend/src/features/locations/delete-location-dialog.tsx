@@ -11,7 +11,14 @@ import {
 import { Button } from "@/src/shared/components/ui/button";
 import { useDeleteLocation } from "./model/use-delete-location";
 import { Location } from "@/src/entities/locations/types";
-import { Trash2Icon, AlertTriangleIcon, BuildingIcon, MapPinIcon } from "lucide-react";
+import {
+  Trash2Icon,
+  AlertTriangleIcon,
+  BuildingIcon,
+  MapPinIcon,
+  AlertCircleIcon,
+} from "lucide-react";
+import { isEnvelopeError } from "@/src/shared/api/errors";
 
 type Props = {
   location: Location;
@@ -20,7 +27,7 @@ type Props = {
 };
 
 export function DeleteLocationDialog({ location, open, onOpenChange }: Props) {
-  const { deleteLocation, isPending } = useDeleteLocation();
+  const { deleteLocation, isPending, isError, error } = useDeleteLocation();
 
   const handleDelete = () => {
     deleteLocation(location.id, {
@@ -29,6 +36,13 @@ export function DeleteLocationDialog({ location, open, onOpenChange }: Props) {
       },
     });
   };
+
+  const errorMessage =
+    isError && error
+      ? isEnvelopeError(error)
+        ? error.message
+        : "Не удалось удалить локацию. Попробуйте снова."
+      : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -39,7 +53,8 @@ export function DeleteLocationDialog({ location, open, onOpenChange }: Props) {
             Удаление локации
           </DialogTitle>
           <DialogDescription className="pt-2">
-            Вы уверены, что хотите удалить локацию? Это действие нельзя отменить.
+            Вы уверены, что хотите удалить локацию? Это действие нельзя
+            отменить.
           </DialogDescription>
         </DialogHeader>
 
@@ -59,6 +74,13 @@ export function DeleteLocationDialog({ location, open, onOpenChange }: Props) {
             После удаления локация станет неактивной и будет скрыта из списка.
           </p>
         </div>
+
+        {errorMessage && (
+          <div className="flex items-start gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+            <AlertCircleIcon className="mt-0.5 size-4 shrink-0" />
+            <span>{errorMessage}</span>
+          </div>
+        )}
 
         <DialogFooter>
           <Button

@@ -76,6 +76,6 @@ public class SearchDepartmentsHandler(
             departmentDtos,
             totalCount ?? 0,
             request.Page,
-            request.Page);
+            request.PageSize);
     }
 }
