@@ -10,11 +10,25 @@ import { Spinner } from "@/src/shared/components/ui/spinner";
 import { MapPinIcon, AlertCircleIcon, RefreshCwIcon } from "lucide-react";
 import { useState } from "react";
 import { CreateLocationDialog } from "@/src/features/locations/create-location-dialog";
+import { DeleteLocationDialog } from "@/src/features/locations/delete-location-dialog";
+import { EditLocationDialog } from "@/src/features/locations/edit-location-dialog";
+import { Location } from "@/src/entities/locations/types";
 
 export default function LocationsPage() {
-  const { locations, totalCount, isPending, error, refetch } =
-    useLocationsList();
+  const {
+    locations,
+    totalCount,
+    isPending,
+    error,
+    refetch,
+    isFetchingNextPage,
+    cursorRef,
+  } = useLocationsList();
   const [open, setOpen] = useState(false);
+  const [locationToDelete, setLocationToDelete] = useState<Location | null>(
+    null,
+  );
+  const [locationToEdit, setLocationToEdit] = useState<Location | null>(null);
 
   return (
     <>
@@ -97,13 +111,41 @@ export default function LocationsPage() {
 
               <div className="flex flex-col gap-3">
                 {locations.map((location) => (
-                  <LocationCard key={location.id} location={location} />
+                  <LocationCard
+                    key={location.id}
+                    location={location}
+                    onEdit={() => setLocationToEdit(location)}
+                    onDelete={() => setLocationToDelete(location)}
+                  />
                 ))}
               </div>
             </>
           )}
+          <div ref={cursorRef} className="flex justify-center py-4">
+            {isFetchingNextPage && <Spinner />}
+          </div>
         </main>
       </div>
+
+      {locationToDelete && (
+        <DeleteLocationDialog
+          location={locationToDelete}
+          open={!!locationToDelete}
+          onOpenChange={(open) => {
+            if (!open) setLocationToDelete(null);
+          }}
+        />
+      )}
+
+      {locationToEdit && (
+        <EditLocationDialog
+          location={locationToEdit}
+          open={!!locationToEdit}
+          onOpenChange={(open) => {
+            if (!open) setLocationToEdit(null);
+          }}
+        />
+      )}
     </>
   );
 }
