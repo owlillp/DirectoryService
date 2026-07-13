@@ -9,4 +9,3 @@ public record GetPositionsInfiniteRequest(
     string? SortBy = "name",
     string? SortDirection = "asc"
 );
-

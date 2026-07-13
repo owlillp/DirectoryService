@@ -9,4 +9,3 @@ public record InfinitePagedResult<T>(
 public record InfinitePaginationRequest(Cursor? Cursor, int Limit);
 
 public record Cursor(Guid Id, string? Value);
-
