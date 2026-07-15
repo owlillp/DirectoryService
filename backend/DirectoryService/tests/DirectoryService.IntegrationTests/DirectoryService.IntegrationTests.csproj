@@ -20,7 +20,6 @@
 
     <ItemGroup>
       <Folder Include="Departments\Commands\" />
-      <Folder Include="Departments\Queries\" />
       <Folder Include="Departments\Services\" />
     </ItemGroup>
 
