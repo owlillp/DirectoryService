@@ -13,6 +13,7 @@ using DirectoryService.Application.Departments.Queries.GetDepartment;
 using DirectoryService.Application.Departments.Queries.GetDepartmentAncestors;
 using DirectoryService.Application.Departments.Queries.GetRootDepartments;
 using DirectoryService.Application.Departments.Queries.GetTopDepartmentsByPositions;
+using DirectoryService.Application.Departments.Queries.SearchDepartmentAncestors;
 using DirectoryService.Application.Departments.Queries.SearchDepartments;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Departments.Dtos;
@@ -176,9 +177,19 @@ public class DepartmentsController : ControllerBase
     }
 
     [HttpGet("tree")]
-    public async Task<EndpointResult<PagedResult<AncestorDepartmentDto>>> Search(
-        [FromServices] IQueryHandler<PagedResult<AncestorDepartmentDto>, SearchDepartmentsQuery> handler,
-        [FromQuery] SearchDepartmentRequest request,
+    public async Task<EndpointResult<PagedResult<AncestorDepartmentDto>>> SearchAncestors(
+        [FromServices] IQueryHandler<PagedResult<AncestorDepartmentDto>, SearchDepartmentAncestorsQuery> handler,
+        [FromQuery] SearchDepartmentAncestorsRequest ancestorsRequest,
+        CancellationToken cancellationToken)
+    {
+        var query = new SearchDepartmentAncestorsQuery(ancestorsRequest);
+        return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet]
+    public async Task<EndpointResult<PagedResult<SearchDepartmentDto>>> Search(
+        [FromServices] IQueryHandler<PagedResult<SearchDepartmentDto>, SearchDepartmentsQuery> handler,
+        [FromQuery] SearchDepartmentsRequest request,
         CancellationToken cancellationToken)
     {
         var query = new SearchDepartmentsQuery(request);

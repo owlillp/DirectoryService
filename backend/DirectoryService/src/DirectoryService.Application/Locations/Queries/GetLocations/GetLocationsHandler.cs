@@ -69,9 +69,7 @@ public class GetLocationsHandler(
             parameters.Add(DEPARTMENT_IDS_PARAMETER, request.DepartmentIds);
         }
 
-        conditions.Add("""
-                        l.deleted_at IS NULL
-                        """);
+        conditions.Add("l.deleted_at IS NULL");
 
         string whereClause = conditions.Any()
             ? $"WHERE {string.Join(" AND ", conditions)}"

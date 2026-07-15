@@ -1,5 +1,4 @@
 ﻿using Core.Validation;
-using DirectoryService.Contracts.Departments.Requests;
 using FluentValidation;
 using Shared.SharedKernel.Failures;
 
@@ -9,32 +8,24 @@ public class SearchDepartmentsValidator : AbstractValidator<SearchDepartmentsQue
 {
     public SearchDepartmentsValidator()
     {
-        RuleFor(q => q.Request)
+        RuleFor(x => x.Request)
             .NotNull()
             .WithError(GeneralErrors.ValueIsRequired(nameof(SearchDepartmentsQuery.Request)));
 
-        When(q => q.Request != null!, () =>
+        When(x => x.Request != null!, () =>
         {
-            RuleFor(q => q.Request.Name)
-                .NotNull().WithError(GeneralErrors.ValueIsRequired(nameof(SearchDepartmentsQuery.Request)))
-                .NotEmpty().WithError(GeneralErrors.ValueIsRequired(nameof(SearchDepartmentsQuery.Request)));
+            RuleFor(x => x.Request.ParentId)
+                .Must(x => !x.HasValue || x.Value != Guid.Empty)
+                .WithError(GeneralErrors.ValueIsInvalid("searchRequest", "empty guid", "parentId"));
 
-            When(q => !string.IsNullOrWhiteSpace(q.Request.Name), () =>
-            {
-                RuleFor(q => q.Request.Name)
-                    .Must(name => name.Length >= 2)
-                    .WithError(GeneralErrors.InvalidLength(
-                        nameof(SearchDepartmentRequest),
-                        nameof(SearchDepartmentRequest.Name)));
-            });
-
-            RuleFor(q => q.Request.Page)
+            RuleFor(x => x.Request.Page)
                 .GreaterThan(0)
-                .WithError(GeneralErrors.ValueIsInvalid(nameof(SearchDepartmentRequest.Page), "Value must be greater than zero."));
+                .WithError(GeneralErrors.ValueIsInvalid("searchRequest", "value must be greater than zero", "page"));
 
-            RuleFor(q => q.Request.PageSize)
-                .GreaterThan(0)
-                .WithError(GeneralErrors.ValueIsInvalid(nameof(SearchDepartmentRequest.PageSize), "Value must be greater than zero."));
+            RuleFor(x => x.Request.PageSize)
+                .LessThanOrEqualTo(50)
+                .WithError(GeneralErrors.ValueIsInvalid("searchRequest", "value must be less or equal than 50",
+                    "pageSize"));
         });
     }
 }
