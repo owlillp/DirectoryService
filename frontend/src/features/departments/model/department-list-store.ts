@@ -77,3 +77,110 @@ export const setDepartmentSearch = (
     },
   }));
 };
+
+export const useDepartmentActive = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).isActive);
+
+export const setDepartmentActive = (
+  isActive?: boolean,
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      isActive,
+    },
+  }));
+};
+
+export const useDepartmentParentId = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).parentId);
+
+export const setDepartmentParentId = (
+  parentId?: string,
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      parentId,
+    },
+  }));
+};
+
+export const useDepartmentLocationIds = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).locationIds);
+
+export const setDepartmentLocationIds = (
+  locationIds?: string[],
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      locationIds,
+    },
+  }));
+};
+
+export const useDepartmentExcludeIds = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).exludeIds);
+
+export const setDepartmentExcludeIds = (
+  exludeIds?: string[],
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      exludeIds,
+    },
+  }));
+};
+
+export const useDepartmentSortBy = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).sortBy);
+
+export const setDepartmentSortBy = (
+  sortBy?: string,
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      sortBy,
+    },
+  }));
+};
+
+export const useDepartmentSortDirection = (stateId?: DepartmentListId) =>
+  useDepartmentListStore(
+    (states) => getOrCreate(states, stateId).sortDirection,
+  );
+
+export const setDepartmentSortDirection = (
+  sortDirection?: string,
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      sortDirection,
+    },
+  }));
+};
+
+export const useDepartmentPageSize = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).pageSize);
+
+export const setDepartmentPageSize = (
+  pageSize: number,
+  stateId?: DepartmentListId,
+) => {
+  useDepartmentListStore.setState((states) => ({
+    [resolvedStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      pageSize,
+    },
+  }));
+};
