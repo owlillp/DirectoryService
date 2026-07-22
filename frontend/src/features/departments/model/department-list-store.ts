@@ -8,7 +8,7 @@ type DepartmentListState = {
   isActive?: boolean;
   parentId?: string;
   locationIds?: string[];
-  exludeIds?: string[];
+  excludeIds?: string[];
   sortBy?: string;
   sortDirection?: string;
   pageSize: number;
@@ -26,7 +26,7 @@ const initialState: DepartmentListState = {
   isActive: undefined,
   parentId: undefined,
   locationIds: undefined,
-  exludeIds: undefined,
+  excludeIds: undefined,
   sortBy: undefined,
   sortDirection: undefined,
   pageSize: 10,
@@ -124,16 +124,16 @@ export const setDepartmentLocationIds = (
 };
 
 export const useDepartmentExcludeIds = (stateId?: DepartmentListId) =>
-  useDepartmentListStore((states) => getOrCreate(states, stateId).exludeIds);
+  useDepartmentListStore((states) => getOrCreate(states, stateId).excludeIds);
 
 export const setDepartmentExcludeIds = (
-  exludeIds?: string[],
+  excludeIds?: string[],
   stateId?: DepartmentListId,
 ) => {
   useDepartmentListStore.setState((states) => ({
     [resolvedStateId(stateId)]: {
       ...getOrCreate(states, stateId),
-      exludeIds,
+      excludeIds,
     },
   }));
 };
@@ -184,3 +184,13 @@ export const setDepartmentPageSize = (
     },
   }));
 };
+
+/** Reset state for a given instance (used on unmount to clear filters/search) */
+export const resetDepartmentState = (stateId?: DepartmentListId) => {
+  useDepartmentListStore.setState((states) => {
+    const id = resolvedStateId(stateId);
+    const { [id]: _, ...rest } = states;
+    return rest;
+  });
+};
+

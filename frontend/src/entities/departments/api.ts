@@ -15,7 +15,7 @@ export type SearchDepartmentsRequest = {
   isActive?: boolean;
   parentId?: string;
   locationIds?: string[];
-  exludeIds?: string[];
+  excludeIds?: string[];
   sortBy?: string;
   sortDirection?: string;
   page: number;
@@ -43,7 +43,7 @@ export type DepartmentsSearchInfiniteParams = {
   isActive?: boolean;
   parentId?: string;
   locationIds?: string[];
-  exludeIds?: string[];
+  excludeIds?: string[];
   sortBy?: string;
   sortDirection?: string;
   pageSize: number;
@@ -73,3 +73,4 @@ export const departmentsQueryOptions = {
     });
   },
 };
+

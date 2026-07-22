@@ -3,7 +3,16 @@ import { SearchDepartment } from "@/src/entities/departments/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { RefCallback, useCallback, useEffect, useRef } from "react";
 import { useDebounce } from "use-debounce";
-import { useDepartmentSearch } from "./department-list-store";
+import {
+  useDepartmentActive,
+  useDepartmentExcludeIds,
+  useDepartmentLocationIds,
+  useDepartmentPageSize,
+  useDepartmentParentId,
+  useDepartmentSearch,
+  useDepartmentSortBy,
+  useDepartmentSortDirection,
+} from "./department-list-store";
 
 type UseDepartmentsSearchResult = {
   departments: SearchDepartment[];
@@ -15,23 +24,18 @@ type UseDepartmentsSearchResult = {
   cursorRef: RefCallback<HTMLDivElement>;
 };
 
-type UseDepartmentsListParams = {
-  search?: string;
-  isActive?: boolean;
-  parentId?: string;
-  locationIds?: string[];
-  excludeIds?: string[];
-  sortBy?: string;
-  sortDirection?: "asc" | "desc";
-  pageSize?: number;
-  stateId?: string;
-};
-
 export function useDepartmentsList(
-  params: UseDepartmentsListParams,
+  stateId?: string,
 ): UseDepartmentsSearchResult {
-  const search = useDepartmentSearch(params.stateId);
-  const [debouncedSearch] = useDebou;
+  const search = useDepartmentSearch(stateId);
+  const [debouncedSearch] = useDebounce(search, 300);
+  const isActive = useDepartmentActive(stateId);
+  const parentId = useDepartmentParentId(stateId);
+  const locationIds = useDepartmentLocationIds(stateId);
+  const excludeIds = useDepartmentExcludeIds(stateId);
+  const sortBy = useDepartmentSortBy(stateId);
+  const sortDirection = useDepartmentSortDirection(stateId);
+  const pageSize = useDepartmentPageSize(stateId);
 
   const {
     data,
@@ -43,14 +47,14 @@ export function useDepartmentsList(
     hasNextPage,
   } = useInfiniteQuery({
     ...departmentsQueryOptions.searchInfiniteOptions({
-      search: params.search,
-      isActive: params.isActive,
-      parentId: params.parentId,
-      locationIds: params.locationIds,
-      exludeIds: params.excludeIds,
-      sortBy: params.sortBy,
-      sortDirection: params.sortDirection,
-      pageSize: params.pageSize ?? 10,
+      search: debouncedSearch,
+      isActive,
+      parentId,
+      locationIds,
+      excludeIds,
+      sortBy,
+      sortDirection,
+      pageSize,
     }),
   });
 
