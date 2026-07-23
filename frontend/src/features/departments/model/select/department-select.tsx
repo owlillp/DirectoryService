@@ -65,6 +65,7 @@ interface DepartmentSelectProps extends React.ComponentProps<"div"> {
   multiselect?: boolean;
   excludeIds?: string[];
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export const DepartmentSelect = ({
@@ -74,6 +75,7 @@ export const DepartmentSelect = ({
   multiselect = true,
   excludeIds,
   placeholder,
+  disabled = false,
   className,
   ...props
 }: DepartmentSelectProps) => {
@@ -142,19 +144,25 @@ export const DepartmentSelect = ({
         <DepartmentSelected
           selectedDepartments={selectedDepartments}
           onRemove={handleRemoveDepartment}
+          disabled={disabled}
         />
       )}
 
       {/* Popover с выбором */}
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover
+        open={open && !disabled}
+        onOpenChange={disabled ? () => {} : setOpen}
+      >
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            disabled={disabled}
             className={cn(
               "w-full justify-between bg-card hover:bg-muted/50 transition-colors",
               open && "ring-2 ring-primary/30 border-primary/50",
+              disabled && "opacity-50 cursor-not-allowed hover:bg-card",
             )}
           >
             <span className="truncate text-sm">{triggerLabel}</span>

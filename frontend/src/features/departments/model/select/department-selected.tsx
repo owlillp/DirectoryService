@@ -9,11 +9,13 @@ import { XIcon } from "lucide-react";
 interface DepartmentSelectedProps extends React.ComponentProps<"div"> {
   selectedDepartments: SearchDepartment[];
   onRemove: (id: string) => void;
+  disabled?: boolean;
 }
 
 export const DepartmentSelected = ({
   selectedDepartments,
   onRemove,
+  disabled = false,
   className,
   ...props
 }: DepartmentSelectedProps) => {
@@ -21,7 +23,7 @@ export const DepartmentSelected = ({
     <div className={cn("flex gap-2 flex-wrap", className)} {...props}>
       {selectedDepartments.map((dep) => (
         <Badge key={dep.id} asChild>
-          <Button onClick={() => onRemove(dep.id)}>
+          <Button onClick={() => onRemove(dep.id)} disabled={disabled}>
             {dep.name}
             <XIcon />
           </Button>

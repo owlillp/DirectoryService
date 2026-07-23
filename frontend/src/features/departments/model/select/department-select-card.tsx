@@ -17,15 +17,25 @@ export const DepartmentSelectCard = ({
   multiselect,
   onSelect,
 }: DepartmentSelectCardProps) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onSelect(department);
+    }
+  };
+
   return (
     <div
       role="option"
       aria-selected={isSelected}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
       className={cn(
         "group flex w-full cursor-pointer items-center gap-3 px-3 py-3",
         "transition-all duration-150 ease-in-out",
         "border-b border-border/40 last:border-b-0",
         "hover:bg-accent/50 hover:pl-4",
+        "focus-visible:outline-none focus-visible:bg-accent/60 focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-inset",
         isSelected && "bg-primary/10 border-l-2 border-l-primary",
         !isSelected && "border-l-2 border-l-transparent",
       )}
