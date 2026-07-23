@@ -3,7 +3,12 @@
 import { useState } from "react";
 import { SearchDepartment } from "@/src/entities/departments/types";
 import { DepartmentSelect } from "@/src/features/departments/model/select/department-select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/shared/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/src/shared/components/ui/card";
 import { Separator } from "@/src/shared/components/ui/separator";
 
 export default function DepartmentSelectDemoPage() {
@@ -15,7 +20,8 @@ export default function DepartmentSelectDemoPage() {
       <div>
         <h1 className="text-2xl font-bold">DepartmentSelect Playground</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Демонстрация компонента выбора подразделений — два независимых экземпляра
+          Демонстрация компонента выбора подразделений — два независимых
+          экземпляра
         </p>
       </div>
 
@@ -29,12 +35,14 @@ export default function DepartmentSelectDemoPage() {
           <DepartmentSelect
             stateId="demo-single"
             selectedDepartments={singleValue}
-            onChange={setSingleValue}
+            onCheckedChange={setSingleValue}
             multiselect={false}
             placeholder="Выберите одно подразделение..."
           />
           <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium text-muted-foreground mb-1">Состояние:</p>
+            <p className="text-xs font-medium text-muted-foreground mb-1">
+              Состояние:
+            </p>
             <pre className="text-xs whitespace-pre-wrap">
               {JSON.stringify(singleValue, null, 2) || "пусто"}
             </pre>
@@ -50,12 +58,14 @@ export default function DepartmentSelectDemoPage() {
           <DepartmentSelect
             stateId="demo-multi"
             selectedDepartments={multiValue}
-            onChange={setMultiValue}
+            onCheckedChange={setMultiValue}
             multiselect={true}
             placeholder="Выберите несколько подразделений..."
           />
           <div className="rounded-lg border bg-muted/30 p-3">
-            <p className="text-xs font-medium text-muted-foreground mb-1">Состояние:</p>
+            <p className="text-xs font-medium text-muted-foreground mb-1">
+              Состояние:
+            </p>
             <pre className="text-xs whitespace-pre-wrap">
               {JSON.stringify(multiValue, null, 2) || "пусто"}
             </pre>

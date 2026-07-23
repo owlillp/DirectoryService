@@ -2,27 +2,31 @@
 
 import { SearchDepartment } from "@/src/entities/departments/types";
 import { Badge } from "@/src/shared/components/ui/badge";
+import { Button } from "@/src/shared/components/ui/button";
+import { cn } from "@/src/shared/lib/utils";
 import { XIcon } from "lucide-react";
 
-type DepartmentSelectedProps = {
-  department: SearchDepartment;
-  onRemove: (departmentId: string) => void;
-};
+interface DepartmentSelectedProps extends React.ComponentProps<"div"> {
+  selectedDepartments: SearchDepartment[];
+  onRemove: (id: string) => void;
+}
 
 export const DepartmentSelected = ({
-  department,
+  selectedDepartments,
   onRemove,
+  className,
+  ...props
 }: DepartmentSelectedProps) => {
   return (
-    <Badge variant="secondary" className="gap-1 pr-1">
-      {department.name}
-      <button
-        type="button"
-        onClick={() => onRemove(department.id)}
-        className="ml-0.5 rounded-full p-0.5 hover:bg-muted-foreground/20 transition-colors"
-      >
-        <XIcon className="size-3" />
-      </button>
-    </Badge>
+    <div className={cn("flex gap-2 flex-wrap", className)} {...props}>
+      {selectedDepartments.map((dep) => (
+        <Badge key={dep.id} asChild>
+          <Button onClick={() => onRemove(dep.id)}>
+            {dep.name}
+            <XIcon />
+          </Button>
+        </Badge>
+      ))}
+    </div>
   );
 };

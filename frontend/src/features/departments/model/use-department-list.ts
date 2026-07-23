@@ -1,7 +1,7 @@
 import { departmentsQueryOptions } from "@/src/entities/departments/api";
 import { SearchDepartment } from "@/src/entities/departments/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { RefCallback, useCallback, useEffect, useRef } from "react";
+import { RefCallback, useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import {
   useDepartmentActive,
@@ -58,14 +58,14 @@ export function useDepartmentsList(
     }),
   });
 
-  const targetRef = useRef<HTMLDivElement | null>(null);
+  const [cursorNode, setCursorNode] = useState<HTMLDivElement | null>(null);
 
   const cursorRef: RefCallback<HTMLDivElement> = useCallback((el) => {
-    targetRef.current = el;
+    setCursorNode(el);
   }, []);
 
   useEffect(() => {
-    const el = targetRef.current;
+    const el = cursorNode;
     if (!el) return;
 
     const observer = new IntersectionObserver(
@@ -79,7 +79,7 @@ export function useDepartmentsList(
     observer.observe(el);
 
     return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [cursorNode, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   return {
     departments: data?.records ?? [],

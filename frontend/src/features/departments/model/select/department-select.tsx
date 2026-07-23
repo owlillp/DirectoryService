@@ -3,7 +3,6 @@
 import { SearchDepartment } from "@/src/entities/departments/types";
 import {
   DepartmentListId,
-  resetDepartmentState,
   setDepartmentActive,
   setDepartmentExcludeIds,
   setDepartmentSearch,
@@ -15,19 +14,31 @@ import {
   useDepartmentSortDirection,
 } from "../department-list-store";
 import { useDepartmentsList } from "../use-department-list";
-import { useCallback, useEffect, useId, useState } from "react";
-import { Button } from "@/src/shared/components/ui/button";
+import { DepartmentSelectCard } from "./department-select-card";
+import { DepartmentSelected } from "./department-selected";
 import { Input } from "@/src/shared/components/ui/input";
+import { Button } from "@/src/shared/components/ui/button";
+import {
+  Loader2,
+  ChevronsUpDown,
+  ArrowUpNarrowWide,
+  ArrowDownWideNarrow,
+} from "lucide-react";
+import { cn } from "@/src/shared/lib/utils";
+import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/shared/components/ui/select";
+import { ScrollArea } from "@/src/shared/components/ui/scroll-area";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/src/shared/components/ui/popover";
-import { Spinner } from "@/src/shared/components/ui/spinner";
-import { cn } from "@/src/shared/lib/utils";
-import { ChevronsUpDown } from "lucide-react";
-import { DepartmentSelected } from "./department-selected";
-import { DepartmentSelectCard } from "./department-select-card";
 
 type ActiveFilter = "all" | "active" | "inactive";
 
@@ -38,51 +49,44 @@ const ACTIVE_FILTER_OPTIONS: { value: ActiveFilter; label: string }[] = [
 ];
 
 const SORT_OPTIONS = [
-  { value: "name_asc", label: "Имя (А→Я)", sortBy: "name", sortDirection: "asc" },
-  { value: "name_desc", label: "Имя (Я→А)", sortBy: "name", sortDirection: "desc" },
-  { value: "createdAt_desc", label: "Сначала новые", sortBy: "createdAt", sortDirection: "desc" },
-  { value: "createdAt_asc", label: "Сначала старые", sortBy: "createdAt", sortDirection: "asc" },
+  { value: "name", label: "Имя", sortBy: "name" },
+  { value: "createdAt", label: "Дата создания", sortBy: "created_at" },
 ] as const;
 
-export type DepartmentSelectProps = {
+const SORT_DIRECTION_OPTIONS = [
+  { value: "asc", label: "По возрастанию", sortDirection: "asc" },
+  { value: "desc", label: "По убыванию", sortDirection: "desc" },
+] as const;
+
+interface DepartmentSelectProps extends React.ComponentProps<"div"> {
   selectedDepartments: SearchDepartment[];
-  onChange: (departments: SearchDepartment[]) => void;
+  onCheckedChange: (departments: SearchDepartment[]) => void;
   stateId: DepartmentListId;
   multiselect?: boolean;
   excludeIds?: string[];
   placeholder?: string;
-};
+}
 
 export const DepartmentSelect = ({
   selectedDepartments,
-  onChange,
+  onCheckedChange,
   stateId,
   multiselect = true,
   excludeIds,
-  placeholder = "Выберите подразделения...",
+  placeholder,
+  className,
+  ...props
 }: DepartmentSelectProps) => {
   const [open, setOpen] = useState(false);
   const search = useDepartmentSearch(stateId);
   const isActive = useDepartmentActive(stateId);
   const sortBy = useDepartmentSortBy(stateId);
   const sortDirection = useDepartmentSortDirection(stateId);
-  const inputId = useId();
 
-  const activeFilter: ActiveFilter =
-    isActive === undefined ? "all" : isActive ? "active" : "inactive";
-
-  const currentSortValue =
-    sortBy && sortDirection ? `${sortBy}_${sortDirection}` : "name_asc";
-
+  // Синхронизируем excludeIds с хранилищем
   useEffect(() => {
     setDepartmentExcludeIds(excludeIds, stateId);
   }, [excludeIds, stateId]);
-
-  useEffect(() => {
-    return () => {
-      resetDepartmentState(stateId);
-    };
-  }, [stateId]);
 
   const {
     departments,
@@ -94,81 +98,54 @@ export const DepartmentSelect = ({
     cursorRef,
   } = useDepartmentsList(stateId);
 
-  const selectedIds = new Set(selectedDepartments.map((d) => d.id));
-
-  const handleSelect = useCallback(
-    (department: SearchDepartment) => {
-      if (multiselect) {
-        if (selectedIds.has(department.id)) {
-          onChange(selectedDepartments.filter((d) => d.id !== department.id));
-        } else {
-          onChange([...selectedDepartments, department]);
-        }
+  const handleCheckedChange = (
+    selected: boolean,
+    department: SearchDepartment,
+  ) => {
+    if (multiselect) {
+      if (selected) {
+        onCheckedChange([...selectedDepartments, department]);
       } else {
-        if (selectedIds.has(department.id)) {
-          onChange([]);
-        } else {
-          onChange([department]);
-        }
+        onCheckedChange(
+          selectedDepartments.filter((dep) => dep.id != department.id),
+        );
       }
-    },
-    [multiselect, onChange, selectedDepartments, selectedIds],
-  );
-
-  const handleRemoveBadge = useCallback(
-    (departmentId: string) => {
-      onChange(selectedDepartments.filter((d) => d.id !== departmentId));
-    },
-    [onChange, selectedDepartments],
-  );
-
-  const handleActiveFilterChange = useCallback(
-    (filter: ActiveFilter) => {
-      switch (filter) {
-        case "all":
-          setDepartmentActive(undefined, stateId);
-          break;
-        case "active":
-          setDepartmentActive(true, stateId);
-          break;
-        case "inactive":
-          setDepartmentActive(false, stateId);
-          break;
+    } else {
+      if (selected) {
+        onCheckedChange([department]);
+        setOpen(false); // Закрываем popover при выборе в single-режиме
+      } else {
+        onCheckedChange([]);
       }
-    },
-    [stateId],
-  );
+    }
+  };
 
-  const handleSortChange = useCallback(
-    (value: string) => {
-      const option = SORT_OPTIONS.find((o) => o.value === value);
-      if (option) {
-        setDepartmentSortBy(option.sortBy, stateId);
-        setDepartmentSortDirection(option.sortDirection, stateId);
-      }
-    },
-    [stateId],
-  );
+  const handleRemoveDepartment = (id: string) => {
+    onCheckedChange(selectedDepartments.filter((dep) => dep.id != id));
+  };
 
-  const filteredDepartments = excludeIds?.length
-    ? departments.filter((d) => !excludeIds.includes(d.id))
-    : departments;
+  const isSelected = (id: string) => {
+    return selectedDepartments.some((dep) => dep.id == id);
+  };
+
+  const triggerLabel =
+    selectedDepartments.length > 0
+      ? multiselect
+        ? `Выбрано: ${selectedDepartments.length}`
+        : selectedDepartments[0].name
+      : (placeholder ?? "Выберите подразделения...");
 
   return (
-    <div className="space-y-2">
-      {/* Badges for selected departments (both modes) */}
+    <div className={cn("flex flex-col gap-4", className)} {...props}>
+      {/* Выбранные департаменты */}
       {selectedDepartments.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {selectedDepartments.map((dept) => (
-            <DepartmentSelected
-              key={dept.id}
-              department={dept}
-              onRemove={handleRemoveBadge}
-            />
-          ))}
-        </div>
+        <DepartmentSelected
+          selectedDepartments={selectedDepartments}
+          onRemove={handleRemoveDepartment}
+        />
       )}
 
+      {/* Popover с выбором */}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -176,121 +153,155 @@ export const DepartmentSelect = ({
             role="combobox"
             aria-expanded={open}
             className={cn(
-              "w-full justify-between",
-              !selectedDepartments.length && "text-muted-foreground",
+              "w-full justify-between bg-card hover:bg-muted/50 transition-colors",
+              open && "ring-2 ring-primary/30 border-primary/50",
             )}
           >
-            {selectedDepartments.length > 0
-              ? multiselect
-                ? `Выбрано: ${selectedDepartments.length}`
-                : selectedDepartments[0].name
-              : placeholder}
-            <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+            <span className="truncate text-sm">{triggerLabel}</span>
+            <ChevronsUpDown className="size-4 shrink-0 text-muted-foreground" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-          <div className="flex flex-col">
-            {/* Search */}
-            <div className="border-b p-2">
-              <Input
-                id={inputId}
-                placeholder="Поиск подразделений..."
-                value={search ?? ""}
-                onChange={(e) => setDepartmentSearch(e.target.value, stateId)}
-                className="h-8"
-              />
-            </div>
 
-            {/* Filters row */}
-            <div className="flex items-center gap-2 border-b px-3 py-1.5">
-              <div className="flex items-center gap-1 shrink-0">
-                {ACTIVE_FILTER_OPTIONS.map((opt) => (
-                  <button
-                    key={opt.value}
-                    type="button"
-                    className={cn(
-                      "rounded-md px-2 py-0.5 text-xs font-medium transition-colors",
-                      activeFilter === opt.value
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:bg-muted",
-                    )}
-                    onClick={() => handleActiveFilterChange(opt.value)}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
+        <PopoverContent
+          className="w-[var(--radix-popover-trigger-width)] p-3"
+          align="start"
+        >
+          <div className="flex flex-col gap-3">
+            {/* Поиск */}
+            <Input
+              placeholder="Поиск департаментов..."
+              value={search ?? ""}
+              onChange={(e) => setDepartmentSearch(e.target.value, stateId)}
+              autoFocus
+            />
 
-              <div className="ml-auto">
-                <select
-                  value={currentSortValue}
-                  onChange={(e) => handleSortChange(e.target.value)}
-                  className="h-7 rounded-md border border-input bg-transparent px-2 text-xs text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50"
-                >
-                  {SORT_OPTIONS.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </option>
+            {/* Фильтры */}
+            <div className="flex gap-1.5 flex-wrap">
+              <Select
+                value={
+                  isActive === undefined
+                    ? "all"
+                    : isActive
+                      ? "active"
+                      : "inactive"
+                }
+                onValueChange={(value) =>
+                  setDepartmentActive(
+                    value === "all" ? undefined : value === "active",
+                    stateId,
+                  )
+                }
+              >
+                <SelectTrigger className="flex-1 min-w-24">
+                  <SelectValue placeholder="Статус" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ACTIVE_FILTER_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
                   ))}
-                </select>
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={sortBy ?? "name"}
+                onValueChange={(value) => setDepartmentSortBy(value, stateId)}
+              >
+                <SelectTrigger className="flex-1 min-w-24">
+                  <SelectValue placeholder="Сортировка" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.sortBy}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select
+                value={sortDirection ?? "asc"}
+                onValueChange={(value) =>
+                  setDepartmentSortDirection(value, stateId)
+                }
+              >
+                <SelectTrigger className="flex-1 min-w-28">
+                  {(sortDirection ?? "asc") === "asc" ? (
+                    <ArrowUpNarrowWide className="size-3.5 shrink-0 text-muted-foreground" />
+                  ) : (
+                    <ArrowDownWideNarrow className="size-3.5 shrink-0 text-muted-foreground" />
+                  )}
+                  <SelectValue placeholder="Направление" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_DIRECTION_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.sortDirection}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Счётчик найденных департаментов */}
+            {!isPending && !error && (
+              <div className="flex items-center justify-between rounded-lg bg-muted/40 px-3 py-2">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Найдено подразделений
+                </span>
+                <span className="inline-flex items-center justify-center rounded-md bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary ring-1 ring-primary/20">
+                  {totalCount}
+                </span>
               </div>
-            </div>
+            )}
 
-            {/* List */}
-            <div className="max-h-64 overflow-y-auto">
-              {isPending && (
+            {/* Список департаментов */}
+            <ScrollArea className="h-72 rounded-lg bg-muted/20">
+              {isPending ? (
                 <div className="flex items-center justify-center py-8">
-                  <Spinner className="size-5" />
+                  <Loader2 className="size-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center gap-2 py-8 text-destructive">
+                  <span className="text-sm">{error}</span>
+                  <button
+                    onClick={() => refetch()}
+                    className="text-sm underline hover:no-underline"
+                  >
+                    Попробовать снова
+                  </button>
+                </div>
+              ) : departments.length === 0 ? (
+                <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
+                  Ничего не найдено
+                </div>
+              ) : (
+                <div role="listbox" className="py-1">
+                  {departments.map((department) => (
+                    <DepartmentSelectCard
+                      key={department.id}
+                      department={department}
+                      isSelected={isSelected(department.id)}
+                      multiselect={multiselect}
+                      onSelect={(dep) =>
+                        handleCheckedChange(!isSelected(dep.id), dep)
+                      }
+                    />
+                  ))}
+
+                  {/* Элемент для intersection observer (подгрузка следующих страниц) */}
+                  <div
+                    ref={cursorRef}
+                    className="flex items-center justify-center py-2"
+                  >
+                    {isFetchingNextPage && (
+                      <Loader2 className="size-4 animate-spin text-muted-foreground" />
+                    )}
+                  </div>
                 </div>
               )}
-
-              {error && (
-                <div className="flex flex-col items-center gap-2 py-6 px-4 text-center">
-                  <p className="text-sm text-destructive">{error}</p>
-                  <Button variant="outline" size="sm" onClick={() => refetch()}>
-                    Повторить
-                  </Button>
-                </div>
-              )}
-
-              {!isPending && !error && filteredDepartments.length === 0 && (
-                <div className="flex flex-col items-center gap-1 py-6 px-4 text-center">
-                  <p className="text-sm text-muted-foreground">
-                    {search
-                      ? "Ничего не найдено"
-                      : "Нет доступных подразделений"}
-                  </p>
-                </div>
-              )}
-
-              {!isPending &&
-                !error &&
-                filteredDepartments.map((department) => (
-                  <DepartmentSelectCard
-                    key={department.id}
-                    department={department}
-                    isSelected={selectedIds.has(department.id)}
-                    multiselect={multiselect}
-                    onSelect={handleSelect}
-                  />
-                ))}
-
-              <div ref={cursorRef} className="h-px" />
-
-              {isFetchingNextPage && (
-                <div className="flex items-center justify-center py-2">
-                  <Spinner className="size-4" />
-                </div>
-              )}
-
-              {!isPending && !error && filteredDepartments.length > 0 && (
-                <div className="border-t px-3 py-1.5 text-xs text-muted-foreground">
-                  {totalCount
-                    ? `Всего: ${totalCount}`
-                    : `${filteredDepartments.length} подразделений`}
-                </div>
-              )}
-            </div>
+            </ScrollArea>
           </div>
         </PopoverContent>
       </Popover>

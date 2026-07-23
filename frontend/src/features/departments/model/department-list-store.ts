@@ -193,4 +193,3 @@ export const resetDepartmentState = (stateId?: DepartmentListId) => {
     return rest;
   });
 };
-
