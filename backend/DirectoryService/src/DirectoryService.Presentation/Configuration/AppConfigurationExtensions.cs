@@ -21,7 +21,7 @@ public static class AppConfigurationExtensions
         app.UseExceptionMiddleware();
         app.UseSerilogRequestLogging();
 
-        if (app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
         {
             app.UseOpenApi();
             app.UseSwaggerUI();
