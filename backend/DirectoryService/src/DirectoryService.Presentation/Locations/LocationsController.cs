@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DirectoryService.Presentation.Locations;
 
 [ApiController]
-[Route("/api/[controller]")]
+[Route("/[controller]")]
 public class LocationsController : ControllerBase
 {
     [HttpPost]
