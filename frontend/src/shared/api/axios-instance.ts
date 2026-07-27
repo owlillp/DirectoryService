@@ -3,8 +3,10 @@ import qs from "qs";
 import { Envelope } from "./envelope";
 import { EnvelopeError } from "./errors";
 
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export const apiClient = axios.create({
-  baseURL: "http://localhost:5209/api",
+  baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
   paramsSerializer: (params) =>
     qs.stringify(params, { indices: false, allowDots: true }),

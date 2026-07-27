@@ -25,7 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DirectoryService.Presentation.Departments;
 
 [ApiController]
-[Route("/api/[controller]")]
+[Route("/[controller]")]
 public class DepartmentsController : ControllerBase
 {
     [HttpPost]

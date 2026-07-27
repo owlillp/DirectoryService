@@ -13,6 +13,30 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:8001
     restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      directory-service-migrations:
+        condition: service_completed_successfully
+
+  directory-service-migrations:
+    container_name: directory-service-migrations
+    build:
+      context: ./backend
+      dockerfile: DirectoryService/Dockerfile
+      args:
+        NUGET_USERNAME: ${NUGET_USERNAME}
+        NUGET_PASSWORD: ${NUGET_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+    environment:
+      - DATABASE_CONNECTION_STRING=${DATABASE_CONNECTION_STRING}
+    env_file:
+      - .env
+    entrypoint:
+      ["/bin/sh", "-c", './efbundle --connection "$DATABASE_CONNECTION_STRING"']
 
   postgres:
     container_name: postgres
@@ -26,6 +50,11 @@ services:
       - 5434:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data_save
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   seq:
     container_name: seq
@@ -36,6 +65,28 @@ services:
     ports:
       - "8081:80"
       - "5341:5341"
+    restart: always
+
+  nginx:
+    container_name: nginx-directory-service
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - directory-service
+    restart: always
+
+  frontend:
+    container_name: frontend-directory-service
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost/api
+    ports:
+      - "3000:3000"
     restart: always
 
 volumes:

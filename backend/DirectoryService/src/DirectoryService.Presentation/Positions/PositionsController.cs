@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace DirectoryService.Presentation.Positions;
 
 [ApiController]
-[Route("/api/[controller]")]
+[Route("/[controller]")]
 public class PositionsController : ControllerBase
 {
     [HttpPost]
