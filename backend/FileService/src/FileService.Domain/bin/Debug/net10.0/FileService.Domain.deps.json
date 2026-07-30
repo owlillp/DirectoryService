@@ -1,0 +1,59 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "FileService.Domain/1.0.0": {
+        "dependencies": {
+          "Owlip.SharedKernel": "0.0.2"
+        },
+        "runtime": {
+          "FileService.Domain.dll": {}
+        }
+      },
+      "CSharpFunctionalExtensions/3.7.0": {
+        "runtime": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "assemblyVersion": "3.7.0.0",
+            "fileVersion": "3.7.0.0"
+          }
+        }
+      },
+      "Owlip.SharedKernel/0.0.2": {
+        "dependencies": {
+          "CSharpFunctionalExtensions": "3.7.0"
+        },
+        "runtime": {
+          "lib/net10.0/Shared.SharedKernel.dll": {
+            "assemblyVersion": "0.0.2.0",
+            "fileVersion": "0.0.2.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FileService.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "CSharpFunctionalExtensions/3.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eMZp8tc88O96eEFutiIskF3LE8lFY3fjbNRGfNa1ca0CD9sB8A00r5ltyYDih/7UFdJdVbhVq7tGeHI8xj6DlQ==",
+      "path": "csharpfunctionalextensions/3.7.0",
+      "hashPath": "csharpfunctionalextensions.3.7.0.nupkg.sha512"
+    },
+    "Owlip.SharedKernel/0.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-PiFJ+C0I/llc1YzDOIKxDLewUfrZGB8ifstB3i6Ymw9sIL9m0c+H+B9pX9ZFlb7oRL6HpQ5xVvsnA/PbH6JCmA==",
+      "path": "owlip.sharedkernel/0.0.2",
+      "hashPath": "owlip.sharedkernel.0.0.2.nupkg.sha512"
+    }
+  }
+}

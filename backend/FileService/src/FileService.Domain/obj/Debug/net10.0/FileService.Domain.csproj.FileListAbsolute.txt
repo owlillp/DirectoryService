@@ -1,0 +1,13 @@
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\bin\Debug\net10.0\FileService.Domain.deps.json
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\bin\Debug\net10.0\FileService.Domain.dll
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\bin\Debug\net10.0\FileService.Domain.pdb
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.csproj.AssemblyReference.cache
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.GeneratedMSBuildEditorConfig.editorconfig
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.AssemblyInfoInputs.cache
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.AssemblyInfo.cs
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.csproj.CoreCompileInputs.cache
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.sourcelink.json
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.dll
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\refint\FileService.Domain.dll
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\FileService.Domain.pdb
+E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\obj\Debug\net10.0\ref\FileService.Domain.dll
