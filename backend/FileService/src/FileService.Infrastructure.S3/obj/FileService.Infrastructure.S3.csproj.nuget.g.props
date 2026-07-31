@@ -14,5 +14,7 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
     <PkgStyleCop_Analyzers Condition=" '$(PkgStyleCop_Analyzers)' == '' ">C:\Users\dgeor\.nuget\packages\stylecop.analyzers\1.1.118</PkgStyleCop_Analyzers>
+    <PkgAWSSDK_Core Condition=" '$(PkgAWSSDK_Core)' == '' ">C:\Users\dgeor\.nuget\packages\awssdk.core\4.0.100.9</PkgAWSSDK_Core>
+    <PkgAWSSDK_S3 Condition=" '$(PkgAWSSDK_S3)' == '' ">C:\Users\dgeor\.nuget\packages\awssdk.s3\4.0.101.6</PkgAWSSDK_S3>
   </PropertyGroup>
 </Project>

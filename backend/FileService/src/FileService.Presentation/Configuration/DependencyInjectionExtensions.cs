@@ -1,4 +1,5 @@
 ﻿using FileService.Application;
+using FileService.Infrastructure.S3;
 using Framework.Logging;
 using Framework.Serializations;
 using Framework.Swagger;
@@ -20,6 +21,7 @@ public static class DependencyInjectionExtensions
             services.AddJsonOptions();
 
             services.AddApplication();
+            services.AddS3(configuration);
             //services.AddInfrastructurePostgres(configuration);
 
             return services;

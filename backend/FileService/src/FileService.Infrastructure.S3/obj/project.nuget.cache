@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "CTkeGbYT+x0=",
+  "dgSpecHash": "y4ajGdBpNz0=",
   "success": true,
   "projectFilePath": "E:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Infrastructure.S3\\FileService.Infrastructure.S3.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\dgeor\\.nuget\\packages\\awssdk.core\\4.0.100.9\\awssdk.core.4.0.100.9.nupkg.sha512",
+    "C:\\Users\\dgeor\\.nuget\\packages\\awssdk.s3\\4.0.101.6\\awssdk.s3.4.0.101.6.nupkg.sha512",
     "C:\\Users\\dgeor\\.nuget\\packages\\csharpfunctionalextensions\\3.7.0\\csharpfunctionalextensions.3.7.0.nupkg.sha512",
     "C:\\Users\\dgeor\\.nuget\\packages\\fluentvalidation\\12.1.1\\fluentvalidation.12.1.1.nupkg.sha512",
     "C:\\Users\\dgeor\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\12.1.1\\fluentvalidation.dependencyinjectionextensions.12.1.1.nupkg.sha512",

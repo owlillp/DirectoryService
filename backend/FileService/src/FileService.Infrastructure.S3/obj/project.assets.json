@@ -2,6 +2,35 @@
   "version": 3,
   "targets": {
     "net10.0": {
+      "AWSSDK.Core/4.0.100.9": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "related": ".xml"
+          }
+        }
+      },
+      "AWSSDK.S3/4.0.101.6": {
+        "type": "package",
+        "dependencies": {
+          "AWSSDK.Core": "[4.0.100.9, 5.0.0)"
+        },
+        "compile": {
+          "lib/net8.0/AWSSDK.S3.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.S3.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "CSharpFunctionalExtensions/3.7.0": {
         "type": "package",
         "compile": {
@@ -805,6 +834,53 @@
     }
   },
   "libraries": {
+    "AWSSDK.Core/4.0.100.9": {
+      "sha512": "OPYy41jZjXwxxcYRotaq24HDrwUnVtBB/mvg1IwB9D1ICXAtHqMa1sp2hpmlVJCZwjlcrPcTCJIejInvV1vp5g==",
+      "type": "package",
+      "path": "awssdk.core/4.0.100.9",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "awssdk.core.4.0.100.9.nupkg.sha512",
+        "awssdk.core.nuspec",
+        "images/AWSLogo.png",
+        "lib/net472/AWSSDK.Core.dll",
+        "lib/net472/AWSSDK.Core.xml",
+        "lib/net8.0/AWSSDK.Core.dll",
+        "lib/net8.0/AWSSDK.Core.xml",
+        "lib/netcoreapp3.1/AWSSDK.Core.dll",
+        "lib/netcoreapp3.1/AWSSDK.Core.xml",
+        "lib/netstandard2.0/AWSSDK.Core.dll",
+        "lib/netstandard2.0/AWSSDK.Core.xml",
+        "tools/account-management.ps1"
+      ]
+    },
+    "AWSSDK.S3/4.0.101.6": {
+      "sha512": "LsVXGc3lyJuUJe+EbGubkFeR0cVmtmj4YdMChqsqSIsjZtCMzPg2BXR7cJqcrIBGoHab3q3RS6K8T9QD2tbhhQ==",
+      "type": "package",
+      "path": "awssdk.s3/4.0.101.6",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "analyzers/dotnet/cs/AWSSDK.S3.CodeAnalysis.dll",
+        "analyzers/dotnet/cs/SharedAnalysisCode.dll",
+        "awssdk.s3.4.0.101.6.nupkg.sha512",
+        "awssdk.s3.nuspec",
+        "images/AWSLogo.png",
+        "lib/net472/AWSSDK.S3.dll",
+        "lib/net472/AWSSDK.S3.xml",
+        "lib/net8.0/AWSSDK.S3.dll",
+        "lib/net8.0/AWSSDK.S3.xml",
+        "lib/netcoreapp3.1/AWSSDK.S3.dll",
+        "lib/netcoreapp3.1/AWSSDK.S3.xml",
+        "lib/netstandard2.0/AWSSDK.S3.dll",
+        "lib/netstandard2.0/AWSSDK.S3.xml",
+        "tools/install.ps1",
+        "tools/uninstall.ps1"
+      ]
+    },
     "CSharpFunctionalExtensions/3.7.0": {
       "sha512": "eMZp8tc88O96eEFutiIskF3LE8lFY3fjbNRGfNa1ca0CD9sB8A00r5ltyYDih/7UFdJdVbhVq7tGeHI8xj6DlQ==",
       "type": "package",
@@ -1910,6 +1986,7 @@
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "AWSSDK.S3 >= 4.0.101.6",
       "FileService.Application >= 1.0.0",
       "StyleCop.Analyzers >= 1.1.118"
     ]
@@ -1964,6 +2041,10 @@
       "net10.0": {
         "targetAlias": "net10.0",
         "dependencies": {
+          "AWSSDK.S3": {
+            "target": "Package",
+            "version": "[4.0.101.6, )"
+          },
           "StyleCop.Analyzers": {
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",

@@ -280,6 +280,10 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "dependencies": {
+            "AWSSDK.S3": {
+              "target": "Package",
+              "version": "[4.0.101.6, )"
+            },
             "StyleCop.Analyzers": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
               "suppressParent": "All",
