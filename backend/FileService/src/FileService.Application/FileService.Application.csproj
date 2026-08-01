@@ -8,4 +8,8 @@
     <PackageReference Include="Owlip.Framework" Version="0.0.3" />
     <PackageReference Include="Dapper" Version="2.1.72" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Commands\" />
+    <Folder Include="Features\Queries\" />
+  </ItemGroup>
 </Project>

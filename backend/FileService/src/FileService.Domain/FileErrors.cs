@@ -1,4 +1,5 @@
-﻿using Shared.SharedKernel.Failures;
+﻿using CSharpFunctionalExtensions;
+using Shared.SharedKernel.Failures;
 
 namespace FileService.Domain;
 
@@ -32,6 +33,12 @@ public static class FileErrors
             message += $" {reason}";
 
         return Error.Validation("validation.failed", message);
+    }
+
+    public static Error BucketAlreadyExist(string? bucketName = null)
+    {
+        string name = bucketName ?? string.Empty;
+        return Error.NotFound("bucket.already.exist", $"Bucket {name} not found");
     }
 
     public static Error InternalServerError()
