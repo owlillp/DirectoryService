@@ -10,12 +10,12 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("FileService.Presentation")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("FileService.UnitTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dda749b1bff40c51010706c2844ce789af9b73de")]
-[assembly: System.Reflection.AssemblyProductAttribute("FileService.Presentation")]
-[assembly: System.Reflection.AssemblyTitleAttribute("FileService.Presentation")]
+[assembly: System.Reflection.AssemblyProductAttribute("FileService.UnitTests")]
+[assembly: System.Reflection.AssemblyTitleAttribute("FileService.UnitTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
 
 // Создано классом WriteCodeFragment MSBuild.

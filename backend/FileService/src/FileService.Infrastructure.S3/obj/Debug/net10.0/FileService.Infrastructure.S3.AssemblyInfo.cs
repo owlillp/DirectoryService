@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FileService.Infrastructure.S3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b3afda7531173a40d16174f99fc03e7d7de04fbb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dda749b1bff40c51010706c2844ce789af9b73de")]
 [assembly: System.Reflection.AssemblyProductAttribute("FileService.Infrastructure.S3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FileService.Infrastructure.S3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
