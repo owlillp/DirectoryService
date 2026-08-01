@@ -6,7 +6,7 @@ namespace FileService.Domain;
 public sealed record StorageKey
 {
     public string Key { get; } = null!;
-    public string Prefix { get; } = null!;
+    public string? Prefix { get; }
     public string Location { get; } = null!;
     public string Value { get; } = null!;
     public string FullPath { get; } = null!;
@@ -33,8 +33,8 @@ public sealed record StorageKey
             return normalizedKeyResult.Error;
 
         var normalizedPrefixResult = NormalizePrefix(prefix);
-        if (normalizedKeyResult.IsFailure)
-            return normalizedKeyResult.Error;
+        if (normalizedPrefixResult.IsFailure)
+            return normalizedPrefixResult.Error;
 
         return new StorageKey(location.Trim(), normalizedPrefixResult.Value, normalizedKeyResult.Value);
     }

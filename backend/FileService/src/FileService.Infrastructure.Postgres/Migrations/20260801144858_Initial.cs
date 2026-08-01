@@ -16,8 +16,9 @@ namespace FileService.Infrastructure.Postgres.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    value = table.Column<string>(type: "text", nullable: false),
-                    extension = table.Column<string>(type: "text", nullable: false),
+                    file_name = table.Column<string>(type: "text", nullable: false),
+                    file_extension = table.Column<string>(type: "text", nullable: false),
+                    content_type = table.Column<string>(type: "text", nullable: false),
                     category = table.Column<string>(type: "text", nullable: false),
                     size = table.Column<long>(type: "bigint", nullable: false),
                     expected_chunks_count = table.Column<int>(type: "integer", nullable: false),

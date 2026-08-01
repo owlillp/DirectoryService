@@ -132,9 +132,8 @@ namespace FileService.Infrastructure.Postgres.Migrations
 
                                     b2.Property<string>("Value")
                                         .IsRequired()
-                                        .ValueGeneratedOnUpdateSometimes()
                                         .HasColumnType("text")
-                                        .HasColumnName("value");
+                                        .HasColumnName("content_type");
 
                                     b2.HasKey("MediaDataMediaAssetId");
 
@@ -152,13 +151,12 @@ namespace FileService.Infrastructure.Postgres.Migrations
                                     b2.Property<string>("Extension")
                                         .IsRequired()
                                         .HasColumnType("text")
-                                        .HasColumnName("extension");
+                                        .HasColumnName("file_extension");
 
                                     b2.Property<string>("Value")
                                         .IsRequired()
-                                        .ValueGeneratedOnUpdateSometimes()
                                         .HasColumnType("text")
-                                        .HasColumnName("value");
+                                        .HasColumnName("file_name");
 
                                     b2.HasKey("MediaDataMediaAssetId");
 

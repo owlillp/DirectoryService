@@ -37,7 +37,7 @@ public sealed record MediaOwner
         if (entityId == Guid.Empty)
             return GeneralErrors.ValueIsInvalid(nameof(entityId));
 
-        return new MediaOwner(context, entityId);
+        return new MediaOwner(normalizedContext, entityId);
     }
 
     public static Result<MediaOwner, Error> ForLocation(Guid locationId) => Create("location", locationId);

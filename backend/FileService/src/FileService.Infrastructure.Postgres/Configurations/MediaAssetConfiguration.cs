@@ -23,13 +23,13 @@ public class MediaAssetConfiguration : IEntityTypeConfiguration<MediaAsset>
             mb.OwnsOne(md => md.ContentType, cb =>
             {
                 cb.Property(x => x.Category).HasConversion<string>().HasColumnName("category");
-                cb.Property(x => x.Value).HasColumnName("value");
+                cb.Property(x => x.Value).HasColumnName("content_type");
             });
 
             mb.OwnsOne(md => md.FileName, fb =>
             {
-                fb.Property(x => x.Extension).HasColumnName("extension");
-                fb.Property(x => x.Value).HasColumnName("value");
+                fb.Property(x => x.Extension).HasColumnName("file_extension");
+                fb.Property(x => x.Value).HasColumnName("file_name");
             });
 
             mb.Property(md => md.Size).HasColumnName("size");

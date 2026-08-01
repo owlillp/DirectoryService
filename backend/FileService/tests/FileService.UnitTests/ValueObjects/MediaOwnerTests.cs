@@ -22,7 +22,7 @@ public class MediaOwnerTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(ValidId, result.Value.EntityId);
-        Assert.Equal("LOCATION", result.Value.Context);
+        Assert.Equal("location", result.Value.Context);
     }
 
     [Theory]
