@@ -8,6 +8,19 @@
           "build/netstandard2.0/coverlet.collector.targets": {}
         }
       },
+      "CSharpFunctionalExtensions/3.7.0": {
+        "type": "package",
+        "compile": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/CSharpFunctionalExtensions.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
       "Microsoft.CodeCoverage/17.14.1": {
         "type": "package",
         "compile": {
@@ -298,6 +311,18 @@
           }
         }
       },
+      "Owlip.SharedKernel/0.0.2": {
+        "type": "package",
+        "dependencies": {
+          "CSharpFunctionalExtensions": "3.7.0"
+        },
+        "compile": {
+          "lib/net10.0/Shared.SharedKernel.dll": {}
+        },
+        "runtime": {
+          "lib/net10.0/Shared.SharedKernel.dll": {}
+        }
+      },
       "StyleCop.Analyzers/1.1.118": {
         "type": "package"
       },
@@ -396,6 +421,19 @@
         "build": {
           "build/net8.0/xunit.runner.visualstudio.props": {}
         }
+      },
+      "FileService.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "Owlip.SharedKernel": "0.0.2"
+        },
+        "compile": {
+          "bin/placeholder/FileService.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/FileService.Domain.dll": {}
+        }
       }
     }
   },
@@ -468,6 +506,26 @@
         "coverlet-icon.png",
         "coverlet.collector.6.0.4.nupkg.sha512",
         "coverlet.collector.nuspec"
+      ]
+    },
+    "CSharpFunctionalExtensions/3.7.0": {
+      "sha512": "eMZp8tc88O96eEFutiIskF3LE8lFY3fjbNRGfNa1ca0CD9sB8A00r5ltyYDih/7UFdJdVbhVq7tGeHI8xj6DlQ==",
+      "type": "package",
+      "path": "csharpfunctionalextensions/3.7.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "csharpfunctionalextensions.3.7.0.nupkg.sha512",
+        "csharpfunctionalextensions.nuspec",
+        "lib/net6.0/CSharpFunctionalExtensions.dll",
+        "lib/net6.0/CSharpFunctionalExtensions.pdb",
+        "lib/net6.0/CSharpFunctionalExtensions.xml",
+        "lib/net8.0/CSharpFunctionalExtensions.dll",
+        "lib/net8.0/CSharpFunctionalExtensions.pdb",
+        "lib/net8.0/CSharpFunctionalExtensions.xml",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.dll",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.pdb",
+        "lib/netstandard2.0/CSharpFunctionalExtensions.xml"
       ]
     },
     "Microsoft.CodeCoverage/17.14.1": {
@@ -767,6 +825,17 @@
         "packageIcon.png"
       ]
     },
+    "Owlip.SharedKernel/0.0.2": {
+      "sha512": "PiFJ+C0I/llc1YzDOIKxDLewUfrZGB8ifstB3i6Ymw9sIL9m0c+H+B9pX9ZFlb7oRL6HpQ5xVvsnA/PbH6JCmA==",
+      "type": "package",
+      "path": "owlip.sharedkernel/0.0.2",
+      "files": [
+        ".nupkg.metadata",
+        "lib/net10.0/Shared.SharedKernel.dll",
+        "owlip.sharedkernel.0.0.2.nupkg.sha512",
+        "owlip.sharedkernel.nuspec"
+      ]
+    },
     "StyleCop.Analyzers/1.1.118": {
       "sha512": "Onx6ovGSqXSK07n/0eM3ZusiNdB6cIlJdabQhWGgJp3Vooy9AaLS/tigeybOJAobqbtggTamoWndz72JscZBvw==",
       "type": "package",
@@ -931,10 +1000,16 @@
         "xunit.runner.visualstudio.3.1.4.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "FileService.Domain/1.0.0": {
+      "type": "project",
+      "path": "../../src/FileService.Domain/FileService.Domain.csproj",
+      "msbuildProject": "../../src/FileService.Domain/FileService.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
+      "FileService.Domain >= 1.0.0",
       "Microsoft.NET.Test.Sdk >= 17.14.1",
       "StyleCop.Analyzers >= 1.1.118",
       "coverlet.collector >= 6.0.4",
@@ -969,7 +1044,11 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "E:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\FileService.Domain.csproj": {
+              "projectPath": "E:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\FileService.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
