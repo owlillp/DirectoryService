@@ -1,4 +1,5 @@
 ﻿using FileService.Application;
+using FileService.Infrastructure.Postgres;
 using FileService.Infrastructure.S3;
 using Framework.Logging;
 using Framework.Serializations;
@@ -22,7 +23,7 @@ public static class DependencyInjectionExtensions
 
             services.AddApplication();
             services.AddS3(configuration);
-            //services.AddInfrastructurePostgres(configuration);
+            services.AddInfrastructurePostgres(configuration);
 
             return services;
         }

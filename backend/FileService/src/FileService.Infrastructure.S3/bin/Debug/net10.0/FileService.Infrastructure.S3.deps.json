@@ -8,10 +8,30 @@
     ".NETCoreApp,Version=v10.0": {
       "FileService.Infrastructure.S3/1.0.0": {
         "dependencies": {
+          "AWSSDK.S3": "4.0.101.6",
           "FileService.Application": "1.0.0"
         },
         "runtime": {
           "FileService.Infrastructure.S3.dll": {}
+        }
+      },
+      "AWSSDK.Core/4.0.100.9": {
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.100.9"
+          }
+        }
+      },
+      "AWSSDK.S3/4.0.101.6": {
+        "dependencies": {
+          "AWSSDK.Core": "4.0.100.9"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.S3.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.101.6"
+          }
         }
       },
       "CSharpFunctionalExtensions/3.7.0": {
@@ -19,6 +39,14 @@
           "lib/net8.0/CSharpFunctionalExtensions.dll": {
             "assemblyVersion": "3.7.0.0",
             "fileVersion": "3.7.0.0"
+          }
+        }
+      },
+      "Dapper/2.1.72": {
+        "runtime": {
+          "lib/net10.0/Dapper.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.1.72.10375"
           }
         }
       },
@@ -375,6 +403,7 @@
       },
       "FileService.Application/1.0.0": {
         "dependencies": {
+          "Dapper": "2.1.72",
           "FileService.Contracts": "1.0.0",
           "FileService.Domain": "1.0.0",
           "Owlip.Core": "0.0.2",
@@ -414,12 +443,33 @@
       "serviceable": false,
       "sha512": ""
     },
+    "AWSSDK.Core/4.0.100.9": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OPYy41jZjXwxxcYRotaq24HDrwUnVtBB/mvg1IwB9D1ICXAtHqMa1sp2hpmlVJCZwjlcrPcTCJIejInvV1vp5g==",
+      "path": "awssdk.core/4.0.100.9",
+      "hashPath": "awssdk.core.4.0.100.9.nupkg.sha512"
+    },
+    "AWSSDK.S3/4.0.101.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-LsVXGc3lyJuUJe+EbGubkFeR0cVmtmj4YdMChqsqSIsjZtCMzPg2BXR7cJqcrIBGoHab3q3RS6K8T9QD2tbhhQ==",
+      "path": "awssdk.s3/4.0.101.6",
+      "hashPath": "awssdk.s3.4.0.101.6.nupkg.sha512"
+    },
     "CSharpFunctionalExtensions/3.7.0": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-eMZp8tc88O96eEFutiIskF3LE8lFY3fjbNRGfNa1ca0CD9sB8A00r5ltyYDih/7UFdJdVbhVq7tGeHI8xj6DlQ==",
       "path": "csharpfunctionalextensions/3.7.0",
       "hashPath": "csharpfunctionalextensions.3.7.0.nupkg.sha512"
+    },
+    "Dapper/2.1.72": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-ns4mGqQd9a/MhP8m6w556vVlZIa0/MfUu03zrxjZC/jlr1uVCsUac8bkdB+Fs98Llbd56rRSo1eZH5VVmeGZyw==",
+      "path": "dapper/2.1.72",
+      "hashPath": "dapper.2.1.72.nupkg.sha512"
     },
     "FluentValidation/12.1.1": {
       "type": "package",
