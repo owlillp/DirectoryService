@@ -30,7 +30,7 @@ public class S3ProviderTests(IntegrationTestsWebFactory factory) : FileServiceTe
         byte[] content = "test"u8.ToArray();
 
         await using var scope = Services.CreateAsyncScope();
-        var s3Provider = scope.ServiceProvider.GetRequiredService<IS3Provider>();
+        var s3Provider = scope.ServiceProvider.GetRequiredService<IFileStorageProvider>();
 
         using var httpClient = new HttpClient();
 

@@ -12,7 +12,7 @@ public static class DependencyInjectionExtensions
     {
         services.Configure<S3Options>(configuration.GetSection(nameof(S3Options)));
 
-        services.AddScoped<IS3Provider, S3Provider>();
+        services.AddScoped<IFileStorageProvider, S3Provider>();
 
         services.AddSingleton<IAmazonS3>(sp =>
         {

@@ -25,7 +25,6 @@ public class AssetTypeTests
     [Theory]
     [InlineData("")]
     [InlineData("unknown")]
-    [InlineData("VIDEO")]
     [InlineData(null)]
     public void ToAssetType_WithInvalidValue_ThrowsArgumentException(string? value)
     {

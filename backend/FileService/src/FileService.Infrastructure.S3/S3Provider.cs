@@ -13,7 +13,7 @@ namespace FileService.Infrastructure.S3;
 public class S3Provider(
     IAmazonS3 s3Client,
     ILogger<S3Provider> logger,
-    IOptions<S3Options> s3Options) : IS3Provider
+    IOptions<S3Options> s3Options) : IFileStorageProvider
 {
     private readonly S3Options _s3Options = s3Options.Value;
     private readonly SemaphoreSlim _requestsSemaphore = new (s3Options.Value.MaxConcurrentRequests);
@@ -26,6 +26,7 @@ public class S3Provider(
             {
                 BucketName = storageKey.Location,
                 Key = storageKey.Key,
+                ContentType = mediaData.ContentType.Value,
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.UtcNow.AddMinutes(_s3Options.UploadExpirationMinutes),
                 Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
@@ -72,15 +73,18 @@ public class S3Provider(
         }
     }
 
-    public async Task<Result<IDictionary<string, string>, Error>> GetAssetMetadataAsync(StorageKey storageKey, CancellationToken cancellationToken)
+    public async Task<Result<StorageObjectMetadata, Error>> GetAssetMetadataAsync(StorageKey storageKey, CancellationToken cancellationToken)
     {
         try
         {
             var request = new GetObjectMetadataRequest { BucketName = storageKey.Location, Key = storageKey.Key, };
             var response = await s3Client.GetObjectMetadataAsync(request, cancellationToken);
-            return response.Metadata
-                .Keys
-                .ToDictionary(key => key, key => response.Metadata[key]);
+            return new StorageObjectMetadata(
+                storageKey,
+                response.ContentLength,
+                response.ContentType,
+                response.ETag,
+                response.StorageClass);
         }
         catch (Exception ex)
         {
