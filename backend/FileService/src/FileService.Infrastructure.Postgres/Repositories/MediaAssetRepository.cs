@@ -38,11 +38,11 @@ public class MediaAssetRepository(
     {
         try
         {
-            var department = await dbContext.MediaAssets
+            var mediaAsset = await dbContext.MediaAssets
                 .FirstOrDefaultAsync(expression, cancellationToken);
 
-            return department != null
-                ? department
+            return mediaAsset != null
+                ? mediaAsset
                 : GeneralErrors.NotFound(nameof(MediaAsset));
         }
         catch (OperationCanceledException ex)
