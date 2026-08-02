@@ -1,6 +1,7 @@
 using Core.Abstractions.Database;
 using FileService.Application.Abstractions;
 using FileService.Infrastructure.Postgres.Database;
+using FileService.Infrastructure.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,6 +63,8 @@ public static class DependencyInjectionExtensions
 
     private static IServiceCollection AddRepositories(IServiceCollection services)
     {
+        services.AddScoped<IMediaAssetRepository, MediaAssetRepository>();
+
         return services;
     }
 }

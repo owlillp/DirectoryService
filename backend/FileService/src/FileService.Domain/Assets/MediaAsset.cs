@@ -38,14 +38,39 @@ public abstract class MediaAsset
         Owner = owner;
         Status = status;
         Key = key;
+        CreatedAt = DateTime.UtcNow;
     }
 
-    protected UnitResult<Error> SetStatus(MediaStatus status)
+    public static Result<MediaAsset, Error> CreateForUpload(MediaData mediaData, AssetType assetType, MediaOwner owner)
     {
-        if (status < Status)
-            return GeneralErrors.ValueIsInvalid(nameof(status));
+        var assetId = Guid.NewGuid();
 
-        Status = status;
+        switch (assetType)
+        {
+            case AssetType.VIDEO:
+                var videoResult = VideoAsset.CreateForUpload(assetId, mediaData, owner);
+                return videoResult.IsFailure ? videoResult.Error : videoResult.Value;
+            case AssetType.PREVIEW:
+                var previewResult = PreviewAsset.CreateForUpload(assetId, mediaData, owner);
+                return previewResult.IsFailure ? previewResult.Error : previewResult.Value;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(assetType), assetType, null);
+        }
+    }
+
+    protected UnitResult<Error> MarkUploaded()
+    {
+        if (Status != MediaStatus.UPLOADING)
+            return GeneralErrors.ValueIsInvalid("status");
+
+        Status = MediaStatus.UPLOADED;
+        UpdatedAt = DateTime.UtcNow;
         return UnitResult.Success<Error>();
+    }
+
+    protected void MarkFailed()
+    {
+        Status = MediaStatus.FAILED;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

@@ -9,7 +9,7 @@
     <PackageReference Include="Dapper" Version="2.1.72" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\Commands\" />
-    <Folder Include="Features\Queries\" />
+    <Folder Include="Features\Commands\CompleteUpload\" />
+    <Folder Include="Features\Queries\GetDownloadUrl\" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@ using Shared.SharedKernel.Failures;
 
 namespace FileService.Application.Abstractions;
 
-public interface IS3Provider
+public interface IFileStorageProvider
 {
     Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData, CancellationToken cancellationToken);
 
@@ -12,7 +12,7 @@ public interface IS3Provider
 
     Task<UnitResult<Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken);
 
-    Task<Result<IDictionary<string, string>, Error>> GetAssetMetadataAsync(StorageKey storageKey, CancellationToken cancellationToken);
+    Task<Result<StorageObjectMetadata, Error>> GetAssetMetadataAsync(StorageKey storageKey, CancellationToken cancellationToken);
 
     Task<UnitResult<Error>> InitializeBucketAsync(string bucketName, CancellationToken cancellationToken);
 
