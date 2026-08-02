@@ -60,19 +60,7 @@ public class S3BucketInitializationService(
 
             logger.LogInformation("Creating policy from bucket '{bucketName}'", bucketName);
 
-            string policy = $$"""
-                          {
-                              "Version": "2012-10-17",
-                              "Statement": [
-                                    {
-                                        "Effect": "Allow",
-                                        "Principal": {"AWS": ["*"]},
-                                        "Action": ["s3:GetObject"],
-                                        "Resource": ["arn:aws:s3:::{{bucketName}}/*"]
-                                    }
-                              ]
-                          }                          
-                          """;
+            string policy = S3Helper.BuildPublicReadPolicy(bucketName);
             var putPolicyRequest = new PutBucketPolicyRequest { BucketName = bucketName, Policy = policy };
             await s3Client.PutBucketPolicyAsync(putPolicyRequest, cancellationToken);
 

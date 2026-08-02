@@ -102,14 +102,14 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\FileService.Domain.csproj",
+      "projectUniqueName": "e:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\FileService.Domain.csproj",
       "projectName": "FileService.Domain",
-      "projectPath": "E:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\FileService.Domain.csproj",
+      "projectPath": "e:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\FileService.Domain.csproj",
       "packagesPath": "C:\\Users\\dgeor\\.nuget\\packages\\",
-      "outputPath": "E:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\obj\\",
+      "outputPath": "e:\\LifeTime\\Projects\\DirectoryService\\backend\\FileService\\src\\FileService.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "E:\\LifeTime\\Projects\\DirectoryService\\backend\\NuGet.Config",
+        "e:\\LifeTime\\Projects\\DirectoryService\\backend\\NuGet.Config",
         "C:\\Users\\dgeor\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
