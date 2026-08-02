@@ -1,5 +1,7 @@
 ﻿using Core.Abstractions;
+using FileService.Application.Features.Commands.CompleteUpload;
 using FileService.Application.Features.Commands.StartUpload;
+using FileService.Application.Features.Queries.GetFile;
 using FileService.Contracts.Files.Requests;
 using FileService.Contracts.Files.Responses;
 using Framework.EndpointResults;
@@ -21,19 +23,23 @@ public class FilesController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    /*[HttpPut("{fileId:guid}")]
+    [HttpPut("{fileId:guid}")]
     public async Task<EndpointResult<string>> GetFile(
         [FromRoute] Guid fileId,
+        [FromServices] IQueryHandler<string, GetFileQuery> handler,
         CancellationToken cancellationToken)
     {
-        return UnitResult.Success<Errors>();
+        var query = new GetFileQuery(fileId);
+        return await handler.Handle(query, cancellationToken);
     }
 
     [HttpPost("complete/{fileId:guid}")]
     public async Task<EndpointResult> CompleteUpload(
         [FromRoute] Guid fileId,
+        [FromServices] ICommandHandler<CompleteUploadCommand> handler,
         CancellationToken cancellationToken)
     {
-        return UnitResult.Success<Errors>();
-    }*/
+        var command = new CompleteUploadCommand(fileId);
+        return await handler.Handle(command, cancellationToken);
+    }
 }

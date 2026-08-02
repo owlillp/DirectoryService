@@ -1,6 +1,8 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
 using FileService.Domain.Assets;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
 
@@ -28,6 +30,29 @@ public class MediaAssetRepository(
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error while creating media asset");
+            return GeneralErrors.Failure();
+        }
+    }
+
+    public async Task<Result<MediaAsset, Error>> GetByAsync(Expression<Func<MediaAsset, bool>> expression, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var department = await dbContext.MediaAssets
+                .FirstOrDefaultAsync(expression, cancellationToken);
+
+            return department != null
+                ? department
+                : GeneralErrors.NotFound(nameof(MediaAsset));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting media asset");
+            return GeneralErrors.Canceled("Process get media asset");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting media asset");
             return GeneralErrors.Failure();
         }
     }

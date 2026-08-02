@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using Shared.SharedKernel.Failures;
 
 namespace FileService.Domain;
@@ -14,6 +15,7 @@ public sealed record StorageKey
     // EF Core
     private StorageKey() { }
 
+    [JsonConstructor]
     private StorageKey(string location, string? prefix, string key)
     {
         Location = location;

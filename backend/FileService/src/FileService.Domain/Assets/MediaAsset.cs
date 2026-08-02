@@ -58,7 +58,7 @@ public abstract class MediaAsset
         }
     }
 
-    protected UnitResult<Error> MarkUploaded()
+    public UnitResult<Error> MarkUploaded()
     {
         if (Status != MediaStatus.UPLOADING)
             return GeneralErrors.ValueIsInvalid("status");
@@ -68,7 +68,7 @@ public abstract class MediaAsset
         return UnitResult.Success<Error>();
     }
 
-    protected void MarkFailed()
+    public void MarkFailed()
     {
         Status = MediaStatus.FAILED;
         UpdatedAt = DateTime.UtcNow;

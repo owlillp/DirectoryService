@@ -13,6 +13,11 @@ public static class AssetTypeExtensions
     {
         public AssetType ToAssetType()
         {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentException($"Invalid asset type: {value}");
+            }
+
             return value.ToLowerInvariant() switch
             {
                 "video" => AssetType.VIDEO,
