@@ -56,6 +56,7 @@ public class S3ProviderTests(IntegrationTestsWebFactory factory) : FileServiceTe
         // generate download url and download the file
         var downloadUrlResult = await s3Provider.GenerateDownloadUrlAsync(storageKey);
         Assert.True(downloadUrlResult.IsSuccess);
+        Assert.Equal(System.Net.HttpStatusCode.OK, uploadResponse.StatusCode);
         string downloadUrl = downloadUrlResult.Value;
 
         var downloadResponse = await httpClient.GetAsync(downloadUrl, cancellationToken);

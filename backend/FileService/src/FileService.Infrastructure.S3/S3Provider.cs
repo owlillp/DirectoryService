@@ -58,13 +58,13 @@ public class S3Provider(
         }
     }
 
-    public async Task<Result<string, Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken)
+    public async Task<UnitResult<Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken)
     {
         try
         {
             var request = new DeleteObjectRequest { BucketName = storageKey.Location, Key = storageKey.Key, };
-            var response = await s3Client.DeleteObjectAsync(request, cancellationToken);
-            return response.DeleteMarker;
+            await s3Client.DeleteObjectAsync(request, cancellationToken);
+            return UnitResult.Success<Error>();
         }
         catch (Exception ex)
         {

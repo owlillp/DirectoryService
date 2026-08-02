@@ -1,5 +1,4 @@
-﻿using CSharpFunctionalExtensions;
-using Shared.SharedKernel.Failures;
+﻿using Shared.SharedKernel.Failures;
 
 namespace FileService.Domain;
 
@@ -8,7 +7,7 @@ public static class FileErrors
     public static Error BucketNotFound(string? bucketName = null)
     {
         string name = bucketName ?? string.Empty;
-        return Error.NotFound("no.such.bucket", $"Bucket {name} not found");
+        return Error.NotFound("bucket.not.found", $"Bucket {name} not found");
     }
 
     public static Error UploadNotFound(string? uploadId = null)
@@ -20,7 +19,7 @@ public static class FileErrors
     public static Error ObjectNotFound(string? objectKey = null)
     {
         string key = objectKey is null ? string.Empty : $"with key {objectKey} ";
-        return Error.NotFound("no.such.bucket", $"Object {key}not found");
+        return Error.NotFound("object.not.found", $"Object {key}not found");
     }
 
     public static Error Forbidden()
@@ -38,7 +37,7 @@ public static class FileErrors
     public static Error BucketAlreadyExist(string? bucketName = null)
     {
         string name = bucketName ?? string.Empty;
-        return Error.NotFound("bucket.already.exist", $"Bucket {name} not found");
+        return Error.NotFound("bucket.already.exist", $"Bucket {name} already exists");
     }
 
     public static Error InternalServerError()

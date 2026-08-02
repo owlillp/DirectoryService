@@ -10,7 +10,7 @@ public interface IS3Provider
 
     Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
 
-    Task<Result<string, Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken);
+    Task<UnitResult<Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken);
 
     Task<Result<IDictionary<string, string>, Error>> GetAssetMetadataAsync(StorageKey storageKey, CancellationToken cancellationToken);
 
