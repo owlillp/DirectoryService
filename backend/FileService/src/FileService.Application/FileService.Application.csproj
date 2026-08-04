@@ -9,4 +9,9 @@
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Features\Commands\AbortMultipartUpload\" />
+    <Folder Include="Features\Commands\CompleteMultipartUpload\" />
+    <Folder Include="Features\Commands\StartMultipartUpload\" />
+  </ItemGroup>
 </Project>

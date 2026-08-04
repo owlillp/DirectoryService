@@ -39,7 +39,7 @@ public class StartUploadHandler(
             return addResult.Error.ToErrors();
         }
 
-        var generateUrlResult = await fileStorageProvider.GenerateUploadUrlAsync(mediaAsset.Key, mediaData, cancellationToken);
+        var generateUrlResult = await fileStorageProvider.GenerateUploadUrlAsync(mediaAsset.Key, mediaData);
         if (generateUrlResult.IsFailure)
         {
             return generateUrlResult.Error.ToErrors();
