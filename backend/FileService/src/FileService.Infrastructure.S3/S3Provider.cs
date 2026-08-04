@@ -3,6 +3,7 @@ using Amazon.S3.Model;
 using Amazon.S3.Util;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
+using FileService.Application.Models;
 using FileService.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,6 +36,7 @@ public class S3Provider(
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error during generate upload url from file with key: {key}", storageKey.Key);
             return S3ErrorMapper.ToError(ex);
         }
     }
@@ -55,11 +57,48 @@ public class S3Provider(
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error during generate download url from file with key: {key}", storageKey.Key);
             return S3ErrorMapper.ToError(ex);
         }
     }
 
-    public async Task<UnitResult<Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(IEnumerable<StorageKey> storageKeys, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var tasks = storageKeys.Select(async storageKey =>
+            {
+                await _requestsSemaphore.WaitAsync(cancellationToken);
+
+                try
+                {
+                    var request = new GetPreSignedUrlRequest
+                    {
+                        BucketName = storageKey.Location,
+                        Key = storageKey.Key,
+                        Verb = HttpVerb.GET,
+                        Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
+                        Expires = DateTime.UtcNow.AddHours(_s3Options.DownloadExpirationHours),
+                    };
+                    string? url = await s3Client.GetPreSignedURLAsync(request);
+                    return new MediaUrl(storageKey, url);
+                }
+                finally
+                {
+                    _requestsSemaphore.Release();
+                }
+            });
+
+            return await Task.WhenAll(tasks);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error during generate download urls");
+            return S3ErrorMapper.ToError(ex);
+        }
+    }
+
+    public async Task<UnitResult<Error>> DeleteFileAsync(StorageKey storageKey, CancellationToken cancellationToken)
     {
         try
         {
@@ -69,6 +108,7 @@ public class S3Provider(
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error during delete file with key: {key}", storageKey.Key);
             return S3ErrorMapper.ToError(ex);
         }
     }
@@ -88,6 +128,7 @@ public class S3Provider(
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Error during get file metadata with key: {key}", storageKey.Key);
             return S3ErrorMapper.ToError(ex);
         }
     }
@@ -113,7 +154,7 @@ public class S3Provider(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error during bucket initialization");
+            logger.LogError(ex, "Error during bucket initialization with name: {bucketName}", bucketName);
             return S3ErrorMapper.ToError(ex);
         }
     }

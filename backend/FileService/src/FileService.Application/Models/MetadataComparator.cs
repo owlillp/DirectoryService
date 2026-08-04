@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using FileService.Domain;
 using Shared.SharedKernel.Failures;
 
-namespace FileService.Application.Common;
+namespace FileService.Application.Models;
 
 public static class MetadataComparator
 {
