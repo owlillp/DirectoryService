@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using FileService.Application.Models;
 using FileService.Domain;
 using Shared.SharedKernel.Failures;
 
@@ -10,7 +11,9 @@ public interface IFileStorageProvider
 
     Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
 
-    Task<UnitResult<Error>> DeleteAssetAsync(StorageKey storageKey, CancellationToken cancellationToken);
+    Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(IEnumerable<StorageKey> storageKeys, CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> DeleteFileAsync(StorageKey storageKey, CancellationToken cancellationToken);
 
     Task<Result<StorageObjectMetadata, Error>> GetAssetMetadataAsync(StorageKey storageKey, CancellationToken cancellationToken);
 

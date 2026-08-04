@@ -3,7 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
-using FileService.Application.Common;
+using FileService.Application.Models;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
@@ -25,14 +25,6 @@ public class CompleteUploadHandler(
             return validationResult.ToErrors();
         }
 
-        var transactionScopeResult = await transactionManager.BeginTransactionAsync(cancellationToken);
-        if (transactionScopeResult.IsFailure)
-        {
-            return transactionScopeResult.Error.ToErrors();
-        }
-
-        using var transactionScope = transactionScopeResult.Value;
-
         var getMediaAssetResult = await repository.GetByAsync(ma => ma.Id == command.FileId, cancellationToken);
         if (getMediaAssetResult.IsFailure)
         {
@@ -49,11 +41,8 @@ public class CompleteUploadHandler(
             var saveFailedChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
             if (saveFailedChangesResult.IsFailure)
             {
-                transactionScope.Rollback();
                 return saveFailedChangesResult.Error.ToErrors();
             }
-
-            transactionScope.Commit();
 
             return getObjectMetadataResult.Error.ToErrors();
         }
@@ -62,16 +51,18 @@ public class CompleteUploadHandler(
         var compareMetaResult = MetadataComparator.Compare(mediaAsset.MediaData, objectMetadata);
         if (compareMetaResult.IsFailure)
         {
+            logger.LogInformation(
+                "Failed upload file: {fileId} with key: {key}, asset mark failed",
+                mediaAsset.Id,
+                mediaAsset.Key);
+
             mediaAsset.MarkFailed();
 
             var saveFailedChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
             if (saveFailedChangesResult.IsFailure)
             {
-                transactionScope.Rollback();
                 return saveFailedChangesResult.Error.ToErrors();
             }
-
-            transactionScope.Commit();
 
             return compareMetaResult.Error;
         }
@@ -79,21 +70,13 @@ public class CompleteUploadHandler(
         var setUploaded = mediaAsset.MarkUploaded();
         if (setUploaded.IsFailure)
         {
-            transactionScope.Rollback();
             return setUploaded.Error.ToErrors();
         }
 
         var saveChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
         if (saveChangesResult.IsFailure)
         {
-            transactionScope.Rollback();
             return saveChangesResult.Error.ToErrors();
-        }
-
-        var commitResult = transactionScope.Commit();
-        if (commitResult.IsFailure)
-        {
-            return commitResult.Error.ToErrors();
         }
 
         logger.LogInformation(

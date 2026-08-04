@@ -16,7 +16,7 @@ public class MediaDataTests
         Assert.True(result.IsSuccess);
         Assert.Equal(1024, result.Value.Size);
         Assert.Equal(4, result.Value.ExpectedChunksCount);
-        Assert.Equal("video.mp4", result.Value.FileName.Value);
+        Assert.Equal("video.mp4", result.Value.FileName.Name);
         Assert.Equal("video/mp4", result.Value.ContentType.Value);
     }
 

@@ -6,15 +6,17 @@ namespace FileService.Domain;
 public sealed record FileName
 {
     public string Value { get; } = null!;
+    public string Name { get; } = null!;
     public string Extension { get; } = null!;
 
     // EF Core
     private FileName() { }
 
-    private FileName(string value, string extension)
+    private FileName(string name, string extension)
     {
-        Value = value;
+        Name = name;
         Extension = extension;
+        Value = $"{name}.{extension}";
     }
 
     public static Result<FileName, Error> Create(string fileName)

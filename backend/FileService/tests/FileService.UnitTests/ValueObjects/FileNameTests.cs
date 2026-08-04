@@ -10,7 +10,7 @@ public class FileNameTests
         var result = FileName.Create("movie.mp4");
 
         Assert.True(result.IsSuccess);
-        Assert.Equal("movie.mp4", result.Value.Value);
+        Assert.Equal("movie.mp4", result.Value.Name);
         Assert.Equal("mp4", result.Value.Extension);
     }
 
@@ -23,7 +23,7 @@ public class FileNameTests
         var result = FileName.Create(fileName);
 
         Assert.True(result.IsSuccess);
-        Assert.Equal(fileName, result.Value.Value);
+        Assert.Equal(fileName, result.Value.Name);
         Assert.Equal(fileName.Split('.').Last().ToLowerInvariant(), result.Value.Extension);
     }
 

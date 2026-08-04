@@ -1,7 +1,11 @@
 ﻿using Core.Abstractions;
+using FileService.Application.Features.Commands.AbortUpload;
 using FileService.Application.Features.Commands.CompleteUpload;
+using FileService.Application.Features.Commands.Delete;
 using FileService.Application.Features.Commands.StartUpload;
-using FileService.Application.Features.Queries.GetFile;
+using FileService.Application.Features.Queries.GetMediaAsset;
+using FileService.Application.Features.Queries.GetMediaAssetsForEntity;
+using FileService.Contracts.Files.Dtos;
 using FileService.Contracts.Files.Requests;
 using FileService.Contracts.Files.Responses;
 using Framework.EndpointResults;
@@ -23,17 +27,7 @@ public class FilesController : ControllerBase
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpPut("{fileId:guid}")]
-    public async Task<EndpointResult<string>> GetFile(
-        [FromRoute] Guid fileId,
-        [FromServices] IQueryHandler<string, GetFileQuery> handler,
-        CancellationToken cancellationToken)
-    {
-        var query = new GetFileQuery(fileId);
-        return await handler.Handle(query, cancellationToken);
-    }
-
-    [HttpPost("complete/{fileId:guid}")]
+    [HttpPost("{fileId:guid}/complete")]
     public async Task<EndpointResult> CompleteUpload(
         [FromRoute] Guid fileId,
         [FromServices] ICommandHandler<CompleteUploadCommand> handler,
@@ -41,5 +35,45 @@ public class FilesController : ControllerBase
     {
         var command = new CompleteUploadCommand(fileId);
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPost("{fileId:guid}/abort")]
+    public async Task<EndpointResult> AbortUpload(
+        [FromRoute] Guid fileId,
+        [FromServices] ICommandHandler<AbortUploadCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new AbortUploadCommand(fileId);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpDelete("{fileId:guid}")]
+    public async Task<EndpointResult> Delete(
+        [FromRoute] Guid fileId,
+        [FromServices] ICommandHandler<DeleteMediaAssetCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new DeleteMediaAssetCommand(fileId);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpGet("{fileId:guid}")]
+    public async Task<EndpointResult<GetMediaAssetDto>> GetMediaAsset(
+        [FromRoute] Guid fileId,
+        [FromServices] IQueryHandler<GetMediaAssetDto, GetMediaAssetQuery> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetMediaAssetQuery(fileId);
+        return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet("entity")]
+    public async Task<EndpointResult<GetFilesForEntityResponse>> GetMediaAssetsForEntity(
+        [FromQuery] GetFilesForEntityRequest request,
+        [FromServices] IQueryHandler<GetFilesForEntityResponse, GetMediaAssetsForEntityQuery> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetMediaAssetsForEntityQuery(request);
+        return await handler.Handle(query, cancellationToken);
     }
 }

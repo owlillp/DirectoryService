@@ -73,4 +73,10 @@ public abstract class MediaAsset
         Status = MediaStatus.FAILED;
         UpdatedAt = DateTime.UtcNow;
     }
+
+    public void MarkDeleted()
+    {
+        Status = MediaStatus.DELETED;
+        UpdatedAt = DateTime.UtcNow;
+    }
 }

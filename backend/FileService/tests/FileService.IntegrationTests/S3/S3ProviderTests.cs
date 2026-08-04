@@ -65,7 +65,7 @@ public class S3ProviderTests(IntegrationTestsWebFactory factory) : FileServiceTe
         Assert.Equal(content, downloaded);
 
         // delete object
-        var deleteResult = await s3Provider.DeleteAssetAsync(storageKey, cancellationToken);
+        var deleteResult = await s3Provider.DeleteFileAsync(storageKey, cancellationToken);
         Assert.True(deleteResult.IsSuccess);
     }
 }

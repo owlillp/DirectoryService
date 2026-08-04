@@ -2,6 +2,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using FileService.Application.Abstractions;
+using FileService.Contracts.Files.Dtos;
 using FileService.Contracts.Files.Requests;
 using FileService.Contracts.Files.Responses;
 using FileService.Domain;
@@ -50,19 +51,21 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
         var uploadSucceeded = await UploadContentAsync(startResult.Value.UploadUrl, VideoContent, "video/mp4", cancellationToken);
         Assert.True(uploadSucceeded);
 
-        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/complete/{fileId}", new { }, cancellationToken);
+        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/{fileId}/complete", new { }, cancellationToken);
         var completeResult = await completeResponse.HandleResponseAsync(cancellationToken);
 
         Assert.True(completeResult.IsSuccess);
 
-        var getFileResponse = await AppHttpClient.PutAsJsonAsync($"/files/{fileId}", new { }, cancellationToken);
-        var getFileResult = await getFileResponse.HandleResponseAsync<string>(cancellationToken);
+        var getFileResponse = await AppHttpClient.GetAsync($"/files/{fileId}", cancellationToken);
+        var getFileResult = await getFileResponse.HandleResponseAsync<GetMediaAssetDto>(cancellationToken);
 
         Assert.True(getFileResult.IsSuccess);
-        Assert.False(string.IsNullOrWhiteSpace(getFileResult.Value));
+        Assert.Equal(fileId, getFileResult.Value.Id);
+        Assert.Equal(MediaStatus.UPLOADED.ToString().ToLowerInvariant(), getFileResult.Value.Status);
+        Assert.False(string.IsNullOrWhiteSpace(getFileResult.Value.Url));
 
         // downloaded content should match uploaded one
-        var downloaded = await DownloadContentAsync(getFileResult.Value, cancellationToken);
+        var downloaded = await DownloadContentAsync(getFileResult.Value.Url, cancellationToken);
         Assert.Equal(VideoContent, downloaded);
 
         await ExecuteInDb(async dbContext =>
@@ -101,18 +104,20 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
         var uploadSucceeded = await UploadContentAsync(startResult.Value.UploadUrl, PreviewContent, "image/png", cancellationToken);
         Assert.True(uploadSucceeded);
 
-        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/complete/{fileId}", new { }, cancellationToken);
+        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/{fileId}/complete", new { }, cancellationToken);
         var completeResult = await completeResponse.HandleResponseAsync(cancellationToken);
 
         Assert.True(completeResult.IsSuccess);
 
-        var getFileResponse = await AppHttpClient.PutAsJsonAsync($"/files/{fileId}", new { }, cancellationToken);
-        var getFileResult = await getFileResponse.HandleResponseAsync<string>(cancellationToken);
+        var getFileResponse = await AppHttpClient.GetAsync($"/files/{fileId}", cancellationToken);
+        var getFileResult = await getFileResponse.HandleResponseAsync<GetMediaAssetDto>(cancellationToken);
 
         Assert.True(getFileResult.IsSuccess);
-        Assert.False(string.IsNullOrWhiteSpace(getFileResult.Value));
+        Assert.Equal(fileId, getFileResult.Value.Id);
+        Assert.Equal(MediaStatus.UPLOADED.ToString().ToLowerInvariant(), getFileResult.Value.Status);
+        Assert.False(string.IsNullOrWhiteSpace(getFileResult.Value.Url));
 
-        var downloaded = await DownloadContentAsync(getFileResult.Value, cancellationToken);
+        var downloaded = await DownloadContentAsync(getFileResult.Value.Url, cancellationToken);
         Assert.Equal(PreviewContent, downloaded);
 
         await ExecuteInDb(async dbContext =>
@@ -203,7 +208,7 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
     }
 
     [Fact]
-    public async Task GetFile_before_complete_should_fail()
+    public async Task GetFile_before_complete_returns_metadata_without_url()
     {
         // arrange
         var cancellationToken = new CancellationTokenSource().Token;
@@ -211,13 +216,14 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
         Guid fileId = await StartUploadOnlyAsync(cancellationToken);
 
         // act
-        var getFileResponse = await AppHttpClient.PutAsJsonAsync($"/files/{fileId}", new { }, cancellationToken);
-        var getFileResult = await getFileResponse.HandleResponseAsync<string>(cancellationToken);
+        var getFileResponse = await AppHttpClient.GetAsync($"/files/{fileId}", cancellationToken);
+        var getFileResult = await getFileResponse.HandleResponseAsync<GetMediaAssetDto>(cancellationToken);
 
         // assert
-        Assert.True(getFileResult.IsFailure);
-        Assert.NotNull(getFileResult.Error);
-        Assert.Contains(getFileResult.Error, e => e.Type == ErrorType.NOT_FOUND);
+        Assert.True(getFileResult.IsSuccess);
+        Assert.Equal(fileId, getFileResult.Value.Id);
+        Assert.Equal(MediaStatus.UPLOADING.ToString().ToLowerInvariant(), getFileResult.Value.Status);
+        Assert.Null(getFileResult.Value.Url);
 
         await ExecuteInDb(async dbContext =>
         {
@@ -238,7 +244,7 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
         Guid fileId = await StartUploadOnlyAsync(cancellationToken);
 
         // act (no content uploaded to the presigned url)
-        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/complete/{fileId}", new { }, cancellationToken);
+        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/{fileId}/complete", new { }, cancellationToken);
         var completeResult = await completeResponse.HandleResponseAsync(cancellationToken);
 
         // assert
@@ -261,7 +267,7 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
         var fileId = Guid.NewGuid();
 
         // act
-        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/complete/{fileId}", new { }, cancellationToken);
+        var completeResponse = await AppHttpClient.PostAsJsonAsync($"/files/{fileId}/complete", new { }, cancellationToken);
         var completeResult = await completeResponse.HandleResponseAsync(cancellationToken);
 
         // assert
@@ -279,8 +285,8 @@ public class FilesUploadFlowTests(IntegrationTestsWebFactory factory) : FileServ
         var fileId = Guid.NewGuid();
 
         // act
-        var getFileResponse = await AppHttpClient.PutAsJsonAsync($"/files/{fileId}", new { }, cancellationToken);
-        var getFileResult = await getFileResponse.HandleResponseAsync<string>(cancellationToken);
+        var getFileResponse = await AppHttpClient.GetAsync($"/files/{fileId}", cancellationToken);
+        var getFileResult = await getFileResponse.HandleResponseAsync<GetMediaAssetDto>(cancellationToken);
 
         // assert
         Assert.True(getFileResult.IsFailure);

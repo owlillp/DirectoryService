@@ -1,4 +1,5 @@
 ﻿using FileService.Application.Abstractions;
+using FileService.Domain;
 using FileService.Domain.Assets;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,9 +11,10 @@ public class FileServiceDbContext(DbContextOptions<FileServiceDbContext> options
 
     public IQueryable<MediaAsset> MediaAssetsRead
         => Set<MediaAsset>()
+            .Where(ma => ma.Status != MediaStatus.DELETED)
             .AsQueryable()
             .AsNoTracking();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder) 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
         => modelBuilder.ApplyConfigurationsFromAssembly(typeof(FileServiceDbContext).Assembly);
 }
