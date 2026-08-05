@@ -39,7 +39,7 @@ public class S3ProviderTests(IntegrationTestsWebFactory factory) : FileServiceTe
         Assert.True(initResult.IsSuccess);
 
         // generate upload url
-        var uploadUrlResult = await s3Provider.GenerateUploadUrlAsync(storageKey, mediaDataResult.Value, cancellationToken);
+        var uploadUrlResult = await s3Provider.GenerateUploadUrlAsync(storageKey, mediaDataResult.Value);
         Assert.True(uploadUrlResult.IsSuccess);
         string uploadUrl = uploadUrlResult.Value;
 

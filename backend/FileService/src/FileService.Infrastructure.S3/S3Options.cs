@@ -9,5 +9,7 @@ public record S3Options
     public int DownloadExpirationHours { get; init; } = 24;
     public int UploadExpirationMinutes { get; init; } = 60;
     public int MaxConcurrentRequests { get; init; } = 20;
+    public int RecommendedChunkSizeBytes { get; init; } = 10 * 1024 * 1024;
+    public int MaxChunks { get; init; } = 10000;
     public IReadOnlyList<string> RequiredBuckets { get; init; } = [];
 }

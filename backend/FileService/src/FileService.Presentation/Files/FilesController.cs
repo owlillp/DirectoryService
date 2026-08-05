@@ -1,7 +1,10 @@
 ﻿using Core.Abstractions;
+using FileService.Application.Features.Commands.AbortMultipartUpload;
 using FileService.Application.Features.Commands.AbortUpload;
+using FileService.Application.Features.Commands.CompleteMultipartUpload;
 using FileService.Application.Features.Commands.CompleteUpload;
 using FileService.Application.Features.Commands.Delete;
+using FileService.Application.Features.Commands.StartMultipartUpload;
 using FileService.Application.Features.Commands.StartUpload;
 using FileService.Application.Features.Queries.GetMediaAsset;
 using FileService.Application.Features.Queries.GetMediaAssetsForEntity;
@@ -44,6 +47,36 @@ public class FilesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = new AbortUploadCommand(fileId);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPost("multipart/start")]
+    public async Task<EndpointResult<StartMultipartUploadResponse>> StartMultipartUpload(
+        [FromBody] StartMultipartUploadRequest request,
+        [FromServices] ICommandHandler<StartMultipartUploadResponse, StartMultipartUploadCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new StartMultipartUploadCommand(request);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPost("multipart/complete")]
+    public async Task<EndpointResult<Guid>> CompleteMultipartUpload(
+        [FromBody] CompleteMultipartUploadRequest request,
+        [FromServices] ICommandHandler<Guid, CompleteMultipartUploadCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new CompleteMultipartUploadCommand(request);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPost("multipart/abort")]
+    public async Task<EndpointResult> AbortMultipartUpload(
+        [FromBody] AbortMultipartUploadRequest request,
+        [FromServices] ICommandHandler<AbortMultipartUploadCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new AbortMultipartUploadCommand(request);
         return await handler.Handle(command, cancellationToken);
     }
 

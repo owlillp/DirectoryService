@@ -4,6 +4,8 @@ using Amazon.S3.Util;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
 using FileService.Application.Models;
+using FileService.Contracts;
+using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,7 +21,7 @@ public class S3Provider(
     private readonly S3Options _s3Options = s3Options.Value;
     private readonly SemaphoreSlim _requestsSemaphore = new (s3Options.Value.MaxConcurrentRequests);
 
-    public async Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData, CancellationToken cancellationToken)
+    public async Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData)
     {
         try
         {
@@ -159,9 +161,8 @@ public class S3Provider(
         }
     }
 
-    /*public async Task<Result<string, Error>> StartMultipartUploadAsync(
-        string bucketName,
-        string key,
+    public async Task<Result<string, Error>> StartMultipartUploadAsync(
+        StorageKey storageKey,
         string contentType,
         CancellationToken cancellationToken)
     {
@@ -169,7 +170,7 @@ public class S3Provider(
         {
             var request = new InitiateMultipartUploadRequest
             {
-                BucketName = bucketName, Key = key, ContentType = contentType,
+                BucketName = storageKey.Location, Key = storageKey.Key, ContentType = contentType,
             };
             var response = await s3Client.InitiateMultipartUploadAsync(request, cancellationToken);
             return response.UploadId;
@@ -181,9 +182,32 @@ public class S3Provider(
         }
     }
 
-    public async Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunksUploadUrlsAsync(
-        string bucketName,
-        string key,
+    public async Task<UnitResult<Error>> AbortMultipartUploadAsync(
+        StorageKey storageKey,
+        string uploadId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new AbortMultipartUploadRequest
+            {
+                BucketName = storageKey.Location,
+                Key = storageKey.Key,
+                UploadId = uploadId,
+            };
+
+            await s3Client.AbortMultipartUploadAsync(request, cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error during abort upload url");
+            return S3ErrorMapper.ToError(ex);
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
+        StorageKey storageKey,
         string uploadId,
         int totalChunks,
         CancellationToken cancellationToken)
@@ -197,15 +221,16 @@ public class S3Provider(
                 {
                     var request = new GetPreSignedUrlRequest
                     {
-                        BucketName = bucketName,
-                        Key = key,
+                        BucketName = storageKey.Location,
+                        Key = storageKey.Key,
                         Verb = HttpVerb.PUT,
                         UploadId = uploadId,
                         PartNumber = partNumber,
                         Expires = DateTime.UtcNow.AddMinutes(_s3Options.UploadExpirationMinutes),
                         Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
                     };
-                    return await s3Client.GetPreSignedURLAsync(request);
+                    string? url = await s3Client.GetPreSignedURLAsync(request);
+                    return new ChunkUploadUrl(partNumber, url);
                 }
                 finally
                 {
@@ -213,7 +238,7 @@ public class S3Provider(
                 }
             });
 
-            string[] results = await Task.WhenAll(tasks);
+            ChunkUploadUrl[] results = await Task.WhenAll(tasks);
             return results;
         }
         catch (Exception ex)
@@ -224,8 +249,7 @@ public class S3Provider(
     }
 
     public async Task<Result<string, Error>> CompleteMultipartUploadAsync(
-        string bucketName,
-        string key,
+        StorageKey storageKey,
         string uploadId,
         IReadOnlyList<PartETagDto> partETags,
         CancellationToken cancellationToken)
@@ -234,10 +258,15 @@ public class S3Provider(
         {
             var request = new CompleteMultipartUploadRequest
             {
-                BucketName = bucketName,
-                Key = key,
+                BucketName = storageKey.Location,
+                Key = storageKey.Key,
                 UploadId = uploadId,
-                PartETags = partETags.Select(p => new PartETag { ETag = p.ETag, PartNumber = p.PartNumber }).ToList(),
+                PartETags = partETags.Select(p => new PartETag
+                    {
+                        ETag = p.ETag,
+                        PartNumber = p.PartNumber,
+                    })
+                    .ToList(),
             };
             var response = await s3Client.CompleteMultipartUploadAsync(request, cancellationToken);
             return response.Key;
@@ -247,5 +276,5 @@ public class S3Provider(
             logger.LogError(ex, "Error during complete multipart upload");
             return S3ErrorMapper.ToError(ex);
         }
-    }*/
+    }
 }

@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.Models;
+using FileService.Contracts;
+using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using Shared.SharedKernel.Failures;
 
@@ -7,7 +9,7 @@ namespace FileService.Application.Abstractions;
 
 public interface IFileStorageProvider
 {
-    Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData, CancellationToken cancellationToken);
+    Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData);
 
     Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
 
@@ -19,23 +21,19 @@ public interface IFileStorageProvider
 
     Task<UnitResult<Error>> InitializeBucketAsync(string bucketName, CancellationToken cancellationToken);
 
-    /*Task<Result<string, Error>> StartMultipartUploadAsync(
-        string bucketName,
-        string key,
-        string contentType,
-        CancellationToken cancellationToken);
+    Task<Result<string, Error>> StartMultipartUploadAsync(StorageKey storageKey, string contentType, CancellationToken cancellationToken);
 
-    Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunksUploadUrlsAsync(
-        string bucketName,
-        string key,
+    Task<UnitResult<Error>> AbortMultipartUploadAsync(StorageKey key, string uploadId, CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
+        StorageKey storageKey,
         string uploadId,
         int totalChunks,
         CancellationToken cancellationToken);
 
     Task<Result<string, Error>> CompleteMultipartUploadAsync(
-        string bucketName,
-        string key,
+        StorageKey storageKey,
         string uploadId,
         IReadOnlyList<PartETagDto> partETags,
-        CancellationToken cancellationToken);*/
+        CancellationToken cancellationToken);
 }
