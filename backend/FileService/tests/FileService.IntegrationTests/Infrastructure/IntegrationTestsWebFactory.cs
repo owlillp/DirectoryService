@@ -102,6 +102,10 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
                 DownloadExpirationHours = 24,
                 UploadExpirationMinutes = 60,
                 MaxConcurrentRequests = 20,
+                // S3 (and MinIO) require every multipart part (except the last) to be
+                // at least 5MB. Keep the recommended chunk size above that limit so
+                // a few MB-sized file splits into valid uploadable parts.
+                RecommendedChunkSizeBytes = 5 * 1024 * 1024,
                 RequiredBuckets = ["videos"],
             }));
 
@@ -129,3 +133,4 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
             });
     }
 }
+

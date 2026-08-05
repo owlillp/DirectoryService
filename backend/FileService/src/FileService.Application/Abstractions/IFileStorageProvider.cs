@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.Models;
 using FileService.Contracts;
+using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using Shared.SharedKernel.Failures;
 
@@ -24,7 +25,7 @@ public interface IFileStorageProvider
 
     Task<UnitResult<Error>> AbortMultipartUploadAsync(StorageKey key, string uploadId, CancellationToken cancellationToken);
 
-    Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunksUploadUrlsAsync(
+    Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
         StorageKey storageKey,
         string uploadId,
         int totalChunks,

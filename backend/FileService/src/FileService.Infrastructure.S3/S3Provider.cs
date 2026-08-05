@@ -5,6 +5,7 @@ using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
 using FileService.Application.Models;
 using FileService.Contracts;
+using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -205,7 +206,7 @@ public class S3Provider(
         }
     }
 
-    public async Task<Result<IReadOnlyList<string>, Error>> GenerateAllChunksUploadUrlsAsync(
+    public async Task<Result<IReadOnlyList<ChunkUploadUrl>, Error>> GenerateAllChunksUploadUrlsAsync(
         StorageKey storageKey,
         string uploadId,
         int totalChunks,
@@ -228,7 +229,8 @@ public class S3Provider(
                         Expires = DateTime.UtcNow.AddMinutes(_s3Options.UploadExpirationMinutes),
                         Protocol = _s3Options.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
                     };
-                    return await s3Client.GetPreSignedURLAsync(request);
+                    string? url = await s3Client.GetPreSignedURLAsync(request);
+                    return new ChunkUploadUrl(partNumber, url);
                 }
                 finally
                 {
@@ -236,7 +238,7 @@ public class S3Provider(
                 }
             });
 
-            string[] results = await Task.WhenAll(tasks);
+            ChunkUploadUrl[] results = await Task.WhenAll(tasks);
             return results;
         }
         catch (Exception ex)
