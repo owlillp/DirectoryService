@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Owlip.FileService.Contracts</PackageId>
-    <Version>0.0.2</Version>
+    <Version>0.0.3</Version>
     <Authors>owlillp</Authors>
     <Company>owlillp</Company>
     <PackageDescription>Communication and contracts for FileService</PackageDescription>
@@ -9,6 +9,7 @@
   
   <ItemGroup>
     <PackageReference Include="CSharpFunctionalExtensions" Version="3.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.8.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />

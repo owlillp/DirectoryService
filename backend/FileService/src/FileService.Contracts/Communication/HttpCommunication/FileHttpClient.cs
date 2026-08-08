@@ -1,6 +1,7 @@
 using CSharpFunctionalExtensions;
 using FileService.Contracts.Files.Dtos;
 using FileService.Contracts.Files.Requests;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
 using Shared.SharedKernel.HttpCommunications;
@@ -15,7 +16,14 @@ internal sealed class FileHttpClient(
     {
         try
         {
-            var response = await httpClient.GetAsync($"files/entity?Context={request.Context}&EntityId={request.EntityId}", cancellationToken);
+            string uri = QueryHelpers.AddQueryString(
+                "files/entity",
+                new Dictionary<string, string?>
+                {
+                    [nameof(GetFilesForEntityRequest.Context)] = request.Context,
+                    [nameof(GetFilesForEntityRequest.EntityId)] = request.EntityId.ToString(),
+                });
+            var response = await httpClient.GetAsync(uri, cancellationToken);
             return await response.HandleResponseAsync<GetMediaAssetDto>(cancellationToken);
         }
         catch (Exception ex)
