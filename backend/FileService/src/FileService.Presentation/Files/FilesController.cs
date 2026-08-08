@@ -6,6 +6,7 @@ using FileService.Application.Features.Commands.CompleteUpload;
 using FileService.Application.Features.Commands.Delete;
 using FileService.Application.Features.Commands.StartMultipartUpload;
 using FileService.Application.Features.Commands.StartUpload;
+using FileService.Application.Features.Queries.CheckFileExist;
 using FileService.Application.Features.Queries.GetMediaAsset;
 using FileService.Application.Features.Queries.GetMediaAssetsForEntity;
 using FileService.Contracts.Files.Dtos;
@@ -107,6 +108,16 @@ public class FilesController : ControllerBase
         CancellationToken cancellationToken)
     {
         var query = new GetMediaAssetsForEntityQuery(request);
+        return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet("{fileId:guid}/exist")]
+    public async Task<EndpointResult<bool>> CheckFileExists(
+        [FromQuery] Guid fileId,
+        [FromServices] IQueryHandler<bool, CheckFileExistQuery> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new CheckFileExistQuery(fileId);
         return await handler.Handle(query, cancellationToken);
     }
 }

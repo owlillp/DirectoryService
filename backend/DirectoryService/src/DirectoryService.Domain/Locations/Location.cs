@@ -32,6 +32,8 @@ public sealed class Location
 
     public LocationTimezone Timezone { get; private set; } = null!;
 
+    public Guid? PreviewId { get; private set; }
+
     public bool IsActive { get; private set; }
 
     public DateTime CreatedAt { get; private set; }
@@ -82,6 +84,12 @@ public sealed class Location
     public void UpdateTimezone(LocationTimezone timezone)
     {
         Timezone = timezone;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    public void UpdatePreviewId(Guid? previewId)
+    {
+        PreviewId = previewId;
         UpdatedAt = DateTime.UtcNow;
     }
 }

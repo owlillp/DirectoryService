@@ -27,6 +27,10 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             .HasConversion(li => li.Value, guid => new LocationId(guid))
             .IsRequired();
 
+        builder.Property(l => l.PreviewId)
+            .HasColumnName("preview_id")
+            .IsRequired(false);
+
         builder.Property(l => l.Name)
             .HasColumnName("name")
             .HasConversion(ln => ln.Value, s => LocationName.Create(s).Value)
