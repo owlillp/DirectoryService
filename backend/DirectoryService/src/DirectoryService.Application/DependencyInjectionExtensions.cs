@@ -1,12 +1,14 @@
 ﻿using Core.Abstractions;
+using FileService.Contracts.Communication;
 using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DirectoryService.Application;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         var assembly = typeof(DependencyInjectionExtensions).Assembly;
 
@@ -19,6 +21,7 @@ public static class DependencyInjectionExtensions
             .WithScopedLifetime());
 
         services.AddValidatorsFromAssembly(assembly);
+        services.AddFileServiceHttpCommunication(configuration);
 
         return services;
     }
