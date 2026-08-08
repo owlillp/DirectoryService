@@ -52,6 +52,7 @@ public class GetLocationHandler(
                 PostalCode = location.Address.PostalCode,
                 BuildingNumber = location.Address.BuildingNumber,
             },
+            PreviewId = location.PreviewId,
         };
     }
 }

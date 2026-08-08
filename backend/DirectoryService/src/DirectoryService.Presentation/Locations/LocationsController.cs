@@ -2,6 +2,7 @@
 using DirectoryService.Application.Locations.Commands.CreateLocation;
 using DirectoryService.Application.Locations.Commands.SoftDelete;
 using DirectoryService.Application.Locations.Commands.UpdateLocation;
+using DirectoryService.Application.Locations.Commands.UpdateLocationPreview;
 using DirectoryService.Application.Locations.Queries.GetLocation;
 using DirectoryService.Application.Locations.Queries.GetLocations;
 using DirectoryService.Application.Locations.Queries.GetTopLocationsByPositions;
@@ -36,6 +37,17 @@ public class LocationsController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = new UpdateLocationCommand(locationId, request);
+        return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPatch("{locationId:guid}/preview")]
+    public async Task<EndpointResult> UpdatePreview(
+        [FromServices] ICommandHandler<UpdateLocationPreviewCommand> handler,
+        [FromRoute] Guid locationId,
+        [FromBody] Guid? previewId,
+        CancellationToken cancellationToken)
+    {
+        var command = new UpdateLocationPreviewCommand(locationId, previewId);
         return await handler.Handle(command, cancellationToken);
     }
 

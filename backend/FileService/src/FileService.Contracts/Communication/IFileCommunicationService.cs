@@ -8,4 +8,6 @@ namespace FileService.Contracts.Communication;
 public interface IFileCommunicationService
 {
     Task<Result<GetMediaAssetDto, Errors>> GetMediaAssetAsync(GetFilesForEntityRequest request, CancellationToken cancellationToken);
+
+    Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, string? mediaType, CancellationToken cancellationToken);
 }

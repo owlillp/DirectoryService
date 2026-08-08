@@ -28,8 +28,28 @@ internal sealed class FileHttpClient(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting media asset fro entity with id: {entityId}",  request.EntityId);
+            logger.LogError(ex, "Error getting media asset for entity with id: {entityId}",  request.EntityId);
             return Error.Failure("server.internal", "Failed to get media asset for entity").ToErrors();
+        }
+    }
+
+    public async Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, string? mediaType, CancellationToken cancellationToken)
+    {
+        try
+        {
+            string uri = QueryHelpers.AddQueryString(
+                $"files/{fileId}/exist",
+                new Dictionary<string, string?>
+                {
+                    ["mediaType"] = mediaType,
+                });
+            var response = await httpClient.GetAsync(uri, cancellationToken);
+            return await response.HandleResponseAsync<bool>(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error check exist media asset with id: {fileId}",  fileId);
+            return Error.Failure("server.internal", "Failed to check exist file").ToErrors();
         }
     }
 }

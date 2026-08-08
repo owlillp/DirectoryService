@@ -9,4 +9,5 @@ public record LocationDto
     public DateTime CreatedAt { get; init; }
     public List<Guid> DepartmentIds { get; init; } = [];
     public LocationAddressDto Address { get; set; } = null!;
+    public Guid? PreviewId { get; init; }
 }
