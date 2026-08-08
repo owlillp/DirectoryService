@@ -114,11 +114,11 @@ public class FilesController : ControllerBase
     [HttpGet("{fileId:guid}/exist")]
     public async Task<EndpointResult<bool>> CheckFileExists(
         [FromRoute] Guid fileId,
-        [FromQuery] string assetType,
+        [FromQuery] string mediaType,
         [FromServices] IQueryHandler<bool, CheckFileExistQuery> handler,
         CancellationToken cancellationToken)
     {
-        var query = new CheckFileExistQuery(fileId, assetType);
+        var query = new CheckFileExistQuery(fileId, mediaType);
         return await handler.Handle(query, cancellationToken);
     }
 }

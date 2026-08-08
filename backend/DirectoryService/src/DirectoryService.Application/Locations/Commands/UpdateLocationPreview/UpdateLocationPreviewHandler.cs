@@ -14,7 +14,7 @@ public class UpdateLocationPreviewHandler(
     ITransactionManager transactionManager,
     ILocationsRepository repository) : ICommandHandler<UpdateLocationPreviewCommand>
 {
-    private const string PREVIEW_ASSET_TYPE = "PREVIEW";
+    private const string IMAGE_MEDIA_TYPE = "IMAGE";
 
     public async Task<UnitResult<Errors>> Handle(UpdateLocationPreviewCommand command, CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public class UpdateLocationPreviewHandler(
 
         if (command.PreviewId.HasValue)
         {
-            var existResult = await fileService.CheckFileExistAsync(command.PreviewId.Value, PREVIEW_ASSET_TYPE, cancellationToken);
+            var existResult = await fileService.CheckFileExistAsync(command.PreviewId.Value, IMAGE_MEDIA_TYPE, cancellationToken);
             if (existResult.IsFailure)
             {
                 return existResult.Error;

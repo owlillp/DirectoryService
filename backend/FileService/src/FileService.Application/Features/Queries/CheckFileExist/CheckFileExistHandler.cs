@@ -21,12 +21,15 @@ public class CheckFileExistHandler(
             return validationResult.ToErrors();
         }
 
-        AssetType? assetType = string.IsNullOrWhiteSpace(query.AssetType)
+        MediaType? mediaType = string.IsNullOrWhiteSpace(query.MediaType)
             ? null
-            : query.AssetType.ToAssetType();
+            : Enum.Parse<MediaType>(query.MediaType, true);
 
         return await dbContext.MediaAssetsRead.AnyAsync(
-            ma => ma.Id == query.FileId && ma.Status == MediaStatus.UPLOADED && (!assetType.HasValue || ma.AssetType == assetType.Value),
+            ma =>
+                ma.Id == query.FileId
+                && ma.Status == MediaStatus.UPLOADED
+                && (!mediaType.HasValue || ma.MediaData.ContentType.Category == mediaType.Value),
             cancellationToken);
     }
 }

@@ -14,11 +14,11 @@ public class CheckFileExistValidator : AbstractValidator<CheckFileExistQuery>
             .NotNull()
             .WithError(GeneralErrors.ValueIsRequired("fileId"));
 
-        When(x => !string.IsNullOrWhiteSpace(x.AssetType), () =>
+        When(x => !string.IsNullOrWhiteSpace(x.MediaType), () =>
         {
-            RuleFor(x => x.AssetType)
-                .Must(at => Enum.IsDefined(typeof(AssetType), at!))
-                .WithError(GeneralErrors.ValueIsInvalid("assetType"));
+            RuleFor(x => x.MediaType)
+                .Must(at => Enum.IsDefined(typeof(MediaType), at!))
+                .WithError(GeneralErrors.ValueIsInvalid("mediaType"));
         });
     }
 }

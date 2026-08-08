@@ -33,7 +33,7 @@ internal sealed class FileHttpClient(
         }
     }
 
-    public async Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, string? assetType, CancellationToken cancellationToken)
+    public async Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, string? mediaType, CancellationToken cancellationToken)
     {
         try
         {
@@ -41,7 +41,7 @@ internal sealed class FileHttpClient(
                 $"files/{fileId}/exist",
                 new Dictionary<string, string?>
                 {
-                    ["assetType"] = assetType,
+                    ["mediaType"] = mediaType,
                 });
             var response = await httpClient.GetAsync(uri, cancellationToken);
             return await response.HandleResponseAsync<bool>(cancellationToken);
