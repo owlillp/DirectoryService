@@ -9,5 +9,5 @@ public interface IFileCommunicationService
 {
     Task<Result<GetMediaAssetDto, Errors>> GetMediaAssetAsync(GetFilesForEntityRequest request, CancellationToken cancellationToken);
 
-    Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, CancellationToken cancellationToken);
+    Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, string? assetType, CancellationToken cancellationToken);
 }

@@ -33,11 +33,17 @@ internal sealed class FileHttpClient(
         }
     }
 
-    public async Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, CancellationToken cancellationToken)
+    public async Task<Result<bool, Errors>> CheckFileExistAsync(Guid fileId, string? assetType, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await httpClient.GetAsync($"files/{fileId}/exist", cancellationToken);
+            string uri = QueryHelpers.AddQueryString(
+                $"files/{fileId}/exist",
+                new Dictionary<string, string?>
+                {
+                    ["assetType"] = assetType,
+                });
+            var response = await httpClient.GetAsync(uri, cancellationToken);
             return await response.HandleResponseAsync<bool>(cancellationToken);
         }
         catch (Exception ex)

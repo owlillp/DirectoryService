@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Owlip.FileService.Contracts</PackageId>
-    <Version>0.0.4</Version>
+    <Version>0.0.5</Version>
     <Authors>owlillp</Authors>
     <Company>owlillp</Company>
     <PackageDescription>Communication and contracts for FileService</PackageDescription>
