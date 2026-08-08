@@ -17,7 +17,7 @@ public class CheckFileExistValidator : AbstractValidator<CheckFileExistQuery>
         When(x => !string.IsNullOrWhiteSpace(x.MediaType), () =>
         {
             RuleFor(x => x.MediaType)
-                .Must(at => Enum.IsDefined(typeof(MediaType), at!))
+                .Must(at => Enum.TryParse<MediaType>(at, ignoreCase: true, out _))
                 .WithError(GeneralErrors.ValueIsInvalid("mediaType"));
         });
     }
