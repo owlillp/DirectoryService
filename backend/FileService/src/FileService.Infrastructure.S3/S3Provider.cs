@@ -4,7 +4,6 @@ using Amazon.S3.Util;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
 using FileService.Application.Models;
-using FileService.Contracts;
 using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using Microsoft.Extensions.Logging;
@@ -21,7 +20,7 @@ public class S3Provider(
     private readonly FileStorageOptions _fileStorageOptions = s3Options.Value;
     private readonly SemaphoreSlim _requestsSemaphore = new (s3Options.Value.MaxConcurrentRequests);
 
-    public async Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData)
+    public async Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData, bool useExternal = true)
     {
         try
         {
@@ -34,7 +33,10 @@ public class S3Provider(
                 Expires = DateTime.UtcNow.AddMinutes(_fileStorageOptions.UploadExpirationMinutes),
                 Protocol = _fileStorageOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
             };
-            return await s3Client.GetPreSignedURLAsync(request);
+            string? url = await s3Client.GetPreSignedURLAsync(request);
+            return useExternal
+                ? ReplaceEndpoint(url)
+                : url;
         }
         catch (Exception ex)
         {
@@ -43,7 +45,7 @@ public class S3Provider(
         }
     }
 
-    public async Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey)
+    public async Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey, bool useExternal = true)
     {
         try
         {
@@ -55,7 +57,10 @@ public class S3Provider(
                 Protocol = _fileStorageOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
                 Expires = DateTime.UtcNow.AddHours(_fileStorageOptions.DownloadExpirationHours),
             };
-            return await s3Client.GetPreSignedURLAsync(request);
+            string? url = await s3Client.GetPreSignedURLAsync(request);
+            return useExternal
+                ? ReplaceEndpoint(url)
+                : url;
         }
         catch (Exception ex)
         {
@@ -64,7 +69,10 @@ public class S3Provider(
         }
     }
 
-    public async Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(IEnumerable<StorageKey> storageKeys, CancellationToken cancellationToken)
+    public async Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(
+        IEnumerable<StorageKey> storageKeys,
+        CancellationToken cancellationToken,
+        bool useExternal = true)
     {
         try
         {
@@ -83,6 +91,11 @@ public class S3Provider(
                         Expires = DateTime.UtcNow.AddHours(_fileStorageOptions.DownloadExpirationHours),
                     };
                     string? url = await s3Client.GetPreSignedURLAsync(request);
+                    if (useExternal)
+                    {
+                        url = ReplaceEndpoint(url);
+                    }
+
                     return new MediaUrl(storageKey, url);
                 }
                 finally
@@ -210,7 +223,8 @@ public class S3Provider(
         StorageKey storageKey,
         string uploadId,
         int totalChunks,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        bool useExternal = true)
     {
         try
         {
@@ -230,6 +244,11 @@ public class S3Provider(
                         Protocol = _fileStorageOptions.WithSsl ? Protocol.HTTPS : Protocol.HTTP,
                     };
                     string? url = await s3Client.GetPreSignedURLAsync(request);
+                    if (useExternal)
+                    {
+                        url = ReplaceEndpoint(url);
+                    }
+
                     return new ChunkUploadUrl(partNumber, url);
                 }
                 finally
@@ -277,4 +296,7 @@ public class S3Provider(
             return S3ErrorMapper.ToError(ex);
         }
     }
+
+    private string ReplaceEndpoint(string presignedUrl)
+        => presignedUrl.Replace(_fileStorageOptions.Endpoint, _fileStorageOptions.ExternalEndpoint, StringComparison.OrdinalIgnoreCase);
 }

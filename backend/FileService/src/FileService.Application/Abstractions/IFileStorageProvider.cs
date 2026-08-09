@@ -8,11 +8,14 @@ namespace FileService.Application.Abstractions;
 
 public interface IFileStorageProvider
 {
-    Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData);
+    Task<Result<string, Error>> GenerateUploadUrlAsync(StorageKey storageKey, MediaData mediaData, bool useExternal = true);
 
-    Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey);
+    Task<Result<string, Error>> GenerateDownloadUrlAsync(StorageKey storageKey, bool useExternal = true);
 
-    Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(IEnumerable<StorageKey> storageKeys, CancellationToken cancellationToken);
+    Task<Result<IReadOnlyList<MediaUrl>, Error>> GenerateDownloadUrlsAsync(
+        IEnumerable<StorageKey> storageKeys,
+        CancellationToken cancellationToken,
+        bool useExternal = true);
 
     Task<UnitResult<Error>> DeleteFileAsync(StorageKey storageKey, CancellationToken cancellationToken);
 
@@ -28,7 +31,8 @@ public interface IFileStorageProvider
         StorageKey storageKey,
         string uploadId,
         int totalChunks,
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken,
+        bool useExternal = true);
 
     Task<Result<string, Error>> CompleteMultipartUploadAsync(
         StorageKey storageKey,

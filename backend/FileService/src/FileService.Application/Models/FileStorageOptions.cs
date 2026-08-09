@@ -3,6 +3,7 @@
 public record FileStorageOptions
 {
     public string Endpoint { get; init; } = string.Empty;
+    public string ExternalEndpoint { get; init; } = string.Empty;
     public string AccessKey { get; init; } = string.Empty;
     public string SecretKey { get; init; } = string.Empty;
     public bool WithSsl { get; init; }

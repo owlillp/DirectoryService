@@ -29,7 +29,7 @@ namespace FileService.Infrastructure.Postgres.Migrations
                     context = table.Column<string>(type: "text", nullable: false),
                     context_id = table.Column<Guid>(type: "uuid", nullable: false),
                     status = table.Column<string>(type: "text", nullable: false),
-                    asset_type1 = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false)
+                    asset_type1 = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                 },
                 constraints: table =>
                 {
