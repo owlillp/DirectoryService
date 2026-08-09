@@ -3,6 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using FluentValidation;
@@ -17,7 +18,8 @@ public class LinkLocationHandler(
     IValidator<LinkLocationCommand> validator,
     IDepartmentsRepository departmentsRepository,
     IReadDbContext readDbContext,
-    ITransactionManager transactionManager)
+    ITransactionManager transactionManager,
+    LocationCacheInvalidator cacheInvalidator)
     : ICommandHandler<LinkLocationCommand>
 {
     public async Task<UnitResult<Errors>> Handle(LinkLocationCommand command, CancellationToken cancellationToken)
@@ -63,6 +65,8 @@ public class LinkLocationHandler(
         {
             return saveChangesResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateDepartmentListsAsync(departmentId.Value, cancellationToken);
 
         logger.LogInformation(
             "Success link location with id [{locationId}] to department with id [{departmentId}]",

@@ -3,6 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Locations;
+using DirectoryService.Application.Locations;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
@@ -13,7 +14,8 @@ public class UpdateLocationHandler (
     ILogger<UpdateLocationHandler> logger,
     IValidator<UpdateLocationCommand> validator,
     ILocationsRepository repository,
-    ITransactionManager transactionManager
+    ITransactionManager transactionManager,
+    LocationCacheInvalidator cacheInvalidator
     ) : ICommandHandler<UpdateLocationCommand>
 {
     public async Task<UnitResult<Errors>> Handle(UpdateLocationCommand command, CancellationToken cancellationToken)
@@ -63,6 +65,8 @@ public class UpdateLocationHandler (
         {
             return saveResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateLocationAsync(location.Id.Value, cancellationToken);
 
         logger.LogInformation(
             "Success update location with id [{locationId}]",

@@ -14,6 +14,8 @@ services:
       - ASPNETCORE_URLS=http://+:8001
     restart: always
     depends_on:
+      redis:
+        condition: service_healthy
       postgres:
         condition: service_healthy
       directory-service-migrations:
@@ -106,5 +108,21 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - "redis_data:/data"
+    command: ["redis-server", "--appendonly", "yes"]
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres-data:
+  redis_data:

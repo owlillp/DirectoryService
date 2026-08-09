@@ -17,7 +17,8 @@ public class UpdateDepartmentLocationsHandler(
     IValidator<UpdateDepartmentLocationsCommand> validator,
     ITransactionManager transactionManager,
     IDepartmentsRepository departmentsRepository,
-    ILocationsRepository locationsRepository
+    ILocationsRepository locationsRepository,
+    LocationCacheInvalidator cacheInvalidator
     ) : ICommandHandler<Guid, UpdateDepartmentLocationsCommand>
 {
     public async Task<Result<Guid, Errors>> Handle(UpdateDepartmentLocationsCommand command, CancellationToken cancellationToken)
@@ -89,6 +90,8 @@ public class UpdateDepartmentLocationsHandler(
         {
             return commitResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateDepartmentListsAsync(departmentId.Value, cancellationToken);
 
         logger.LogInformation("Success updated locations from department with id [{departmentId}]",  departmentId.Value);
 

@@ -1,6 +1,7 @@
 ﻿using Core.Abstractions;
 using Core.Validation;
 using CSharpFunctionalExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,8 @@ namespace DirectoryService.Application.Locations.Commands.CreateLocation;
 public class CreateLocationHandler(
     ILogger<CreateLocationHandler> logger,
     IValidator<CreateLocationCommand> validator,
-    ILocationsRepository locationsRepository)
+    ILocationsRepository locationsRepository,
+    LocationCacheInvalidator cacheInvalidator)
     : ICommandHandler<Guid, CreateLocationCommand>
 {
     public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
@@ -57,6 +59,8 @@ public class CreateLocationHandler(
         {
             return addResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateListsAsync(cancellationToken);
 
         logger.LogInformation("Success created location with id [{locationId}]", addResult.Value.Value);
 
