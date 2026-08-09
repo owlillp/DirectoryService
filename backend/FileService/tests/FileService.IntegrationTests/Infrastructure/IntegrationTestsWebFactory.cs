@@ -1,6 +1,7 @@
 using System.Data.Common;
 using Amazon.S3;
 using FileService.Application.Abstractions;
+using FileService.Application.Models;
 using FileService.Infrastructure.Postgres;
 using FileService.Infrastructure.S3;
 using Microsoft.AspNetCore.Hosting;
@@ -92,8 +93,8 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
                 return new AmazonS3Client("minioadmin", "minioadmin", config);
             });
 
-            services.RemoveAll<IOptions<S3Options>>();
-            services.AddSingleton<IOptions<S3Options>>(new OptionsWrapper<S3Options>(new S3Options
+            services.RemoveAll<IOptions<FileStorageOptions>>();
+            services.AddSingleton<IOptions<FileStorageOptions>>(new OptionsWrapper<FileStorageOptions>(new FileStorageOptions
             {
                 Endpoint = endpoint,
                 AccessKey = "minioadmin",

@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Util;
+using FileService.Application.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -9,24 +10,24 @@ namespace FileService.Infrastructure.S3;
 
 public class S3BucketInitializationService(
     IAmazonS3 s3Client,
-    IOptions<S3Options> s3Options,
+    IOptions<FileStorageOptions> s3Options,
     ILogger<S3BucketInitializationService> logger) : BackgroundService
 {
-    private readonly S3Options _s3Options = s3Options.Value;
+    private readonly FileStorageOptions _fileStorageOptions = s3Options.Value;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            if (!_s3Options.RequiredBuckets.Any())
+            if (!_fileStorageOptions.RequiredBuckets.Any())
             {
                 logger.LogInformation("S3 bucket initialization service failed: required buckets not specified.");
                 throw new ArgumentException("RequiredBuckets not specified.");
             }
 
-            logger.LogInformation("S3 bucket initialization service started with buckets: [{buckets}]", string.Join(", ", _s3Options.RequiredBuckets));
+            logger.LogInformation("S3 bucket initialization service started with buckets: [{buckets}]", string.Join(", ", _fileStorageOptions.RequiredBuckets));
 
-            Task[] tasks = _s3Options.RequiredBuckets.Select(bucket => InitializeBucketAsync(bucket, stoppingToken)).ToArray();
+            Task[] tasks = _fileStorageOptions.RequiredBuckets.Select(bucket => InitializeBucketAsync(bucket, stoppingToken)).ToArray();
             await Task.WhenAll(tasks);
 
             logger.LogInformation("S3 bucket initialization service successful finished...]");

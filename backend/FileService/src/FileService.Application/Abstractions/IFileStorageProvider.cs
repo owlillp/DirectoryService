@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Application.Models;
-using FileService.Contracts;
 using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using Shared.SharedKernel.Failures;

@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using FileService.Application.Abstractions;
+using FileService.Application.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -10,21 +11,21 @@ public static class DependencyInjectionExtensions
 {
     public static IServiceCollection AddS3(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<S3Options>(configuration.GetSection(nameof(S3Options)));
+        services.Configure<FileStorageOptions>(configuration.GetSection(nameof(FileStorageOptions)));
 
         services.AddScoped<IFileStorageProvider, S3Provider>();
 
         services.AddSingleton<IAmazonS3>(sp =>
         {
-            S3Options s3Options = sp.GetRequiredService<IOptions<S3Options>>().Value;
+            FileStorageOptions fileStorageOptions = sp.GetRequiredService<IOptions<FileStorageOptions>>().Value;
 
             var config = new AmazonS3Config
             {
-                ServiceURL = s3Options.Endpoint,
-                UseHttp = !s3Options.WithSsl,
+                ServiceURL = fileStorageOptions.Endpoint,
+                UseHttp = !fileStorageOptions.WithSsl,
                 ForcePathStyle = true,
             };
-            return new AmazonS3Client(s3Options.AccessKey, s3Options.SecretKey, config);
+            return new AmazonS3Client(fileStorageOptions.AccessKey, fileStorageOptions.SecretKey, config);
         });
 
         services.AddTransient<IChunkSizeCalculator, ChunkSizeCalculator>();
