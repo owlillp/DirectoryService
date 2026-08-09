@@ -2,6 +2,7 @@
 using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Application.Locations.Failures;
 using DirectoryService.Domain.Locations;
 using FluentValidation;
@@ -14,7 +15,8 @@ public class SoftDeleteLocationHandler(
     ILogger<SoftDeleteLocationHandler> logger,
     IValidator<SoftDeleteLocationCommand> validator,
     ITransactionManager transactionManager,
-    ILocationsRepository locationsRepository)
+    ILocationsRepository locationsRepository,
+    LocationCacheInvalidator cacheInvalidator)
     : ICommandHandler<SoftDeleteLocationCommand>
 {
     public async Task<UnitResult<Errors>> Handle(SoftDeleteLocationCommand command, CancellationToken cancellationToken)
@@ -47,6 +49,8 @@ public class SoftDeleteLocationHandler(
         {
             return saveChangesResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateLocationAsync(locationId.Value, cancellationToken);
 
         logger.LogInformation("Success soft delete location with id [{locationId}]", locationId.Value);
 

@@ -6,13 +6,16 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Common;
 using DirectoryService.Contracts.Locations.Dtos;
+using DirectoryService.Contracts.Locations.Requests;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 using Shared.SharedKernel.Failures;
 
 namespace DirectoryService.Application.Locations.Queries.GetLocations;
 
 public class GetLocationsHandler(
     IValidator<GetLocationsQuery> validator,
+    HybridCache cache,
     IDbConnectionFactory connectionFactory)
     : IQueryHandler<PagedResult<LocationDto>, GetLocationsQuery>
 {
@@ -32,6 +35,32 @@ public class GetLocationsHandler(
 
         var request = query.Request;
 
+        return string.IsNullOrWhiteSpace(request.Search)
+            ? await GetLocationsFromCacheAsync(query.Request, cancellationToken)
+            : await QueryLocationsAsync(request, cancellationToken);
+    }
+
+    private async Task<Result<PagedResult<LocationDto>, Errors>> GetLocationsFromCacheAsync(
+        GetLocationsRequest request,
+        CancellationToken cancellationToken)
+    {
+        string key = LocationCacheKeys.BuildListKey(request);
+        var tags = LocationCacheKeys.BuildTags(request);
+
+        var cached = await cache.GetOrCreateAsync<PagedResult<LocationDto>>(
+            key,
+            _ => QueryLocationsAsync(request, cancellationToken),
+            options: null,
+            tags: tags,
+            cancellationToken);
+
+        return cached;
+    }
+
+    private async ValueTask<PagedResult<LocationDto>> QueryLocationsAsync(
+        GetLocationsRequest request,
+        CancellationToken cancellationToken)
+    {
         var connection = await connectionFactory.CreateConnectionAsync(cancellationToken);
 
         var conditions = new List<string>();
@@ -75,7 +104,7 @@ public class GetLocationsHandler(
             ? $"WHERE {string.Join(" AND ", conditions)}"
             : string.Empty;
 
-        string orderByField = query.Request.SortBy?.ToLower() switch
+        string orderByField = request.SortBy?.ToLower() switch
         {
             "name" => "name",
             "country" => "country",
@@ -83,85 +112,85 @@ public class GetLocationsHandler(
             _ => "name",
         };
 
-        string orderByClauseFormat = string.Equals(query.Request.SortDirection, "asc")
+        string orderByClauseFormat = string.Equals(request.SortDirection, "asc")
             ? $"ORDER BY {{0}}.{orderByField} ASC"
             : $"ORDER BY {{0}}.{orderByField} DESC";
 
         long? totalCount = null;
         var locationsDtoMap = new Dictionary<Guid, LocationDto>();
         await connection.QueryAsync<LocationDto, LocationAddressDto, Guid?, long, LocationDto>(
-            $"""
-            WITH filtered_locations AS (
+                $"""
+                WITH filtered_locations AS (
+                    SELECT
+                        l.id,
+                        l.name,
+                        l.created_at,
+                        l.is_active,
+                        l.timezone,
+                        l.country,
+                        l.city,
+                        l.street,
+                        l.apartment,
+                        l.postal_code,
+                        l.building_number
+                    FROM locations l
+                    {whereClause}
+                ),
+                paged_locations AS (
+                    SELECT
+                        fl.*,
+                        COUNT(*) OVER() AS total_count
+                    FROM filtered_locations fl
+                    {string.Format(orderByClauseFormat, "fl")}
+                    LIMIT @{PAGE_SIZE_PARAMETER} OFFSET @{OFFSET_PARAMETER}
+                )
                 SELECT
-                    l.id,
-                    l.name,
-                    l.created_at,
-                    l.is_active,
-                    l.timezone,
-                    l.country,
-                    l.city,
-                    l.street,
-                    l.apartment,
-                    l.postal_code,
-                    l.building_number
-                FROM locations l
-                {whereClause}
-            ),
-            paged_locations AS (
-                SELECT
-                    fl.*,
-                    COUNT(*) OVER() AS total_count
-                FROM filtered_locations fl
-                {string.Format(orderByClauseFormat, "fl")}
-                LIMIT @{PAGE_SIZE_PARAMETER} OFFSET @{OFFSET_PARAMETER}
-            )
-            SELECT
-                pl.id,
-                pl.name,
-                pl.created_at,
-                pl.is_active,
-                pl.timezone,
-                
-                pl.country,
-                pl.city,
-                pl.street,
-                pl.apartment,
-                pl.postal_code,
-                pl.building_number,
-                
-                dl.department_id,
-                pl.total_count
-            FROM paged_locations pl
-            LEFT JOIN department_locations dl ON pl.id = dl.location_id
-            {string.Format(orderByClauseFormat, "pl")}
-            """,
-            param: parameters,
-            splitOn: "country,department_id,total_count",
-            map: (locationDto, addressDto, departmentId, count) =>
-            {
-                if (locationsDtoMap.TryGetValue(locationDto.Id, out var dto))
-                {
-                    locationDto = dto;
-                }
-                else
-                {
-                    locationDto.Address = addressDto;
-                    locationsDtoMap.Add(locationDto.Id, locationDto);
-                }
+                    pl.id,
+                    pl.name,
+                    pl.created_at,
+                    pl.is_active,
+                    pl.timezone,
 
-                if (departmentId.HasValue)
-                {
-                    locationDto.DepartmentIds.Add(departmentId.Value);
-                }
+                    pl.country,
+                    pl.city,
+                    pl.street,
+                    pl.apartment,
+                    pl.postal_code,
+                    pl.building_number,
 
-                totalCount ??= count;
-                return locationDto;
-            });
+                    dl.department_id,
+                    pl.total_count
+                FROM paged_locations pl
+                LEFT JOIN department_locations dl ON pl.id = dl.location_id
+                {string.Format(orderByClauseFormat, "pl")}
+                """,
+                param: parameters,
+                splitOn: "country,department_id,total_count",
+                map: (locationDto, addressDto, departmentId, count) =>
+                {
+                    if (locationsDtoMap.TryGetValue(locationDto.Id, out var dto))
+                    {
+                        locationDto = dto;
+                    }
+                    else
+                    {
+                        locationDto.Address = addressDto;
+                        locationsDtoMap.Add(locationDto.Id, locationDto);
+                    }
+
+                    if (departmentId.HasValue)
+                    {
+                        locationDto.DepartmentIds.Add(departmentId.Value);
+                    }
+
+                    totalCount ??= count;
+                    return locationDto;
+                });
 
         return new PagedResult<LocationDto>(
-            locationsDtoMap.Values.ToList(),
-            totalCount ?? 0,
-            request.Pagination.Page,
-            request.Pagination.PageSize);
+                locationsDtoMap.Values.ToList(),
+                totalCount ?? 0,
+                request.Pagination.Page,
+                request.Pagination.PageSize);
     }
 }

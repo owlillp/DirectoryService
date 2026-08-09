@@ -1,6 +1,7 @@
 using Core.Abstractions;
 using Core.Abstractions.Database;
 using CSharpFunctionalExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 using FileService.Contracts.Communication;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,8 @@ public class UpdateLocationPreviewHandler(
     ILogger<UpdateLocationPreviewHandler> logger,
     IFileCommunicationService fileService,
     ITransactionManager transactionManager,
-    ILocationsRepository repository) : ICommandHandler<UpdateLocationPreviewCommand>
+    ILocationsRepository repository,
+    LocationCacheInvalidator cacheInvalidator) : ICommandHandler<UpdateLocationPreviewCommand>
 {
     private const string IMAGE_MEDIA_TYPE = "IMAGE";
 
@@ -48,6 +50,8 @@ public class UpdateLocationPreviewHandler(
         {
             return saveResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateLocationAsync(location.Id.Value, cancellationToken);
 
         logger.LogInformation(
             "Success update location preview with id: {locationId} preview id: {previewId}",

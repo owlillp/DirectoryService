@@ -3,6 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.Failures;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Departments;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,8 @@ public class SoftDeleteDepartmentHandler(
     ILogger<SoftDeleteDepartmentHandler> logger,
     IValidator<SoftDeleteDepartmentCommand> validator,
     ITransactionManager transactionManager,
-    IDepartmentsRepository departmentsRepository)
+    IDepartmentsRepository departmentsRepository,
+    LocationCacheInvalidator cacheInvalidator)
     : ICommandHandler<SoftDeleteDepartmentCommand>
 {
     public async Task<UnitResult<Errors>> Handle(SoftDeleteDepartmentCommand command, CancellationToken cancellationToken)
@@ -87,6 +89,8 @@ public class SoftDeleteDepartmentHandler(
         {
             return commitResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateDepartmentListsAsync(departmentId.Value, cancellationToken);
 
         logger.LogInformation("Success soft delete department with id [{departmentId}]", departmentId.Value);
 

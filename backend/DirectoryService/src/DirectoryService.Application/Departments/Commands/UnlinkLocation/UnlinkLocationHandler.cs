@@ -2,6 +2,7 @@
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using DirectoryService.Application.Abstractions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using FluentValidation;
@@ -15,7 +16,8 @@ public class UnlinkLocationHandler(
     ILogger<UnlinkLocationHandler> logger,
     IValidator<UnlinkLocationCommand> validator,
     IDepartmentsRepository departmentsRepository,
-    IReadDbContext readDbContext)
+    IReadDbContext readDbContext,
+    LocationCacheInvalidator cacheInvalidator)
     : ICommandHandler<UnlinkLocationCommand>
 {
     public async Task<UnitResult<Errors>> Handle(UnlinkLocationCommand command, CancellationToken cancellationToken)
@@ -47,6 +49,8 @@ public class UnlinkLocationHandler(
         {
             return unlinkResult.Error.ToErrors();
         }
+
+        await cacheInvalidator.InvalidateDepartmentListsAsync(departmentId.Value, cancellationToken);
 
         logger.LogInformation(
             "Success unlink location with id [{locationId}] to department with id [{departmentId}]",

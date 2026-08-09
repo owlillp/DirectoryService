@@ -1,6 +1,8 @@
 ﻿using Core.Abstractions;
+using DirectoryService.Application.Locations;
 using FileService.Contracts.Communication;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -22,6 +24,32 @@ public static class DependencyInjectionExtensions
 
         services.AddValidatorsFromAssembly(assembly);
         services.AddFileServiceHttpCommunication(configuration);
+
+        services.AddValidatorsFromAssembly(assembly);
+        services.AddFileServiceHttpCommunication(configuration);
+
+        services.Configure<CacheOptions>(configuration.GetSection(nameof(CacheOptions)));
+        var cacheOptions = configuration.GetSection(nameof(CacheOptions)).Get<CacheOptions>()
+                           ?? new CacheOptions();
+
+        if (cacheOptions.EnableRedisCache)
+        {
+            services.AddStackExchangeRedisCache(setup =>
+            {
+                setup.Configuration = configuration.GetConnectionString("Redis");
+            });
+        }
+
+        services.AddHybridCache(options =>
+        {
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(cacheOptions.LocalCacheExpirationMinutes),
+                Expiration = TimeSpan.FromMinutes(cacheOptions.CacheExpirationMinutes),
+            };
+        });
+
+        services.AddScoped<LocationCacheInvalidator>();
 
         return services;
     }
