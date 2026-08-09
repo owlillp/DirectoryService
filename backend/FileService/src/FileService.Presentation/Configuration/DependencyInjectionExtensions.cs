@@ -21,7 +21,7 @@ public static class DependencyInjectionExtensions
             services.ConfigureApiBehaviorOptions();
             services.AddJsonOptions();
 
-            services.AddApplication();
+            services.AddApplication(configuration);
             services.AddS3(configuration);
             services.AddInfrastructurePostgres(configuration);
 

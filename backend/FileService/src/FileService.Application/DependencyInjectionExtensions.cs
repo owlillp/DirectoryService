@@ -1,12 +1,15 @@
 ﻿using Core.Abstractions;
+using FileService.Application.Models;
 using FluentValidation;
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FileService.Application;
 
 public static class DependencyInjectionExtensions
 {
-    public static IServiceCollection AddApplication(this IServiceCollection services)
+    public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration configuration)
     {
         var assembly = typeof(DependencyInjectionExtensions).Assembly;
 
@@ -19,6 +22,29 @@ public static class DependencyInjectionExtensions
             .WithScopedLifetime());
 
         services.AddValidatorsFromAssembly(assembly);
+
+        services.Configure<CacheOptions>(configuration.GetSection(nameof(CacheOptions)));
+        var cacheOptions = configuration.GetSection(nameof(CacheOptions)).Get<CacheOptions>()
+                           ?? new CacheOptions();
+
+        if (cacheOptions.EnableRedisCache)
+        {
+            services.AddStackExchangeRedisCache(setup =>
+            {
+                setup.Configuration = configuration.GetConnectionString("Redis");
+            });
+        }
+
+        services.AddHybridCache(options =>
+        {
+            options.DefaultEntryOptions = new HybridCacheEntryOptions
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(cacheOptions.LocalCacheExpirationMinutes),
+                Expiration = TimeSpan.FromMinutes(cacheOptions.CacheExpirationMinutes),
+            };
+        });
+
+        services.AddScoped<MediaAssetCacheInvalidator>();
 
         return services;
     }

@@ -2,10 +2,13 @@
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
+using FileService.Application.Models;
 using FileService.Contracts.Files.Dtos;
 using FileService.Domain;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
+using Microsoft.Extensions.Options;
 using Shared.SharedKernel.Failures;
 
 namespace FileService.Application.Features.Queries.GetMediaAsset;
@@ -13,8 +16,12 @@ namespace FileService.Application.Features.Queries.GetMediaAsset;
 public class GetMediaAssetHandler(
     IValidator<GetMediaAssetQuery> validator,
     IFileStorageProvider fileStorageProvider,
+    HybridCache cache,
+    IOptions<FileStorageOptions> fileStorageOptions,
     IReadDbContext readDbContext) : IQueryHandler<GetMediaAssetDto, GetMediaAssetQuery>
 {
+    private readonly FileStorageOptions _fileStorageOptions = fileStorageOptions.Value;
+
     public async Task<Result<GetMediaAssetDto, Errors>> Handle(GetMediaAssetQuery query, CancellationToken cancellationToken)
     {
         var validationResult = await validator.ValidateAsync(query, cancellationToken);
@@ -48,15 +55,31 @@ public class GetMediaAssetHandler(
 
         if (mediaAsset.Status == MediaStatus.UPLOADED)
         {
-            var generateUrlResult = await fileStorageProvider.GenerateDownloadUrlAsync(mediaAsset.Key);
-            if (generateUrlResult.IsFailure)
-            {
-                return generateUrlResult.Error.ToErrors();
-            }
-
-            mediaAssetDto = mediaAssetDto with { Url = generateUrlResult.Value };
+            string? presignedUrl = await GetPresignedUrlFromCacheAsync(mediaAsset.Key, cancellationToken);
+            mediaAssetDto = mediaAssetDto with { Url = presignedUrl };
         }
 
         return mediaAssetDto;
+    }
+
+    private async Task<string?> GetPresignedUrlFromCacheAsync(StorageKey storageKey, CancellationToken cancellationToken)
+    {
+        string key = MediaAssetCacheKeys.BuildPresignedUrlKey(storageKey);
+
+        return await cache.GetOrCreateAsync<string?>(
+            key,
+            async _ =>
+            {
+                var generateUrlResult = await fileStorageProvider.GenerateDownloadUrlAsync(storageKey);
+                return generateUrlResult.IsSuccess
+                    ? generateUrlResult.Value
+                    : null;
+            },
+            options: new HybridCacheEntryOptions
+            {
+                Expiration = TimeSpan.FromHours(_fileStorageOptions.DownloadExpirationHours).Subtract(TimeSpan.FromHours(1)),
+                LocalCacheExpiration = TimeSpan.FromHours(1),
+            },
+            cancellationToken: cancellationToken);
     }
 }
