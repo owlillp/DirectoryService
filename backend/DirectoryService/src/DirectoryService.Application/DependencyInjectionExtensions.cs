@@ -25,9 +25,6 @@ public static class DependencyInjectionExtensions
         services.AddValidatorsFromAssembly(assembly);
         services.AddFileServiceHttpCommunication(configuration);
 
-        services.AddValidatorsFromAssembly(assembly);
-        services.AddFileServiceHttpCommunication(configuration);
-
         services.Configure<CacheOptions>(configuration.GetSection(nameof(CacheOptions)));
         var cacheOptions = configuration.GetSection(nameof(CacheOptions)).Get<CacheOptions>()
                            ?? new CacheOptions();

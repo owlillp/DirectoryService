@@ -49,7 +49,7 @@ public class GetLocationsHandler(
 
         var cached = await cache.GetOrCreateAsync<PagedResult<LocationDto>>(
             key,
-            _ => QueryLocationsAsync(request, cancellationToken),
+            token => QueryLocationsAsync(request, token),
             options: null,
             tags: tags,
             cancellationToken);

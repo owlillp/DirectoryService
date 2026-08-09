@@ -60,7 +60,7 @@ public class CreateLocationHandler(
             return addResult.Error.ToErrors();
         }
 
-        await cacheInvalidator.InvalidateActiveListsAsync(cancellationToken);
+        await cacheInvalidator.InvalidateListsAsync(cancellationToken);
 
         logger.LogInformation("Success created location with id [{locationId}]", addResult.Value.Value);
 
