@@ -16,7 +16,7 @@ public class VideoAsset : MediaAsset
     public static readonly string[] AllowedExtensions = ["mp4", "mkv", "avi", "mov"];
 
     // EF Core
-    public VideoAsset() { }
+    private VideoAsset() { }
 
     private VideoAsset(Guid id, MediaData mediaData, MediaOwner owner, MediaStatus status, StorageKey key)
         : base(id, mediaData, AssetType.VIDEO, owner, status, key)
@@ -48,4 +48,6 @@ public class VideoAsset : MediaAsset
 
         return new VideoAsset(id, mediaData, owner, MediaStatus.UPLOADING, key.Value);
     }
+
+    public override bool RequiresProcessing() => true;
 }
