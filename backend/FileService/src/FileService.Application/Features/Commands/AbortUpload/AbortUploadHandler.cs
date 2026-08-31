@@ -33,7 +33,7 @@ public class AbortUploadHandler(
 
         var mediaAsset = getMediaAssetResult.Value;
 
-        var deleteResult = await fileStorageProvider.DeleteFileAsync(mediaAsset.Key, cancellationToken);
+        var deleteResult = await fileStorageProvider.DeleteFileAsync(mediaAsset.UploadKey, cancellationToken);
         if (deleteResult.IsFailure && deleteResult.Error.Code != "object.not.found")
         {
             logger.LogInformation("Failed to abort upload file: {fileId}", command.FileId);

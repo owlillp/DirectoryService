@@ -34,15 +34,25 @@ public abstract class MediaAsset
         AssetType assetType,
         MediaOwner owner,
         MediaStatus status,
-        StorageKey key)
+        StorageKey key,
+        bool isDirectUpload = false)
     {
         Id = id;
         MediaData = mediaData;
         AssetType = assetType;
         Owner = owner;
         Status = status;
-        Key = key;
         CreatedAt = DateTime.UtcNow;
+        RawKey = key;
+
+        if (isDirectUpload)
+        {
+            Key = key;
+        }
+        else
+        {
+            RawKey = key;
+        }
     }
 
     public static Result<MediaAsset, Error> CreateForUpload(MediaData mediaData, AssetType assetType, MediaOwner owner)

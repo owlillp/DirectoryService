@@ -34,7 +34,7 @@ public class AbortMultipartUploadHandler(
 
         var mediaAsset = getMediaAssetResult.Value;
 
-        var abortResult = await fileStorageProvider.AbortMultipartUploadAsync(mediaAsset.Key, request.UploadId, cancellationToken);
+        var abortResult = await fileStorageProvider.AbortMultipartUploadAsync(mediaAsset.UploadKey, request.UploadId, cancellationToken);
         if (abortResult.IsFailure)
         {
             logger.LogInformation("Failed to abort uploading the media asset {mediaAssetId}", mediaAsset.Id);

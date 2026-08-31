@@ -55,7 +55,7 @@ public class GetMediaAssetHandler(
 
         if (mediaAsset.Status == MediaStatus.UPLOADED)
         {
-            string? presignedUrl = await GetPresignedUrlFromCacheAsync(mediaAsset.Key, cancellationToken);
+            string? presignedUrl = await GetPresignedUrlFromCacheAsync(mediaAsset.UploadKey, cancellationToken);
             mediaAssetDto = mediaAssetDto with { Url = presignedUrl };
         }
 

@@ -1,4 +1,7 @@
-﻿namespace FileService.Domain.MediaProcessing;
+﻿using CSharpFunctionalExtensions;
+using Shared.SharedKernel.Failures;
+
+namespace FileService.Domain.MediaProcessing;
 
 public sealed class ProcessingStep
 {
@@ -32,6 +35,61 @@ public sealed class ProcessingStep
     // Ef Core
     private ProcessingStep()
     { }
+
+    internal UnitResult<Error> Start()
+    {
+        if (Status != StepStatus.PENDING)
+        {
+            return Error.Validation("step.invalid.status", $"Can not start processing step: {StepType} with status: {Status}");
+        }
+
+        Status = StepStatus.IN_PROGRESS;
+        StartedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
+
+    internal UnitResult<Error> Complete(string? resultData = null)
+    {
+        if (Status != StepStatus.IN_PROGRESS)
+        {
+            return Error.Validation("step.invalid.status", $"Can not complete processing step: {StepType} with status: {Status}");
+        }
+
+        Status = StepStatus.COMPLETED;
+        CompletedAt = DateTime.UtcNow;
+        ResultData = resultData;
+
+        return UnitResult.Success<Error>();
+    }
+
+    internal UnitResult<Error> Fail(string errorMessage)
+    {
+        if (Status != StepStatus.IN_PROGRESS)
+        {
+            return Error.Validation("step.invalid.status", $"Can not fail processing step: {StepType} with status: {Status}");
+        }
+
+        if (string.IsNullOrWhiteSpace(errorMessage))
+        {
+            return Error.Validation("step.error.required", "Error message is required");
+        }
+
+        Status = StepStatus.FAILED;
+        ErrorMessage = errorMessage;
+        CompletedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
+
+    internal void Reset()
+    {
+        Status = StepStatus.PENDING;
+        ResultData = null;
+        ErrorMessage = null;
+        StartedAt = null;
+        CompletedAt = null;
+    }
 }
 
 public enum StepType

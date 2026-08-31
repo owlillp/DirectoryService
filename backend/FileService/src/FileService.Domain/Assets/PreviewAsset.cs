@@ -17,7 +17,7 @@ public class PreviewAsset : MediaAsset
     private PreviewAsset() { }
 
     private PreviewAsset(Guid id, MediaData mediaData, MediaOwner owner, MediaStatus status, StorageKey key)
-        : base(id, mediaData, AssetType.PREVIEW, owner, status, key)
+        : base(id, mediaData, AssetType.PREVIEW, owner, status, key, true)
     { }
 
     public static UnitResult<Error> Validate(MediaData mediaData)

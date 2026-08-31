@@ -79,6 +79,10 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
                 services.Remove(s3InitializationDescriptor);
             }
 
+            services.RemoveAll<Microsoft.Extensions.Caching.Distributed.IDistributedCache>();
+            services.RemoveAll<StackExchange.Redis.ConnectionMultiplexer>();
+            services.RemoveAll<Microsoft.Extensions.Caching.StackExchangeRedis.RedisCache>();
+
             string endpoint = $"http://{_minioContainer.Hostname}:{_minioContainer.GetMappedPublicPort(9000)}";
 
             services.RemoveAll<IAmazonS3>();
@@ -97,15 +101,13 @@ public class IntegrationTestsWebFactory : WebApplicationFactory<Program>, IAsync
             services.AddSingleton<IOptions<FileStorageOptions>>(new OptionsWrapper<FileStorageOptions>(new FileStorageOptions
             {
                 Endpoint = endpoint,
+                ExternalEndpoint = endpoint,
                 AccessKey = "minioadmin",
                 SecretKey = "minioadmin",
                 WithSsl = false,
                 DownloadExpirationHours = 24,
                 UploadExpirationMinutes = 60,
                 MaxConcurrentRequests = 20,
-                // S3 (and MinIO) require every multipart part (except the last) to be
-                // at least 5MB. Keep the recommended chunk size above that limit so
-                // a few MB-sized file splits into valid uploadable parts.
                 RecommendedChunkSizeBytes = 5 * 1024 * 1024,
                 RequiredBuckets = ["videos"],
             }));

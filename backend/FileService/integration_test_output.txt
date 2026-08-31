@@ -1,0 +1,88 @@
+﻿  Determining projects to restore...
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj : warning NU1903: Package 'SSH.NET' 2025.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-q939-rpr3-3284
+  All projects are up-to-date for restore.
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj : warning NU1903: Package 'SSH.NET' 2025.1.0 has a known high severity vulnerability, https://github.com/advisories/GHSA-q939-rpr3-3284
+  FileService.Contracts -> E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Contracts\bin\Debug\net10.0\FileService.Contracts.dll
+  FileService.Domain -> E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Domain\bin\Debug\net10.0\FileService.Domain.dll
+  FileService.Application -> E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Application\bin\Debug\net10.0\FileService.Application.dll
+  FileService.Infrastructure.S3 -> E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Infrastructure.S3\bin\Debug\net10.0\FileService.Infrastructure.S3.dll
+  FileService.Infrastructure.Postgres -> E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Infrastructure.Postgres\bin\Debug\net10.0\FileService.Infrastructure.Postgres.dll
+  FileService.Presentation -> E:\LifeTime\Projects\DirectoryService\backend\FileService\src\FileService.Presentation\bin\Debug\net10.0\FileService.Presentation.dll
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\MultipartLifecycleTests.cs(202,59): warning SA1204: Static members should appear before non-static members (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1204.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\MultipartLifecycleTests.cs(269,39): warning SA1204: Static members should appear before non-static members (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1204.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(77,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(87,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(88,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(89,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(91,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(93,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(94,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(105,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(106,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(120,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(121,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(128,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(129,1): warning SA1137: Elements should have the same indentation (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1137.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Infrastructure\IntegrationTestsWebFactory.cs(143,2): warning SA1518: Code should not contain blank lines at the end of the file (https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1518.md) [E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\FileService.IntegrationTests.csproj]
+  FileService.IntegrationTests -> E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\bin\Debug\net10.0\FileService.IntegrationTests.dll
+Test run for E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\bin\Debug\net10.0\FileService.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+dotnet : [xUnit.net 00:00:28.89]     FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForE
+ntity_filters_assets_by_entity [FAIL]
+строка:1 знак:65
++ ... leService"; dotnet test tests\FileService.IntegrationTests\FileServic ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([xUnit.net 00:0...y_entity [FAIL]:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[xUnit.net 00:00:28.91]     FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_of_
+entity_returns_all_its_assets [FAIL]
+[xUnit.net 00:00:28.96]     FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_exc
+ludes_deleted_assets [FAIL]
+  Failed FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_filters_assets_by_entity [37 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_filters_assets_by_entity() in E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\GetMediaAssetsForEntityTests.cs:line 86
+--- End of stack trace from previous location ---
+  Failed FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_of_entity_returns_all_its_assets [14 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_of_entity_returns_all_its_assets() in E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\GetMediaAssetsForEntityTests.cs:line 33
+--- End of stack trace from previous location ---
+  Failed FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_excludes_deleted_assets [12 ms]
+  Error Message:
+   Assert.Single() Failure: The collection was empty
+  Stack Trace:
+     at FileService.IntegrationTests.Files.GetMediaAssetsForEntityTests.GetMediaAssetsForEntity_excludes_deleted_assets() in E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\GetMediaAssetsForEntityTests.cs:line 108
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:30.43]     FileService.IntegrationTests.Files.MultipartLifecycleTests.Successful_multipart_upload_of_a
+ll_parts_marks_asset_uploaded [FAIL]
+  Failed FileService.IntegrationTests.Files.MultipartLifecycleTests.Successful_multipart_upload_of_all_parts_marks_asset_uploaded [2 s]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at FileService.IntegrationTests.Files.MultipartLifecycleTests.Successful_multipart_upload_of_all_parts_marks_asset_uploaded() in E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\MultipartLifecycleTests.cs:line 55
+--- End of stack trace from previous location ---
+[xUnit.net 00:00:39.75]     FileService.IntegrationTests.Files.MultipartLifecycleTests.Repeated_complete_after_successf
+ul_upload_fails [FAIL]
+  Failed FileService.IntegrationTests.Files.MultipartLifecycleTests.Repeated_complete_after_successful_upload_fails [1 s]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at FileService.IntegrationTests.Files.MultipartLifecycleTests.Repeated_complete_after_successful_upload_fails() in E:\LifeTime\Projects\DirectoryService\backend\FileService\tests\FileService.IntegrationTests\Files\MultipartLifecycleTests.cs:line 140
+--- End of stack trace from previous location ---
+
+Failed!  - Failed:     5, Passed:    37, Skipped:     0, Total:    42, Duration: 13 s - FileService.IntegrationTests.dll (net10.0)
