@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <Folder Include="Assets\" />
+      <Folder Include="MediaProcessing\" />
     </ItemGroup>
 
     <ItemGroup>

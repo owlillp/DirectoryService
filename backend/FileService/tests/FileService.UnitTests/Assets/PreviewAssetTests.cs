@@ -62,8 +62,8 @@ public class PreviewAssetTests
         Assert.Equal(ValidId, result.Value.Id);
         Assert.Equal(AssetType.PREVIEW, result.Value.AssetType);
         Assert.Equal(MediaStatus.UPLOADING, result.Value.Status);
-        Assert.Equal(PreviewAsset.LOCATION, result.Value.Key.Location);
-        Assert.Equal(ValidId.ToString(), result.Value.Key.Key);
+        Assert.Equal(PreviewAsset.LOCATION, result.Value.UploadKey.Location);
+        Assert.Equal(ValidId.ToString(), result.Value.UploadKey.Key);
     }
 
     [Fact]

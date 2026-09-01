@@ -52,7 +52,7 @@ public class StartMultipartUploadHandler(
             return addResult.Error.ToErrors();
         }
 
-        var startMultipartUploadResult = await fileStorageProvider.StartMultipartUploadAsync(mediaAsset.Key, mediaAsset.MediaData.ContentType.Value, cancellationToken);
+        var startMultipartUploadResult = await fileStorageProvider.StartMultipartUploadAsync(mediaAsset.UploadKey, mediaAsset.MediaData.ContentType.Value, cancellationToken);
         if (startMultipartUploadResult.IsFailure)
         {
             logger.LogInformation("Failed to start multipart upload: {multipartUploadResult}", startMultipartUploadResult.Error);
@@ -61,7 +61,7 @@ public class StartMultipartUploadHandler(
 
         string? uploadId = startMultipartUploadResult.Value;
 
-        var generateChunksUploadUrls = await fileStorageProvider.GenerateAllChunksUploadUrlsAsync(mediaAsset.Key, uploadId, chunkData.TotalChunks, cancellationToken);
+        var generateChunksUploadUrls = await fileStorageProvider.GenerateAllChunksUploadUrlsAsync(mediaAsset.UploadKey, uploadId, chunkData.TotalChunks, cancellationToken);
         if (generateChunksUploadUrls.IsFailure)
         {
             return generateChunksUploadUrls.Error.ToErrors();

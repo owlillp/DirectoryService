@@ -40,7 +40,7 @@ public class CompleteMultipartUploadHandler(
             return GeneralErrors.ValueIsInvalid("Amount of eTags is not equal to amount of chunks.").ToErrors();
         }
 
-        var completeResult = await fileStorageProvider.CompleteMultipartUploadAsync(mediaAsset.Key, request.UploadId, request.PartETags, cancellationToken);
+        var completeResult = await fileStorageProvider.CompleteMultipartUploadAsync(mediaAsset.UploadKey, request.UploadId, request.PartETags, cancellationToken);
         if (completeResult.IsFailure)
         {
             logger.LogInformation(
@@ -58,7 +58,7 @@ public class CompleteMultipartUploadHandler(
             return completeResult.Error.ToErrors();
         }
 
-        var getObjectMetadataResult = await fileStorageProvider.GetAssetMetadataAsync(mediaAsset.Key, cancellationToken);
+        var getObjectMetadataResult = await fileStorageProvider.GetAssetMetadataAsync(mediaAsset.UploadKey, cancellationToken);
         if (getObjectMetadataResult.IsFailure)
         {
             mediaAsset.MarkFailed();

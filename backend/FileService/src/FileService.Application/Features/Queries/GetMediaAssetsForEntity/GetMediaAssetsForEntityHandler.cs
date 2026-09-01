@@ -35,10 +35,10 @@ public class GetMediaAssetsForEntityHandler(
 
         var uploadedAssetKeys = mediaAssets
             .Where(ma => ma.Status == MediaStatus.UPLOADED)
-            .Select(ma => ma.Key)
+            .Select(ma => ma.UploadKey)
             .ToList();
 
-        var getUrlsResult = await fileStorageProvider.GenerateDownloadUrlsAsync(uploadedAssetKeys, cancellationToken);
+        var getUrlsResult = await fileStorageProvider.GenerateDownloadUrlsAsync(uploadedAssetKeys!, cancellationToken);
         if (getUrlsResult.IsFailure)
         {
             return getUrlsResult.Error.ToErrors();
@@ -49,7 +49,7 @@ public class GetMediaAssetsForEntityHandler(
         var mediaAssetDtos = new List<GetMediaAssetsDto>();
         foreach (var mediaAsset in mediaAssets)
         {
-            urlsDict.TryGetValue(mediaAsset.Key, out string? url);
+            urlsDict.TryGetValue(mediaAsset.UploadKey, out string? url);
 
             mediaAssetDtos.Add(new GetMediaAssetsDto
             {

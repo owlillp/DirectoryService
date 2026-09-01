@@ -15,11 +15,15 @@ public abstract class MediaAsset
 
     public DateTime UpdatedAt { get; protected set; } = DateTime.UtcNow;
 
-    public StorageKey Key { get; protected set; } = null!;
+    public StorageKey? Key { get; protected set; }
+
+    public StorageKey? RawKey { get; protected set; }
 
     public MediaOwner Owner { get; protected set; } = null!;
 
     public MediaStatus Status { get; protected set; }
+
+    public StorageKey UploadKey => RequiresProcessing() ? RawKey! : Key!;
 
     // EF Core
     protected MediaAsset() { }
@@ -30,15 +34,25 @@ public abstract class MediaAsset
         AssetType assetType,
         MediaOwner owner,
         MediaStatus status,
-        StorageKey key)
+        StorageKey key,
+        bool isDirectUpload = false)
     {
         Id = id;
         MediaData = mediaData;
         AssetType = assetType;
         Owner = owner;
         Status = status;
-        Key = key;
         CreatedAt = DateTime.UtcNow;
+        RawKey = key;
+
+        if (isDirectUpload)
+        {
+            Key = key;
+        }
+        else
+        {
+            RawKey = key;
+        }
     }
 
     public static Result<MediaAsset, Error> CreateForUpload(MediaData mediaData, AssetType assetType, MediaOwner owner)
@@ -57,6 +71,8 @@ public abstract class MediaAsset
                 throw new ArgumentOutOfRangeException(nameof(assetType), assetType, null);
         }
     }
+
+    public virtual bool RequiresProcessing() => false;
 
     public UnitResult<Error> MarkUploaded()
     {

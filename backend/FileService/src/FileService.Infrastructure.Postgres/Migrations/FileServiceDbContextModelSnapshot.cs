@@ -39,7 +39,10 @@ namespace FileService.Infrastructure.Postgres.Migrations
                         .HasColumnName("created_at");
 
                     b.Property<string>("Key")
-                        .IsRequired()
+                        .HasColumnType("jsonb")
+                        .HasColumnName("key");
+
+                    b.Property<string>("RawKey")
                         .HasColumnType("jsonb")
                         .HasColumnName("raw_key");
 
@@ -70,6 +73,65 @@ namespace FileService.Infrastructure.Postgres.Migrations
                     b.HasDiscriminator<string>("asset_type").HasValue("MediaAsset");
 
                     b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("FileService.Domain.MediaProcessing.VideoProcess", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("completed_at");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("text")
+                        .HasColumnName("error_message");
+
+                    b.Property<bool>("IsCriticalError")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_critical_error");
+
+                    b.Property<int>("MaxRetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("NextRetryAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ProcessPercentage")
+                        .HasColumnType("integer")
+                        .HasColumnName("progress_percentage");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("started_at");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("status");
+
+                    b.Property<Guid>("VideoAssetId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("video_asset_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("ix_video_processing_status");
+
+                    b.HasIndex("VideoAssetId")
+                        .HasDatabaseName("ix_video_processing_video_asset_id");
+
+                    b.HasIndex("Status", "StartedAt")
+                        .HasDatabaseName("ix_video_processing_status_started_at");
+
+                    b.ToTable("video_processing", (string)null);
                 });
 
             modelBuilder.Entity("FileService.Domain.Assets.PreviewAsset", b =>
@@ -153,7 +215,7 @@ namespace FileService.Infrastructure.Postgres.Migrations
                                         .HasColumnType("text")
                                         .HasColumnName("file_extension");
 
-                                    b2.Property<string>("Value")
+                                    b2.Property<string>("Name")
                                         .IsRequired()
                                         .HasColumnType("text")
                                         .HasColumnName("file_name");
@@ -200,6 +262,72 @@ namespace FileService.Infrastructure.Postgres.Migrations
 
                     b.Navigation("Owner")
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FileService.Domain.MediaProcessing.VideoProcess", b =>
+                {
+                    b.OwnsMany("FileService.Domain.MediaProcessing.ProcessingStep", "Steps", b1 =>
+                        {
+                            b1.Property<Guid>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("uuid")
+                                .HasColumnName("id");
+
+                            b1.Property<DateTime?>("CompletedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("completed_at");
+
+                            b1.Property<string>("ErrorMessage")
+                                .HasColumnType("text")
+                                .HasColumnName("error_message");
+
+                            b1.Property<int>("Order")
+                                .HasColumnType("integer")
+                                .HasColumnName("order");
+
+                            b1.Property<string>("ResultData")
+                                .HasColumnType("jsonb")
+                                .HasColumnName("result_data");
+
+                            b1.Property<DateTime?>("StartedAt")
+                                .HasColumnType("timestamp with time zone")
+                                .HasColumnName("started_at");
+
+                            b1.Property<string>("Status")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("status");
+
+                            b1.Property<string>("StepType")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("step_type");
+
+                            b1.Property<Guid>("VideoProcessId")
+                                .HasColumnType("uuid")
+                                .HasColumnName("video_process_id");
+
+                            b1.Property<int>("Weight")
+                                .HasColumnType("integer")
+                                .HasColumnName("weight");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("Status")
+                                .HasDatabaseName("ix_processing_steps_status");
+
+                            b1.HasIndex("StepType")
+                                .HasDatabaseName("ix_processing_steps_step_type");
+
+                            b1.HasIndex("VideoProcessId");
+
+                            b1.ToTable("processing_steps", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("VideoProcessId");
+                        });
+
+                    b.Navigation("Steps");
                 });
 #pragma warning restore 612, 618
         }

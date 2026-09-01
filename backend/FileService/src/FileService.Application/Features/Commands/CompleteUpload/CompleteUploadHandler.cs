@@ -33,7 +33,7 @@ public class CompleteUploadHandler(
 
         var mediaAsset = getMediaAssetResult.Value;
 
-        var getObjectMetadataResult = await fileStorageProvider.GetAssetMetadataAsync(mediaAsset.Key, cancellationToken);
+        var getObjectMetadataResult = await fileStorageProvider.GetAssetMetadataAsync(mediaAsset.UploadKey, cancellationToken);
         if (getObjectMetadataResult.IsFailure)
         {
             mediaAsset.MarkFailed();
