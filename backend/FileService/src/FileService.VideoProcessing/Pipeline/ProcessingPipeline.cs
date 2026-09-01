@@ -74,7 +74,7 @@ public class ProcessingPipeline(
                         videoAssetId);
                 }
 
-                return Error.Failure("pipeline.handler.not.foud", error);
+                return Error.Failure("pipeline.handler.not.found", error);
             }
 
             var executionResult = await ExecuteStepSafelyAsync(stepHandler, context, cancellationToken);
@@ -132,6 +132,11 @@ public class ProcessingPipeline(
 
         if (getProcessingResult.IsFailure)
         {
+            if (getProcessingResult.Error.Type != ErrorType.NOT_FOUND)
+            {
+                return getProcessingResult.Error;
+            }
+
             videoProcess = new VideoProcess(videoAssetId);
 
             await videoProcessingRepository.AddAsync(videoProcess, cancellationToken);
