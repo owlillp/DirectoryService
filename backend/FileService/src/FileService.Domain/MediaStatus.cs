@@ -8,4 +8,5 @@ public enum MediaStatus
     PENDING,
     FAILED,
     DELETED,
+    PROCESSING,
 }

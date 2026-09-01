@@ -15,6 +15,8 @@ public class VideoAsset : MediaAsset
 
     public static readonly string[] AllowedExtensions = ["mp4", "mkv", "avi", "mov"];
 
+    public VideoMetadata? Metadata { get; private set; }
+
     // EF Core
     private VideoAsset() { }
 
@@ -49,5 +51,25 @@ public class VideoAsset : MediaAsset
         return new VideoAsset(id, mediaData, owner, MediaStatus.UPLOADING, key.Value);
     }
 
+    public void SetMetadata(VideoMetadata metadata)
+        => Metadata = metadata;
+
     public override bool RequiresProcessing() => true;
+
+    public UnitResult<Error> StartProcessing()
+    {
+        if (Status != MediaStatus.UPLOADED)
+        {
+            return Error.Validation("asset.invalid.status.transition", "Can only start processing from UPLOADED status");
+        }
+
+        if (!RequiresProcessing())
+        {
+            return Error.Validation("asset.processing.not.required", "This asset type does not require processing");
+        }
+
+        Status = MediaStatus.PROCESSING;
+        UpdatedAt = DateTime.UtcNow;
+        return UnitResult.Success<Error>();
+    }
 }

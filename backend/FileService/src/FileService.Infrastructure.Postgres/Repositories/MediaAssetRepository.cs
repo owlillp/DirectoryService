@@ -56,4 +56,27 @@ public class MediaAssetRepository(
             return GeneralErrors.Failure();
         }
     }
+
+    public async Task<Result<VideoAsset, Error>> GetVideoByAsync(Expression<Func<VideoAsset, bool>> expression, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var videoAsset = await dbContext.MediaAssets.OfType<VideoAsset>()
+                .FirstOrDefaultAsync(expression, cancellationToken);
+
+            return videoAsset != null
+                ? videoAsset
+                : GeneralErrors.NotFound(nameof(VideoAsset));
+        }
+        catch (OperationCanceledException ex)
+        {
+            logger.LogError(ex, "Operation was cancelled while getting video asset");
+            return GeneralErrors.Canceled("Process get video asset");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Unexpected error while getting video asset");
+            return GeneralErrors.Failure();
+        }
+    }
 }

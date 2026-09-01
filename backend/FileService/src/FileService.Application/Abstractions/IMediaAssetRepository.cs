@@ -10,4 +10,6 @@ public interface IMediaAssetRepository
     Task<Result<Guid, Error>> AddAsync(MediaAsset asset, CancellationToken cancellationToken);
 
     Task<Result<MediaAsset, Error>> GetByAsync(Expression<Func<MediaAsset, bool>> expression, CancellationToken cancellationToken);
+
+    Task<Result<VideoAsset, Error>> GetVideoByAsync(Expression<Func<VideoAsset, bool>> expression, CancellationToken cancellationToken);
 }
