@@ -126,7 +126,7 @@ public class ProcessingPipeline(
         CancellationToken cancellationToken = default)
     {
         var getProcessingResult = await videoProcessingRepository
-                .GetByAsync(vp => vp.Id == videoAssetId, cancellationToken);
+                .GetByAsync(vp => vp.VideoAssetId == videoAssetId, cancellationToken);
 
         VideoProcess videoProcess;
 
