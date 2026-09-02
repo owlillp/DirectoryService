@@ -35,4 +35,6 @@ public record ProcessingContext
 
         return UnitResult.Success<Error>();
     }
+
+    public void SetMediaAssetUrl(string mediaAssetUrl) => MediaAssetUrl = mediaAssetUrl;
 }

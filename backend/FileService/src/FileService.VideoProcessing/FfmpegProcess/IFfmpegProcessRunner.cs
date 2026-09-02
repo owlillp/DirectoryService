@@ -6,9 +6,10 @@ namespace FileService.VideoProcessing.FfmpegProcess;
 
 public interface IFfmpegProcessRunner
 {
-    // Task<UnitResult<Error>> GenerateHlsAsync(
-    //     HlsGenerationContext context,
-    //     CancellationToken cancellationToken = default);
+    Task<UnitResult<Error>> GenerateHlsAsync(
+        string inputFileUrl,
+        string outputDirectory,
+        CancellationToken cancellationToken = default);
 
     Task<Result<VideoMetadata, Error>> ExtractMetadataAsync(
         string inputFileUrl,

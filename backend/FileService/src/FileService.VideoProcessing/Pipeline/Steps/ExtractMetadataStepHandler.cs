@@ -32,6 +32,8 @@ public class ExtractMetadataStepHandler(
             return generateUrlResult.Error;
         }
 
+        context.SetMediaAssetUrl(generateUrlResult.Value);
+
         var metadataResult = await ffmpegProcessRunner.ExtractMetadataAsync(generateUrlResult.Value, cancellationToken);
         if (metadataResult.IsFailure)
         {
