@@ -2,6 +2,7 @@ using Core.Abstractions.Database;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
 using FileService.Domain.MediaProcessing;
+using FileService.VideoProcessing.Pipeline.Steps;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
 

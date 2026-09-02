@@ -2,7 +2,7 @@ using CSharpFunctionalExtensions;
 using FileService.Domain.MediaProcessing;
 using Shared.SharedKernel.Failures;
 
-namespace FileService.VideoProcessing.Pipeline;
+namespace FileService.VideoProcessing.Pipeline.Steps;
 
 public interface IProcessingStepHandler
 {
