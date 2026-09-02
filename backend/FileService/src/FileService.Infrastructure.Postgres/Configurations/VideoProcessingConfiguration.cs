@@ -14,7 +14,7 @@ public class VideoProcessingConfiguration : IEntityTypeConfiguration<VideoProces
         builder.Property(x => x.Id).HasColumnName("id");
         builder.Property(x => x.VideoAssetId).HasColumnName("video_asset_id");
         builder.Property(x => x.Status).HasConversion<string>().HasColumnName("status");
-        builder.Property(x => x.ProcessPercentage).HasColumnName("progress_percentage");
+        builder.Property(x => x.ProgressPercentage).HasColumnName("progress_percentage");
         builder.Property(x => x.ErrorMessage).HasColumnName("error_message");
         builder.Property(x => x.IsCriticalError).HasColumnName("is_critical_error");
         builder.Property(x => x.StartedAt).HasColumnName("started_at");

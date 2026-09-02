@@ -14,7 +14,7 @@ public class VideoProcessTests
         Assert.Equal(ValidVideoAssetId, process.VideoAssetId);
         Assert.NotEqual(Guid.Empty, process.Id);
         Assert.Equal(ProcessingStatus.IN_PROGRESS, process.Status);
-        Assert.Equal(0, process.ProcessPercentage);
+        Assert.Equal(0, process.ProgressPercentage);
         Assert.Equal(3, process.MaxRetryCount);
         Assert.Equal(0, process.RetryCount);
         Assert.False(process.IsCriticalError);
@@ -141,7 +141,7 @@ public class VideoProcessTests
         Assert.True(result.IsSuccess);
         Assert.Null(result.Value);
         Assert.Equal(ProcessingStatus.COMPLETED, process.Status);
-        Assert.Equal(100, process.ProcessPercentage);
+        Assert.Equal(100, process.ProgressPercentage);
         Assert.NotNull(process.CompletedAt);
     }
 
@@ -223,7 +223,7 @@ public class VideoProcessTests
             }
         }
 
-        Assert.Equal(expectedPercentage, process.ProcessPercentage);
+        Assert.Equal(expectedPercentage, process.ProgressPercentage);
     }
 
     [Fact]
@@ -362,7 +362,7 @@ public class VideoProcessTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(ProcessingStatus.IN_PROGRESS, process.Status);
-        Assert.Equal(0, process.ProcessPercentage);
+        Assert.Equal(0, process.ProgressPercentage);
         Assert.Null(process.ErrorMessage);
         Assert.Null(process.CompletedAt);
         Assert.False(process.IsCriticalError);

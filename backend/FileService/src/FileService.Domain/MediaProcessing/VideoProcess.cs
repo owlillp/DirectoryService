@@ -23,7 +23,7 @@ public class VideoProcess
 
     public ProcessingStatus Status { get; private set; }
 
-    public int ProcessPercentage { get; private set; }
+    public int ProgressPercentage { get; private set; }
 
     public string? ErrorMessage { get; private set; }
 
@@ -48,7 +48,7 @@ public class VideoProcess
         Id = Guid.NewGuid();
         VideoAssetId = videoAssetId;
         Status = ProcessingStatus.IN_PROGRESS;
-        ProcessPercentage = 0;
+        ProgressPercentage = 0;
         StartedAt = DateTime.UtcNow;
 
         InitializeSteps();
@@ -185,7 +185,7 @@ public class VideoProcess
         }
 
         Status = ProcessingStatus.IN_PROGRESS;
-        ProcessPercentage = 0;
+        ProgressPercentage = 0;
         CompletedAt = null;
         ErrorMessage = null;
         IsCriticalError = false;
@@ -244,7 +244,7 @@ public class VideoProcess
 
         Status = ProcessingStatus.COMPLETED;
         CompletedAt = DateTime.UtcNow;
-        ProcessPercentage = 100;
+        ProgressPercentage = 100;
 
         return UnitResult.Success<Error>();
     }
@@ -255,7 +255,7 @@ public class VideoProcess
             .Where(s => s.Status == StepStatus.COMPLETED)
             .Sum(s => s.Weight);
 
-        ProcessPercentage = totalProgress;
+        ProgressPercentage = totalProgress;
     }
 }
 
