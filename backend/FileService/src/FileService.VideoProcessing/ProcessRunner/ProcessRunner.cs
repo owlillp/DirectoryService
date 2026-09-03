@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
 using CSharpFunctionalExtensions;
-using FileService.Domain;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
 

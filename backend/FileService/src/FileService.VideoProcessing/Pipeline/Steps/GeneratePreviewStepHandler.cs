@@ -99,7 +99,7 @@ public class GeneratePreviewStepHandler(
             }
         }
 
-        context.SetPreviewKeys(uploadPreviewsResult.Value, spriteSheetKey);
+        context.VideoAsset.SetPreviewKeys(uploadPreviewsResult.Value, spriteSheetKey);
 
         logger.LogInformation(
             "Preview generation completed for video: {VideoAssetId}. Generated {Count} previews, SpriteSheet: {HasSprite}",

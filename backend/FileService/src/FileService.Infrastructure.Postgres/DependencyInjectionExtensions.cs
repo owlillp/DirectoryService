@@ -64,6 +64,7 @@ public static class DependencyInjectionExtensions
     private static IServiceCollection AddRepositories(IServiceCollection services)
     {
         services.AddScoped<IMediaAssetRepository, MediaAssetRepository>();
+        services.AddScoped<IVideoProcessingRepository, VideoProcessingRepository>();
 
         return services;
     }

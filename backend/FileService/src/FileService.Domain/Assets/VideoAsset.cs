@@ -5,6 +5,8 @@ namespace FileService.Domain.Assets;
 
 public class VideoAsset : MediaAsset
 {
+    private readonly List<StorageKey> _previewKeys = new();
+
     public const long MAX_SIZE = 5_368_709_120;
 
     public const string LOCATION = "videos";
@@ -18,7 +20,11 @@ public class VideoAsset : MediaAsset
 
     public static readonly string[] AllowedExtensions = ["mp4", "mkv", "avi", "mov"];
 
+    public StorageKey? SpritePreviewKey { get; private set; }
+
     public VideoMetadata? Metadata { get; private set; }
+
+    public IReadOnlyList<StorageKey> PreviewKeys => _previewKeys.AsReadOnly();
 
     // EF Core
     private VideoAsset() { }
@@ -113,5 +119,13 @@ public class VideoAsset : MediaAsset
         Status = MediaStatus.READY;
         UpdatedAt = DateTime.UtcNow;
         return UnitResult.Success<Error>();
+    }
+
+    public void SetPreviewKeys(IEnumerable<StorageKey> previewKeys, StorageKey? spriteKey = null)
+    {
+        _previewKeys.Clear();
+        _previewKeys.AddRange(previewKeys);
+        SpritePreviewKey = spriteKey;
+        UpdatedAt = DateTime.UtcNow;
     }
 }

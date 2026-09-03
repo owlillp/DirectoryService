@@ -7,7 +7,7 @@ namespace FileService.VideoProcessing;
 
 public class VideoProcessingService(
     ILogger<VideoProcessingService> logger,
-    IProcessingPipeline processingPipeline)
+    IProcessingPipeline processingPipeline) : IVideoProcessingService
 {
     public async Task<UnitResult<Error>> ProcessVideoAsync(
         Guid videoAssetId,

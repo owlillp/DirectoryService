@@ -11,6 +11,10 @@ public record VideoMetadata
 
     public int Height { get; }
 
+    // EF Core
+    private VideoMetadata()
+    { }
+
     private VideoMetadata(TimeSpan duration, int width, int height)
     {
         Duration = duration;
