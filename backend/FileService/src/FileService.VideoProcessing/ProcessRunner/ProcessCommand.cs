@@ -2,7 +2,7 @@
 
 namespace FileService.VideoProcessing.ProcessRunner;
 
-public partial record ProcessComand(string ExecutableFile, string Arguments)
+public partial record ProcessCommand(string ExecutableFile, string Arguments)
 {
     public string NormalizedArguments => NormalizeWhitespace(Arguments);
 

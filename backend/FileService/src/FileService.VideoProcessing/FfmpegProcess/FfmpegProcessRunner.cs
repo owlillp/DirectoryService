@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using FileService.Domain;
 using FileService.Domain.Assets;
+using FileService.VideoProcessing.Preview;
 using FileService.VideoProcessing.ProcessRunner;
 using Microsoft.Extensions.Options;
 using Shared.SharedKernel.Failures;
@@ -8,10 +9,12 @@ using Shared.SharedKernel.Failures;
 namespace FileService.VideoProcessing.FfmpegProcess;
 
 public class FfmpegProcessRunner(
-    IOptions<VideoProcessingOptions> options,
+    IOptions<VideoProcessingOptions> videoProcessingOptions,
+    IOptions<PreviewOptions> previewOptions,
     IProcessRunner processRunner) : IFfmpegProcessRunner
 {
-    private readonly VideoProcessingOptions _options = options.Value;
+    private readonly VideoProcessingOptions _videoProcessingOptions = videoProcessingOptions.Value;
+    private readonly PreviewOptions _previewOptions = previewOptions.Value;
 
     public async Task<UnitResult<Error>> GenerateHlsAsync(
         string inputFileUrl,
@@ -19,7 +22,7 @@ public class FfmpegProcessRunner(
         CancellationToken cancellationToken = default)
     {
         string arguments = BuildFfmpegHlsArguments(inputFileUrl, outputDirectory);
-        var command = new ProcessComand(_options.FfmpegPath, arguments);
+        var command = new ProcessCommand(_videoProcessingOptions.FfmpegPath, arguments);
 
         var processResult = await processRunner.RunAsync(command, cancellationToken: cancellationToken);
         if (processResult.IsFailure)
@@ -35,7 +38,7 @@ public class FfmpegProcessRunner(
         CancellationToken cancellationToken = default)
     {
         string arguments = BuildFfprobeArguments(inputFileUrl);
-        var command = new ProcessComand(_options.FfprobePath, arguments);
+        var command = new ProcessCommand(_videoProcessingOptions.FfprobePath, arguments);
 
         var processResult = await processRunner.RunAsync(command, cancellationToken: cancellationToken);
         if (processResult.IsFailure)
@@ -44,6 +47,75 @@ public class FfmpegProcessRunner(
         }
 
         return FfprobeOutputParser.Parse(processResult.Value.StandardOutput);
+    }
+
+    public async Task<UnitResult<Error>> ExtractFrameAsync(
+        string inputFileUrl,
+        string outputPath,
+        TimeSpan timestamp,
+        CancellationToken cancellationToken = default)
+    {
+        string? directory = Path.GetDirectoryName(outputPath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        string arguments = BuildExtractFrameArguments(
+            inputFileUrl,
+            outputPath,
+            timestamp,
+            _previewOptions.Quality);
+
+        var command = new ProcessCommand(_videoProcessingOptions.FfmpegPath, arguments);
+
+        var processResult = await processRunner.RunAsync(command, cancellationToken: cancellationToken);
+        if (processResult.IsFailure)
+        {
+            return processResult.Error;
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> CreateSpriteSheetAsync(
+        IEnumerable<string> spritePaths,
+        string outputPath,
+        CancellationToken cancellationToken = default)
+    {
+        string[] paths = spritePaths.ToArray();
+        if (!paths.Any())
+        {
+            return Error.Validation("sprite.no.images", "No images provided for sprite sheet");
+        }
+
+        string? directory = Path.GetDirectoryName(outputPath);
+        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        if (paths.Length == 1)
+        {
+            File.Copy(paths[0], outputPath, overwrite: true);
+            return UnitResult.Success<Error>();
+        }
+
+        string arguments = BuildSpriteSheetArguments(
+            paths,
+            outputPath,
+            _previewOptions.FrameWidth,
+            _previewOptions.FrameHeight,
+            _previewOptions.Quality);
+
+        var command = new ProcessCommand(_videoProcessingOptions.FfmpegPath, arguments);
+        var processResult = await processRunner.RunAsync(command, cancellationToken: cancellationToken);
+        if (processResult.IsFailure)
+        {
+            return processResult.Error;
+        }
+
+        return UnitResult.Success<Error>();
     }
 
     private static string BuildFfprobeArguments(string inputFileUrl)
@@ -60,7 +132,7 @@ public class FfmpegProcessRunner(
 
     private string BuildFfmpegHlsArguments(string inputFileUrl, string outputDirectory)
     {
-        string hwaccel = _options.UseHardwareAcceleration
+        string hwaccel = _videoProcessingOptions.UseHardwareAcceleration
             ? "-hwaccel cuda -hwaccel_output_format cuda"
             : string.Empty;
 
@@ -88,8 +160,8 @@ public class FfmpegProcessRunner(
 
     private string BuildVideoMapping()
     {
-        string encoder = _options.VideoEncoder;
-        string preset = _options.VideoPreset;
+        string encoder = _videoProcessingOptions.VideoEncoder;
+        string preset = _videoProcessingOptions.VideoPreset;
 
         return $"""
                 -map \"[v0out]\" -c:v:0 {encoder} -preset {preset} -b:v:0 2M -maxrate:v:0 2M -bufsize:v:0 2M -g 20
@@ -100,10 +172,68 @@ public class FfmpegProcessRunner(
 
     private string BuildAudioMapping()
     {
-        return $"""
+        return """
                 -map \"[a0]\" -c:a:0 aac -b:a:0 96k -ac 2
                 -map \"[a1]\" -c:a:1 aac -b:a:1 96k -ac 2
                 -map \"[a2]\" -c:a:2 aac -b:a:2 96k -ac 2
                 """;
     }
+
+    private string BuildExtractFrameArguments(
+        string inputFileUrl,
+        string outputPath,
+        TimeSpan timestamp,
+        int quality)
+    {
+        string seconds = timestamp.TotalSeconds.ToString("F3", System.Globalization.CultureInfo.InvariantCulture);
+        return $"-y -ss {seconds} -i \"{inputFileUrl}\" " +
+               $"-frames:v 1 -q:v {quality} \"{outputPath}\"";
+    }
+
+    private string BuildSpriteSheetArguments(
+        IEnumerable<string> imagePaths,
+        string outputPath,
+        int frameWidth,
+        int frameHeight,
+        int quality)
+    {
+        string[] paths = imagePaths.ToArray();
+        int totalFrames = paths.Length;
+
+        int cols = (int)Math.Ceiling(Math.Sqrt(totalFrames));
+        int rows = (int)Math.Ceiling((double)totalFrames / cols);
+
+        string inputs = string.Join(" ", paths.Select(p => $"-i \"{p}\""));
+
+        var filterParts = new List<string>();
+        for (int i = 0; i < totalFrames; i++)
+        {
+            filterParts.Add($"[{i}:v]scale={frameWidth}:{frameHeight}[v{i}]");
+        }
+
+        string gridInputs = string.Join(string.Empty, Enumerable.Range(0, totalFrames).Select(i => $"[v{i}]"));
+
+        var layouts = new List<string>();
+        for (int row = 0; row < rows; row++)
+        {
+            for (int col = 0; col < cols; col++)
+            {
+                int index = (row * cols) + col;
+                if (index >= totalFrames) break;
+
+                int x = col * frameWidth;
+                int y = row * frameHeight;
+                layouts.Add($"{x}_{y}");
+            }
+        }
+
+        string layout = string.Join("|", layouts);
+        filterParts.Add($"{gridInputs}xstack=inputs={totalFrames}:layout={layout}[grid]");
+
+        string filterComplex = string.Join(";", filterParts);
+
+        return $"{inputs} -filter_complex \"{filterComplex}\" -map \"[grid]\" " +
+               $"-frames:v 1 -q:v {quality} \"{outputPath}\"";
+    }
+
 }

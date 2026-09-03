@@ -10,7 +10,7 @@ namespace FileService.VideoProcessing.ProcessRunner;
 public class ProcessRunner(ILogger<ProcessRunner> logger) : IProcessRunner
 {
     public async Task<Result<ProcessResult, Error>> RunAsync(
-        ProcessComand command,
+        ProcessCommand command,
         Action<string>? onOutput = null,
         CancellationToken cancellationToken = default)
     {

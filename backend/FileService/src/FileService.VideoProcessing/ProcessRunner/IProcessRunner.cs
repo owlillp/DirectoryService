@@ -6,7 +6,7 @@ namespace FileService.VideoProcessing.ProcessRunner;
 public interface IProcessRunner
 {
     Task<Result<ProcessResult, Error>> RunAsync(
-        ProcessComand command,
+        ProcessCommand command,
         Action<string>? onOutput = null,
         CancellationToken cancellationToken = default);
 }
