@@ -10,6 +10,7 @@ public class VideoAsset : MediaAsset
     public const string LOCATION = "videos";
     public const string RAW_PREFIX = "raw";
     public const string HLS_FOLDER = "hls";
+    public const string HLS_ROOT_PREFIX = "hls";
     public const string MASTER_PLAYLIST_NAME = "master.m3u8";
     public const string STREAM_PLAYLIST_PATTERN = "%v_stream.m3u8";
     public const string SEGMENT_FILE_PATTERN = "%v_%06d.ts";
@@ -58,6 +59,33 @@ public class VideoAsset : MediaAsset
 
     public override bool RequiresProcessing() => true;
 
+    public Result<StorageKey, Error> GetHlsRootKey()
+        => StorageKey.Create(LOCATION, HLS_ROOT_PREFIX, Id.ToString());
+
+    public Result<StorageKey, Error> GetHlsMasterPlaylistKey()
+    {
+        var hlsRootResult = GetHlsRootKey();
+        if (hlsRootResult.IsFailure)
+        {
+            return hlsRootResult.Error;
+        }
+
+        return hlsRootResult.Value.AppendKey(MASTER_PLAYLIST_NAME);
+    }
+
+    public UnitResult<Error> SetHlsMasterPlaylistKey(StorageKey value)
+    {
+        if (Status != MediaStatus.PROCESSING)
+        {
+            return Error.Validation("video.invalid.status", "Can only set processed data during processing");
+        }
+
+        Key = value;
+        UpdatedAt = DateTime.UtcNow;
+
+        return UnitResult.Success<Error>();
+    }
+
     public UnitResult<Error> StartProcessing()
     {
         if (Status != MediaStatus.UPLOADED)
@@ -71,6 +99,18 @@ public class VideoAsset : MediaAsset
         }
 
         Status = MediaStatus.PROCESSING;
+        UpdatedAt = DateTime.UtcNow;
+        return UnitResult.Success<Error>();
+    }
+
+    public UnitResult<Error> CompleteProcessing()
+    {
+        if (Status != MediaStatus.PROCESSING)
+        {
+            return Error.Validation("asset.invalid.status.transition", "Can only complete processing from PROCESSING status");
+        }
+
+        Status = MediaStatus.READY;
         UpdatedAt = DateTime.UtcNow;
         return UnitResult.Success<Error>();
     }

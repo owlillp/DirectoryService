@@ -37,4 +37,11 @@ public record ProcessingContext
     }
 
     public void SetMediaAssetUrl(string mediaAssetUrl) => MediaAssetUrl = mediaAssetUrl;
+
+    internal void Cleanup()
+    {
+        WorkingDirectory = null;
+        HlsOutputDirectory = null;
+        MediaAssetUrl = null;
+    }
 }

@@ -8,10 +8,10 @@ public class GeneratePreviewStepHandler : IProcessingStepHandler
 {
     public StepType StepType => StepType.GENERATE_PREVIEW;
 
-    public Task<Result<ProcessingContext, Error>> ExecuteAsync(
+    public async Task<Result<ProcessingContext, Error>> ExecuteAsync(
         ProcessingContext context,
         CancellationToken cancellationToken = default)
     {
-        
+        return await Task.FromResult(context);
     }
 }

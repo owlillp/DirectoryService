@@ -58,15 +58,6 @@ public class VideoProcess
     private VideoProcess()
     { }
 
-    private void InitializeSteps()
-    {
-        int order = 0;
-        foreach (var (type, weight) in _stepWeights)
-        {
-            _steps.Add(new ProcessingStep(type, order++, weight));
-        }
-    }
-
     public Result<ProcessingStep?, Error> ProcessNextStep()
     {
         if (Status != ProcessingStatus.IN_PROGRESS)
@@ -227,7 +218,7 @@ public class VideoProcess
         return UnitResult.Success<Error>();
     }
 
-    private UnitResult<Error> Complete()
+    public UnitResult<Error> Complete()
     {
         if (Status != ProcessingStatus.IN_PROGRESS)
         {
@@ -247,6 +238,15 @@ public class VideoProcess
         ProgressPercentage = 100;
 
         return UnitResult.Success<Error>();
+    }
+
+    private void InitializeSteps()
+    {
+        int order = 0;
+        foreach (var (type, weight) in _stepWeights)
+        {
+            _steps.Add(new ProcessingStep(type, order++, weight));
+        }
     }
 
     private void RecalculateProgress()

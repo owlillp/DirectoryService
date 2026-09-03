@@ -28,6 +28,19 @@ public class ProcessingPipeline(
 
         var context = contextResult.Value;
 
+        var executeResult = await ExecuteAllStepsAsync(context, cancellationToken);
+        if (executeResult.IsFailure)
+        {
+            return await FinalizeWithFailureAsync(context, executeResult.Error, cancellationToken);
+        }
+
+        return await FinalizeAsync(context, cancellationToken);
+    }
+
+    private async Task<UnitResult<Error>> ExecuteAllStepsAsync(ProcessingContext context, CancellationToken cancellationToken)
+    {
+        var videoAssetId = context.VideoAsset.Id;
+
         while (true)
         {
             var stepResult = context.VideoProcess.ProcessNextStep();
@@ -120,6 +133,58 @@ public class ProcessingPipeline(
                 return completeSaveResult.Error;
             }
         }
+    }
+
+    private async Task<UnitResult<Error>> FinalizeAsync(ProcessingContext context, CancellationToken cancellationToken)
+    {
+        var videoAssetId = context.VideoAsset.Id;
+
+        var completeAssetResult = context.VideoAsset.CompleteProcessing();
+        if (completeAssetResult.IsFailure)
+        {
+            return completeAssetResult.Error;
+        }
+
+        var completeProcessResult = context.VideoProcess.Complete();
+        if (completeProcessResult.IsFailure)
+        {
+            return completeProcessResult.Error;
+        }
+
+        logger.LogInformation(
+            "Video processing completed successfully for videoAssetId: {videoAssetId}",
+            videoAssetId);
+
+        var saveResult = await transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+        {
+            logger.LogError("Failed to save final state for VideoAssetId: {videoAssetId}", videoAssetId);
+            return saveResult.Error;
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
+    private async Task<UnitResult<Error>> FinalizeWithFailureAsync(
+        ProcessingContext context,
+        Error error,
+        CancellationToken cancellationToken)
+    {
+        var videoAssetId = context.VideoAsset.Id;
+
+        logger.LogError(
+            "Video processing failed for videoAssetId: {videoAssetId}. Error: {error}",
+            videoAssetId,
+            error);
+
+        var saveResult = await transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+        {
+            logger.LogError("Failed to save failure state for VideoAssetId: {videoAssetId}", videoAssetId);
+            return saveResult.Error;
+        }
+
+        return UnitResult.Failure(error);
     }
 
     private async Task<Result<ProcessingContext, Error>> LoadContextAsync(

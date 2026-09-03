@@ -39,4 +39,10 @@ public interface IFileStorageProvider
         string uploadId,
         IReadOnlyList<PartETagDto> partETags,
         CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> UploadFileAsync(
+        StorageKey storageKey,
+        FileStream fileStream,
+        string contentType,
+        CancellationToken cancellationToken);
 }
