@@ -1,4 +1,5 @@
 using CSharpFunctionalExtensions;
+using FileService.Domain;
 using FileService.Domain.Assets;
 using FileService.Domain.MediaProcessing;
 using Shared.SharedKernel.Failures;
@@ -7,6 +8,8 @@ namespace FileService.VideoProcessing.Pipeline;
 
 public record ProcessingContext
 {
+    private readonly List<StorageKey> _previewKeys = new();
+
     private const string HLS_SUBDIRECTORY = "hls";
 
     public required VideoProcess VideoProcess { get; init; }
@@ -18,6 +21,10 @@ public record ProcessingContext
     public string? HlsOutputDirectory { get; private set; }
 
     public string? MediaAssetUrl { get; private set; }
+
+    public StorageKey? SpritePreviewKey { get; private set; }
+
+    public IReadOnlyList<StorageKey> PreviewKeys => _previewKeys.AsReadOnly();
 
     public UnitResult<Error> CreateWorkingDirectory()
     {
@@ -34,6 +41,13 @@ public record ProcessingContext
         }
 
         return UnitResult.Success<Error>();
+    }
+
+    public void SetPreviewKeys(IEnumerable<StorageKey> previewKeys, StorageKey? spriteKey = null)
+    {
+        _previewKeys.Clear();
+        _previewKeys.AddRange(previewKeys);
+        SpritePreviewKey = spriteKey;
     }
 
     public void SetMediaAssetUrl(string mediaAssetUrl) => MediaAssetUrl = mediaAssetUrl;
