@@ -97,6 +97,8 @@ public class GeneratePreviewStepHandler(
 
                 return uploadSpriteSheetResult.Error;
             }
+
+            spriteSheetKey = uploadSpriteSheetResult.Value;
         }
 
         context.VideoAsset.SetPreviewKeys(uploadPreviewsResult.Value, spriteSheetKey);

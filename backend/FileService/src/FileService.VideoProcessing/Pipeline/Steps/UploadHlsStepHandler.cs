@@ -9,7 +9,7 @@ using Shared.SharedKernel.Failures;
 namespace FileService.VideoProcessing.Pipeline.Steps;
 
 public class UploadHlsStepHandler(
-    ILogger<GenerateHlsStepHandler> logger,
+    ILogger<UploadHlsStepHandler> logger,
     IOptions<VideoProcessingOptions> options,
     IFileStorageProvider fileStorageProvider) : IProcessingStepHandler
 {
