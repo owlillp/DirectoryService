@@ -121,7 +121,7 @@ public class GeneratePreviewStepHandler(
         {
             string fileName = Path.GetFileName(previewPath);
 
-            var storageKeyResult = StorageKey.Create(fileName, videoAssetId.ToString(), PreviewAsset.LOCATION);
+            var storageKeyResult = StorageKey.Create(PreviewAsset.LOCATION, videoAssetId.ToString(), fileName);
             if (storageKeyResult.IsFailure)
             {
                 return storageKeyResult.Error;
@@ -152,7 +152,7 @@ public class GeneratePreviewStepHandler(
     {
         string spriteFileName = _options.SpriteSheetFileName;
 
-        var storageKeyResult = StorageKey.Create(spriteFileName, videoAssetId.ToString(), PreviewAsset.LOCATION);
+        var storageKeyResult = StorageKey.Create(PreviewAsset.LOCATION, videoAssetId.ToString(), spriteFileName);
         if (storageKeyResult.IsFailure)
         {
             logger.LogWarning("Failed to create storage key for sprite sheet: {error}", storageKeyResult.Error);

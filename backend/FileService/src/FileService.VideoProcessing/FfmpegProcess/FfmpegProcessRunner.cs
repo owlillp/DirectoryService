@@ -119,16 +119,7 @@ public class FfmpegProcessRunner(
     }
 
     private static string BuildFfprobeArguments(string inputFileUrl)
-    {
-        return $"""
-                -v error
-                -select_streams v:0
-                -show_entries stream=width,height
-                -show_entries format=duration
-                -of json
-                "{inputFileUrl}"
-                """;
-    }
+        => $"-v error -select_streams v:0 -show_entries stream=width,height -show_entries format=duration -of json \"{inputFileUrl}\"";
 
     private string BuildFfmpegHlsArguments(string inputFileUrl, string outputDirectory)
     {
@@ -136,26 +127,31 @@ public class FfmpegProcessRunner(
             ? "-hwaccel cuda -hwaccel_output_format cuda"
             : string.Empty;
 
-        return $"""
-                -y -stats -loglevel error {hwaccel}-i \"{inputFileUrl}\"
-                -filter_complex \"
-                [0:v]split=3[v0][v1][v2];
-                [v0]scale=w=-2:h=360[v0out];
-                [v1]scale=w=-2:h=720[v1out];
-                [v2]scale=w=-2:h=1080[v2out];
-                [0:a]asplit=3[a0][a1][a2]\"
-                {BuildVideoMapping()}
-                {BuildAudioMapping()}
-                -f hls
-                -var_stream_map \"v:0,a:0,name:360p v:1,a:1,name:720p v:2,a:2,name:1080p\"
-                -hls time 4
-                -hls_list_size 0
-                -hls_segment_type mpegts
-                -hls_playlist_type vod
-                -hls_segment_filename {outputDirectory}/{VideoAsset.SEGMENT_FILE_PATTERN}
-                -master_pl_name {VideoAsset.MASTER_PLAYLIST_NAME}
-                {outputDirectory}/{VideoAsset.STREAM_PLAYLIST_PATTERN}
-                """;
+        string normalizedInputUrl = NormalizePath(inputFileUrl);
+        string normalizedOutputDir = NormalizePath(outputDirectory);
+
+        string segmentPattern = CombineAndNormalize(normalizedOutputDir, VideoAsset.SEGMENT_FILE_PATTERN);
+        string streamPlaylistPattern = CombineAndNormalize(normalizedOutputDir, VideoAsset.STREAM_PLAYLIST_PATTERN);
+        string masterPlaylistPath = CombineAndNormalize(normalizedOutputDir, VideoAsset.MASTER_PLAYLIST_NAME);
+
+        return $"-y -stats -loglevel error {hwaccel} -i \"{normalizedInputUrl}\" " +
+               "-filter_complex \"" +
+               "[0:v]split=3[v0][v1][v2]; " +
+               "[v0]scale=w=-2:h=360[v0out]; " +
+               "[v1]scale=w=-2:h=720[v1out]; " +
+               "[v2]scale=w=-2:h=1080[v2out]; " +
+               "[0:a]asplit=3[a0][a1][a2]\" " +
+               BuildVideoMapping() +
+               BuildAudioMapping() +
+               "-f hls " +
+               "-var_stream_map \"v:0,a:0,name:360p v:1,a:1,name:720p v:2,a:2,name:1080p\" " +
+               "-hls_time 4 " +
+               "-hls_list_size 0 " +
+               "-hls_segment_type mpegts " +
+               "-hls_playlist_type vod " +
+               $"-hls_segment_filename \"{segmentPattern}\" " +
+               $"-master_pl_name \"{VideoAsset.MASTER_PLAYLIST_NAME}\" " +
+               $"\"{streamPlaylistPattern}\"";
     }
 
     private string BuildVideoMapping()
@@ -163,20 +159,16 @@ public class FfmpegProcessRunner(
         string encoder = _videoProcessingOptions.VideoEncoder;
         string preset = _videoProcessingOptions.VideoPreset;
 
-        return $"""
-                -map \"[v0out]\" -c:v:0 {encoder} -preset {preset} -b:v:0 2M -maxrate:v:0 2M -bufsize:v:0 2M -g 20
-                -map \"[v1out]\" -c:v:1 {encoder} -preset {preset} -b:v:1 3M -maxrate:v:0 3M -bufsize:v:1 3M -g 20
-                -map \"[v2out]\" -c:v:2 {encoder} -preset {preset} -b:v:2 5M -maxrate:v:0 5M -bufsize:v:2 5M -g 20
-                """;
+        return $"-map \"[v0out]\" -c:v:0 {encoder} -preset {preset} -b:v:0 2M -maxrate:v:0 2M -bufsize:v:0 2M -g 20 " +
+               $"-map \"[v1out]\" -c:v:1 {encoder} -preset {preset} -b:v:1 3M -maxrate:v:1 3M -bufsize:v:1 3M -g 20 " +
+               $"-map \"[v2out]\" -c:v:2 {encoder} -preset {preset} -b:v:2 5M -maxrate:v:2 5M -bufsize:v:2 5M -g 20 ";
     }
 
     private string BuildAudioMapping()
     {
-        return """
-                -map \"[a0]\" -c:a:0 aac -b:a:0 96k -ac 2
-                -map \"[a1]\" -c:a:1 aac -b:a:1 96k -ac 2
-                -map \"[a2]\" -c:a:2 aac -b:a:2 96k -ac 2
-                """;
+        return "-map \"[a0]\" -c:a:0 aac -b:a:0 96k -ac 2 " +
+               "-map \"[a1]\" -c:a:1 aac -b:a:1 96k -ac 2 " +
+               "-map \"[a2]\" -c:a:2 aac -b:a:2 96k -ac 2 ";
     }
 
     private string BuildExtractFrameArguments(
@@ -236,4 +228,12 @@ public class FfmpegProcessRunner(
                $"-frames:v 1 -q:v {quality} \"{outputPath}\"";
     }
 
+    private string NormalizePath(string path)
+        => path?.Replace("\\", "/") ?? string.Empty;
+
+    private string CombineAndNormalize(params string[] parts)
+    {
+        string combined = Path.Combine(parts);
+        return NormalizePath(combined);
+    }
 }

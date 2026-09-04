@@ -72,41 +72,26 @@ public static class FfprobeOutputParser
 
     private sealed class FormatInfo
     {
+        private double? _duration;
+
         [JsonPropertyName("duration")]
-        [JsonConverter(typeof(StringToDoubleConverter))]
-        public double? Duration { get; set; }
-    }
-
-    private sealed class StringToDoubleConverter : JsonConverter<double?>
-    {
-        public override double? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public string? DurationString
         {
-            if (reader.TokenType == JsonTokenType.String)
+            get => _duration?.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            set
             {
-                string? str = reader.GetString();
-                return double.TryParse(str, out double result)
-                    ? result
-                    : null;
+                if (value != null && double.TryParse(
+                        value,
+                        System.Globalization.NumberStyles.Any,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out double result))
+                {
+                    _duration = result;
+                }
             }
-
-            if (reader.TokenType == JsonTokenType.Number)
-            {
-                return reader.GetDouble();
-            }
-
-            return null;
         }
 
-        public override void Write(Utf8JsonWriter writer, double? value, JsonSerializerOptions options)
-        {
-            if (value.HasValue)
-            {
-                writer.WriteNumberValue(value.Value);
-            }
-            else
-            {
-                writer.WriteNullValue();
-            }
-        }
+        [JsonIgnore]
+        public double? Duration => _duration;
     }
 }

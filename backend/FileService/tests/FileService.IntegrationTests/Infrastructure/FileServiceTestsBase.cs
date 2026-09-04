@@ -1,11 +1,15 @@
+using Amazon.S3;
 using FileService.Infrastructure.Postgres;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FileService.IntegrationTests.Infrastructure;
 
+[Collection("FileServiceTestsCollection")]
 public class FileServiceTestsBase(IntegrationTestsWebFactory factory)
     : IClassFixture<IntegrationTestsWebFactory>, IAsyncLifetime
 {
+    protected const string TestFileName = "test-file.mp4";
+
     private readonly Func<Task> _resetDatabaseAsync = factory.ResetDatabaseAsync;
 
     protected HttpClient AppHttpClient { get; init; } = factory.CreateClient();
@@ -30,5 +34,12 @@ public class FileServiceTestsBase(IntegrationTestsWebFactory factory)
         await using var scope = Services.CreateAsyncScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<FileServiceDbContext>();
         await action(dbContext);
+    }
+
+    protected async Task ExecuteInS3(Func<IAmazonS3, Task> action)
+    {
+        await using var scope = Services.CreateAsyncScope();
+        var s3Client = scope.ServiceProvider.GetRequiredService<IAmazonS3>();
+        await action(s3Client);
     }
 }

@@ -145,10 +145,13 @@ public class ProcessingPipeline(
             return completeAssetResult.Error;
         }
 
-        var completeProcessResult = context.VideoProcess.Complete();
-        if (completeProcessResult.IsFailure)
+        if (context.VideoProcess.Status != ProcessingStatus.COMPLETED)
         {
-            return completeProcessResult.Error;
+            var completeProcessResult = context.VideoProcess.Complete();
+            if (completeProcessResult.IsFailure)
+            {
+                return completeProcessResult.Error;
+            }
         }
 
         logger.LogInformation(
