@@ -74,4 +74,15 @@ public sealed record StorageKey
 
         return string.Join("/", normalizedParts);
     }
+
+    public Result<StorageKey, Error> AppendKey(string childKey)
+    {
+        if (string.IsNullOrWhiteSpace(childKey))
+        {
+            return GeneralErrors.ValueIsInvalid("childKey");
+        }
+
+        string prefix = Value;
+        return Create(Location, prefix, childKey);
+    }
 }

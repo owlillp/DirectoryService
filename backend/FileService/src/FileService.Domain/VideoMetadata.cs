@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Text.Json.Serialization;
+using CSharpFunctionalExtensions;
 using Shared.SharedKernel.Failures;
 
 namespace FileService.Domain;
@@ -11,6 +12,11 @@ public record VideoMetadata
 
     public int Height { get; }
 
+    // EF Core
+    private VideoMetadata()
+    { }
+
+    [JsonConstructor]
     private VideoMetadata(TimeSpan duration, int width, int height)
     {
         Duration = duration;

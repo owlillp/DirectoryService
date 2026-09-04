@@ -297,6 +297,32 @@ public class S3Provider(
         }
     }
 
+    public async Task<UnitResult<Error>> UploadFileAsync(
+        StorageKey storageKey,
+        FileStream fileStream,
+        string contentType,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var request = new PutObjectRequest
+            {
+                BucketName = storageKey.Location,
+                Key = storageKey.Value,
+                InputStream = fileStream,
+                ContentType = contentType ?? "application/octet-stream",
+            };
+
+            await s3Client.PutObjectAsync(request, cancellationToken);
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error during upload file to {key}", storageKey.Value);
+            return S3ErrorMapper.ToError(ex);
+        }
+    }
+
     private string ReplaceEndpoint(string presignedUrl)
         => presignedUrl.Replace(_fileStorageOptions.Endpoint, _fileStorageOptions.ExternalEndpoint, StringComparison.OrdinalIgnoreCase);
 }
