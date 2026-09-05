@@ -67,11 +67,14 @@ public static class DependencyInjectionExtensions
                     });
 
                     persistenceOptions.UseNewtonsoftJsonSerializer();
-                    persistenceOptions.UseProperties = true;
                 });
             });
 
-            services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+            services.AddQuartzHostedService(options =>
+            {
+                options.WaitForJobsToComplete = true;
+                options.AwaitApplicationStarted = true;
+            });
 
             return services;
         }

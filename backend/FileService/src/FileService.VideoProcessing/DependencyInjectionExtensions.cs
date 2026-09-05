@@ -1,4 +1,6 @@
-﻿using FileService.VideoProcessing.FfmpegProcess;
+﻿using FileService.Application.Abstractions;
+using FileService.VideoProcessing.FfmpegProcess;
+using FileService.VideoProcessing.Jobs;
 using FileService.VideoProcessing.Pipeline;
 using FileService.VideoProcessing.Pipeline.Steps;
 using FileService.VideoProcessing.Preview;
@@ -23,6 +25,9 @@ public static class DependencyInjectionExtensions
         services.AddScoped<IProcessingPipeline, ProcessingPipeline>();
 
         RegisterStepHandlers(services);
+
+        services.AddScoped<IProcessingJobFactory, VideoProcessingJobFactory>();
+        services.AddTransient<VideoProcessingJob>();
 
         return services;
     }
