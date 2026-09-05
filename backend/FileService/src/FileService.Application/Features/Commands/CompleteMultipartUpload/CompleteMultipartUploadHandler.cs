@@ -158,13 +158,12 @@ public class CompleteMultipartUploadHandler(
             }
 
             transaction.Commit();
+            return mediaAsset.Id;
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error completing multipart upload for MediaAssetId: {mediaAssetId}",  mediaAsset.Id);
             return GeneralErrors.Failure("Error completing multipart upload").ToErrors();
         }
-
-        return mediaAsset.Id;
     }
 }
