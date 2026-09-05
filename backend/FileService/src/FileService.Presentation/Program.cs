@@ -1,4 +1,5 @@
 using System.Globalization;
+using FileService.Infrastructure.Postgres.Initialization;
 using FileService.Presentation.Configuration;
 using Serilog;
 
@@ -16,6 +17,12 @@ try
     builder.Services.AddDependency(builder.Configuration);
 
     var app = builder.Build();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var quartzInitializer = scope.ServiceProvider.GetRequiredService<QuartzDbInitializer>();
+        await quartzInitializer.InitializeAsync();
+    }
 
     await app.Configure(args);
 
