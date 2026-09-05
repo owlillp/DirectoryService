@@ -1,4 +1,6 @@
-﻿using Framework.Middlewares;
+﻿using CrystalQuartz.AspNetCore;
+using Framework.Middlewares;
+using Quartz;
 using Serilog;
 
 namespace FileService.Presentation.Configuration;
@@ -28,6 +30,9 @@ public static class AppConfigurationExtensions
             app.UseSwaggerUI();
         }
 
+        app.UseRouting();
+        app.UseAuthorization();
+        app.UseCrystalQuartz(() => app.Services.GetRequiredService<ISchedulerFactory>().GetScheduler());
         app.MapControllers();
 
         return app;

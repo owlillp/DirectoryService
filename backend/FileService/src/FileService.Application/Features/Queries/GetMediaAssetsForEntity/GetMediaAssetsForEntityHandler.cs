@@ -34,7 +34,7 @@ public class GetMediaAssetsForEntityHandler(
             .ToListAsync(cancellationToken);
 
         var uploadedAssetKeys = mediaAssets
-            .Where(ma => ma.Status == MediaStatus.UPLOADED)
+            .Where(ma => ma.Status == MediaStatus.READY)
             .Select(ma => ma.UploadKey)
             .ToList();
 

@@ -30,7 +30,7 @@ public static class FfprobeOutputParser
             return GeneralErrors.ValueIsInvalid("Empty ffprobe response");
         }
 
-        StreamInfo? streamInfo = response.Streams.FirstOrDefault();
+        StreamInfo? streamInfo = response.Streams?.FirstOrDefault();
         if (streamInfo == null)
         {
             return GeneralErrors.ValueIsInvalid("No streams found");

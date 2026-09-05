@@ -84,6 +84,16 @@ public abstract class MediaAsset
         return UnitResult.Success<Error>();
     }
 
+    public UnitResult<Error> MarkReady()
+    {
+        if (Status != MediaStatus.UPLOADED && Status != MediaStatus.PROCESSING)
+            return Error.Validation("asset.invalid.status.transition", "Can only mark as ready from UPLOADED or PROCESSING status");
+
+        Status = MediaStatus.READY;
+        UpdatedAt = DateTime.UtcNow;
+        return UnitResult.Success<Error>();
+    }
+
     public void MarkFailed()
     {
         Status = MediaStatus.FAILED;

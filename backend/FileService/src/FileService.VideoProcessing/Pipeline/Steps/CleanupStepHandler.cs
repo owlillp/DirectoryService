@@ -51,7 +51,7 @@ public class CleanupStepHandler(
         {
            logger.LogWarning(
                ex,
-               "Failed to delete working directory: {workingDirectory}. Will be cleaned up later", 
+               "Failed to delete working directory: {workingDirectory}. Will be cleaned up later",
                context.WorkingDirectory);
         }
 

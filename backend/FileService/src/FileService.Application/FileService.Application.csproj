@@ -4,11 +4,14 @@
     <ProjectReference Include="..\FileService.Domain\FileService.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="CrystalQuartz.AspNetCore" Version="7.3.0" />
     <PackageReference Include="Owlip.Core" Version="0.0.2" />
     <PackageReference Include="Owlip.Framework" Version="0.0.3" />
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Caching.Hybrid" Version="10.8.0" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.10" />
+    <PackageReference Include="Quartz.Extensions.Hosting" Version="3.20.1" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.20.1" />
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 using Core.Abstractions.Database;
 using FileService.Application.Abstractions;
 using FileService.Infrastructure.Postgres.Database;
+using FileService.Infrastructure.Postgres.Initialization;
 using FileService.Infrastructure.Postgres.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,11 +16,11 @@ public static class DependencyInjectionExtensions
     public static IServiceCollection AddInfrastructurePostgres(this IServiceCollection services, IConfiguration configuration)
     {
         AddDbContext(services, configuration);
-
         AddRepositories(services);
 
         services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
         services.AddScoped<ITransactionManager, TransactionManager>();
+        services.AddScoped<QuartzDbInitializer>();
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
