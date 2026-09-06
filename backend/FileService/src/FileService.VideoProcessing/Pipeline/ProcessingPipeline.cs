@@ -3,6 +3,7 @@ using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
 using FileService.Domain.MediaProcessing;
 using FileService.VideoProcessing.Pipeline.Steps;
+using FileService.VideoProcessing.Progress;
 using Microsoft.Extensions.Logging;
 using Shared.SharedKernel.Failures;
 
@@ -13,7 +14,8 @@ public class ProcessingPipeline(
     IEnumerable<IProcessingStepHandler> handlers,
     IVideoProcessingRepository videoProcessingRepository,
     IMediaAssetRepository mediaAssetRepository,
-    ITransactionManager transactionManager
+    ITransactionManager transactionManager,
+    IVideoProgressReporter progressReporter
     ) : IProcessingPipeline
 {
     public async Task<UnitResult<Error>> ProcessAllStepsAsync(
@@ -70,6 +72,8 @@ public class ProcessingPipeline(
                 currentStep.Order,
                 videoAssetId);
 
+            progressReporter.Publish(context.VideoProcess);
+
             var stepHandler = handlers.FirstOrDefault(h => h.StepType == currentStep.StepType);
             if (stepHandler == null)
             {
@@ -111,6 +115,7 @@ public class ProcessingPipeline(
                         videoAssetId);
                 }
 
+                progressReporter.Publish(context.VideoProcess);
                 return executionResult.Error;
             }
 
@@ -132,6 +137,8 @@ public class ProcessingPipeline(
 
                 return completeSaveResult.Error;
             }
+
+            progressReporter.Publish(context.VideoProcess);
         }
     }
 
@@ -165,6 +172,7 @@ public class ProcessingPipeline(
             return saveResult.Error;
         }
 
+        progressReporter.Publish(context.VideoProcess, finalize: true);
         return UnitResult.Success<Error>();
     }
 
@@ -187,6 +195,7 @@ public class ProcessingPipeline(
             return saveResult.Error;
         }
 
+        progressReporter.Publish(context.VideoProcess, finalize: true);
         return UnitResult.Failure(error);
     }
 

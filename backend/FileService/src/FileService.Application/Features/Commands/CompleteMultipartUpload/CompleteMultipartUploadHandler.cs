@@ -3,6 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
+using FileService.Application.Abstractions.Processing;
 using FileService.Application.Models;
 using FluentValidation;
 using Microsoft.Extensions.Logging;

@@ -1,7 +1,7 @@
 ﻿using FileService.Domain.Assets;
 using Quartz;
 
-namespace FileService.Application.Abstractions;
+namespace FileService.Application.Abstractions.Processing;
 
 public interface IProcessingJobFactory
 {
