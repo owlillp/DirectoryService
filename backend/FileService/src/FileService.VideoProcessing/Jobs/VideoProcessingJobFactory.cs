@@ -1,4 +1,5 @@
 ﻿using FileService.Application.Abstractions;
+using FileService.Application.Abstractions.Processing;
 using FileService.Domain.Assets;
 using Quartz;
 

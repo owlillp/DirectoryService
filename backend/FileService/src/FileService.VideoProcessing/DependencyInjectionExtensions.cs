@@ -1,10 +1,12 @@
 ﻿using FileService.Application.Abstractions;
+using FileService.Application.Abstractions.Processing;
 using FileService.VideoProcessing.FfmpegProcess;
 using FileService.VideoProcessing.Jobs;
 using FileService.VideoProcessing.Pipeline;
 using FileService.VideoProcessing.Pipeline.Steps;
 using FileService.VideoProcessing.Preview;
 using FileService.VideoProcessing.ProcessRunner;
+using FileService.VideoProcessing.Progress;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,8 +28,11 @@ public static class DependencyInjectionExtensions
 
         RegisterStepHandlers(services);
 
+        services.AddScoped<IVideoProgressReporter, VideoProgressReporter>();
         services.AddScoped<IProcessingJobFactory, VideoProcessingJobFactory>();
+        services.AddScoped<IProgressStreamService, ProgressStreamService>();
         services.AddTransient<VideoProcessingJob>();
+        services.AddSingleton<IProgressEventQueue, InMemoryProgressQueue>();
 
         return services;
     }
