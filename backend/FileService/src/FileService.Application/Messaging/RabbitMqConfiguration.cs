@@ -10,58 +10,55 @@ public static class RabbitMqConfiguration
 {
     private const string FILE_HARD_DELETES_QUEUE = "file.hard-delete";
 
-    extension(WolverineOptions options)
+    public static void ConfigureRabbitMq(this WolverineOptions options, string connectionString)
     {
-        public void ConfigureRabbitMq(string connectionString)
-        {
-            options.UseRabbitMq(new Uri(connectionString))
-                .AutoProvision()
-                .EnableWolverineControlQueues()
-                .UseQuorumQueues()
-                .DeclareExchange(DirectoryEventRouting.EXCHANGE, exchange =>
-                {
-                    exchange.ExchangeType = ExchangeType.Fanout;
-                    exchange.IsDurable = true;
-                })
-                .DeclareExchange(FileEventsRouting.EXCHANGE, exchange =>
-                {
-                    exchange.ExchangeType = ExchangeType.Topic;
-                    exchange.IsDurable = true;
-                });
-
-            options.ConfigureDirectoryEventsListeners();
-            options.ConfigureFileEventPublishing();
-        }
-
-        private void ConfigureDirectoryEventsListeners()
-        {
-            options.ListenToRabbitQueue(FILE_HARD_DELETES_QUEUE, queue =>
+        options.UseRabbitMq(new Uri(connectionString))
+            .AutoProvision()
+            .EnableWolverineControlQueues()
+            .UseQuorumQueues()
+            .DeclareExchange(DirectoryEventRouting.EXCHANGE, exchange =>
             {
-                queue.BindExchange(DirectoryEventRouting.EXCHANGE);
+                exchange.ExchangeType = ExchangeType.Fanout;
+                exchange.IsDurable = true;
+            })
+            .DeclareExchange(FileEventsRouting.EXCHANGE, exchange =>
+            {
+                exchange.ExchangeType = ExchangeType.Topic;
+                exchange.IsDurable = true;
             });
-        }
 
-        private void ConfigureFileEventPublishing()
+        options.ConfigureDirectoryEventsListeners();
+        options.ConfigureFileEventPublishing();
+    }
+
+    private static void ConfigureDirectoryEventsListeners(this WolverineOptions options)
+    {
+        options.ListenToRabbitQueue(FILE_HARD_DELETES_QUEUE, queue =>
         {
-            options.PublishMessagesToRabbitMqExchange<VideoCreatedEvent>(
+            queue.BindExchange(DirectoryEventRouting.EXCHANGE);
+        });
+    }
+
+    private static void ConfigureFileEventPublishing(this WolverineOptions options)
+    {
+        options.PublishMessagesToRabbitMqExchange<VideoCreatedEvent>(
                 FileEventsRouting.EXCHANGE,
                 m => FileEventsRouting.RoutingKeys.VideoCreated(m.EntityType))
-                .UseDurableOutbox();
+            .UseDurableOutbox();
 
-            options.PublishMessagesToRabbitMqExchange<VideoDeletedEvent>(
-                    FileEventsRouting.EXCHANGE,
-                    m => FileEventsRouting.RoutingKeys.VideoDeleted(m.EntityType))
-                .UseDurableOutbox();
+        options.PublishMessagesToRabbitMqExchange<VideoDeletedEvent>(
+                FileEventsRouting.EXCHANGE,
+                m => FileEventsRouting.RoutingKeys.VideoDeleted(m.EntityType))
+            .UseDurableOutbox();
 
-            options.PublishMessagesToRabbitMqExchange<PreviewCreatedEvent>(
-                    FileEventsRouting.EXCHANGE,
-                    m => FileEventsRouting.RoutingKeys.PreviewCreated(m.EntityType))
-                .UseDurableOutbox();
+        options.PublishMessagesToRabbitMqExchange<PreviewCreatedEvent>(
+                FileEventsRouting.EXCHANGE,
+                m => FileEventsRouting.RoutingKeys.PreviewCreated(m.EntityType))
+            .UseDurableOutbox();
 
-            options.PublishMessagesToRabbitMqExchange<PreviewDeletedEvent>(
-                    FileEventsRouting.EXCHANGE,
-                    m => FileEventsRouting.RoutingKeys.PreviewDeleted(m.EntityType))
-                .UseDurableOutbox();
-        }
+        options.PublishMessagesToRabbitMqExchange<PreviewDeletedEvent>(
+                FileEventsRouting.EXCHANGE,
+                m => FileEventsRouting.RoutingKeys.PreviewDeleted(m.EntityType))
+            .UseDurableOutbox();
     }
 }
