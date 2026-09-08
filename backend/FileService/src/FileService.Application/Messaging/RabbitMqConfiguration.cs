@@ -58,9 +58,9 @@ public static class RabbitMqConfiguration
                     m => FileEventsRouting.RoutingKeys.PreviewCreated(m.EntityType))
                 .UseDurableOutbox();
 
-            options.PublishMessagesToRabbitMqExchange<PreviewCreatedEvent>(
+            options.PublishMessagesToRabbitMqExchange<PreviewDeletedEvent>(
                     FileEventsRouting.EXCHANGE,
-                    m => FileEventsRouting.RoutingKeys.PreviewCreated(m.EntityType))
+                    m => FileEventsRouting.RoutingKeys.PreviewDeleted(m.EntityType))
                 .UseDurableOutbox();
         }
     }
