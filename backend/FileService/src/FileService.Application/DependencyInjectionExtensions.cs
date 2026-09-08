@@ -1,4 +1,5 @@
 ﻿using Core.Abstractions;
+using FileService.Application.Messaging.Publishers;
 using FileService.Application.Models;
 using FluentValidation;
 using Microsoft.Extensions.Caching.Hybrid;
@@ -48,6 +49,9 @@ public static class DependencyInjectionExtensions
             });
 
             services.AddScoped<MediaAssetCacheInvalidator>();
+
+            services.AddScoped<IAssetCreatedEventPublisher, AssetCreatedEventPublisher>();
+            services.AddScoped<IAssetDeletedEventPublisher, AssetDeletedEventPublisher>();
 
             services.AddQuartzServices(configuration);
 

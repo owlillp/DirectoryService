@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Npgsql" Version="10.0.3" />
+      <PackageReference Include="WolverineFx" Version="6.35.0" />
+    </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Owlip.Messaging</PackageId>
+    <Version>0.0.3</Version>
+    <Authors>owlillp</Authors>
+    <Company>owlillp</Company>
+    <PackageDescription>Messaging</PackageDescription>
+    <RepositoryUrl>https://github.com/owlillp/DirectoryService</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>

@@ -1,4 +1,5 @@
 using System.Globalization;
+using FileService.Application.Messaging;
 using FileService.Infrastructure.Postgres.Initialization;
 using FileService.Presentation.Configuration;
 using Serilog;
@@ -15,6 +16,8 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddDependency(builder.Configuration);
+
+    builder.AddWolverine();
 
     var app = builder.Build();
 

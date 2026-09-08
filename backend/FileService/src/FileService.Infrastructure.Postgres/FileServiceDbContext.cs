@@ -3,6 +3,7 @@ using FileService.Domain;
 using FileService.Domain.Assets;
 using FileService.Domain.MediaProcessing;
 using Microsoft.EntityFrameworkCore;
+using Wolverine.EntityFrameworkCore;
 
 namespace FileService.Infrastructure.Postgres;
 
@@ -19,5 +20,8 @@ public class FileServiceDbContext(DbContextOptions<FileServiceDbContext> options
             .AsNoTracking();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-        => modelBuilder.ApplyConfigurationsFromAssembly(typeof(FileServiceDbContext).Assembly);
+    {
+        modelBuilder.MapWolverineEnvelopeStorage("public");
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(FileServiceDbContext).Assembly);
+    }
 }

@@ -1,7 +1,9 @@
 ﻿using Core.Abstractions;
+using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
+using FileService.Application.Messaging.Publishers;
 using FileService.Contracts.Files.Responses;
 using FileService.Domain;
 using FileService.Domain.Assets;
@@ -15,6 +17,8 @@ public class StartUploadHandler(
     ILogger<StartUploadHandler> logger,
     IValidator<StartUploadCommand> validator,
     IFileStorageProvider fileStorageProvider,
+    IAssetCreatedEventPublisher assetCreatedEventPublisher,
+    ITransactionManager transactionManager,
     IMediaAssetRepository repository) : ICommandHandler<StartUploadResponse, StartUploadCommand>
 {
     public async Task<Result<StartUploadResponse, Errors>> Handle(StartUploadCommand command, CancellationToken cancellationToken)
@@ -37,6 +41,18 @@ public class StartUploadHandler(
         if (addResult.IsFailure)
         {
             return addResult.Error.ToErrors();
+        }
+
+        var publishResult = await assetCreatedEventPublisher.PublishAsync(mediaAsset);
+        if (publishResult.IsFailure)
+        {
+            return publishResult.Error.ToErrors();
+        }
+
+        var saveResult = await transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+        {
+            return saveResult.Error.ToErrors();
         }
 
         var generateUrlResult = await fileStorageProvider.GenerateUploadUrlAsync(mediaAsset.UploadKey, mediaData);

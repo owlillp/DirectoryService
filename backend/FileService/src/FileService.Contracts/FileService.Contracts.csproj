@@ -13,7 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.10" />
     <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="10.8.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.10" />
-    <PackageReference Include="Owlip.SharedKernel" Version="0.0.2" />
+    <PackageReference Include="Owlip.SharedKernel" Version="0.0.3" />
   </ItemGroup>
 </Project>
 

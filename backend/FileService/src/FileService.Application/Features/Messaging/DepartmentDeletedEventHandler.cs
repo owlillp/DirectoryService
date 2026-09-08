@@ -1,37 +1,31 @@
-﻿using Core.Abstractions;
-using Core.Abstractions.Database;
-using Core.Validation;
-using CSharpFunctionalExtensions;
+﻿using Core.Abstractions.Database;
 using FileService.Application.Abstractions;
 using FileService.Application.Messaging.Publishers;
 using FileService.Application.Models;
-using FluentValidation;
+using Messaging.IntegrationEvents.Directories.Events;
 using Microsoft.Extensions.Logging;
-using Shared.SharedKernel.Failures;
 
-namespace FileService.Application.Features.Commands.Delete;
+namespace FileService.Application.Features.Messaging;
 
-public class DeleteMediaAssetHandler(
-    ILogger<DeleteMediaAssetHandler> logger,
-    IValidator<DeleteMediaAssetCommand> validator,
+public class DepartmentDeletedEventHandler(
+    ILogger<DepartmentDeletedEventHandler> logger,
+    IMediaAssetRepository mediaAssetRepository,
     IFileStorageProvider fileStorageProvider,
-    ITransactionManager transactionManager,
     MediaAssetCacheInvalidator cacheInvalidator,
     IAssetDeletedEventPublisher assetDeletedEventPublisher,
-    IMediaAssetRepository repository) : ICommandHandler<DeleteMediaAssetCommand>
+    ITransactionManager transactionManager)
 {
-    public async Task<UnitResult<Errors>> Handle(DeleteMediaAssetCommand command, CancellationToken cancellationToken)
+    public async Task Handle(DepartmentDeletedEvent @event, CancellationToken cancellationToken)
     {
-        var validationResult = await validator.ValidateAsync(command, cancellationToken);
-        if (!validationResult.IsValid)
-        {
-            return validationResult.ToErrors();
-        }
+        logger.LogInformation("Received DepartmentDeletedEvent for Department: {departmentId}", @event.DepartmentId);
 
-        var getMediaAssetResult = await repository.GetByAsync(ma => ma.Id == command.FileId, cancellationToken);
+        var getMediaAssetResult = await mediaAssetRepository.GetByAsync(
+            ma => ma.Owner.EntityId == @event.DepartmentId,
+            cancellationToken);
+
         if (getMediaAssetResult.IsFailure)
         {
-            return getMediaAssetResult.Error.ToErrors();
+            return;
         }
 
         var mediaAsset = getMediaAssetResult.Value;
@@ -39,8 +33,8 @@ public class DeleteMediaAssetHandler(
         var deleteResult = await fileStorageProvider.DeleteFileAsync(mediaAsset.UploadKey, cancellationToken);
         if (deleteResult.IsFailure && deleteResult.Error.Code != "object.not.found")
         {
-            logger.LogInformation("Failed to delete file: {fileId}", command.FileId);
-            return deleteResult.Error.ToErrors();
+            logger.LogInformation("Failed to delete file: {fileId}", mediaAsset.Id);
+            return;
         }
 
         mediaAsset.MarkDeleted();
@@ -48,13 +42,13 @@ public class DeleteMediaAssetHandler(
         var publishResult = await assetDeletedEventPublisher.PublishAsync(mediaAsset);
         if (publishResult.IsFailure)
         {
-            return publishResult.Error.ToErrors();
+            return;
         }
 
         var saveChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
         if (saveChangesResult.IsFailure)
         {
-            return saveChangesResult.Error.ToErrors();
+            return;
         }
 
         await cacheInvalidator.InvalidateMediaAssetAsync(mediaAsset.Id, mediaAsset.Key, cancellationToken);
@@ -63,7 +57,5 @@ public class DeleteMediaAssetHandler(
             "Delete file: {fileId} with key: {key} successful",
             mediaAsset.Id,
             mediaAsset.Key);
-
-        return UnitResult.Success<Errors>();
     }
 }

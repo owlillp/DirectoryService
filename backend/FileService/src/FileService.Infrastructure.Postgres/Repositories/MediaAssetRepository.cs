@@ -12,25 +12,22 @@ public class MediaAssetRepository(
     ILogger<MediaAssetRepository> logger,
     FileServiceDbContext dbContext) : IMediaAssetRepository
 {
-    public async Task<Result<Guid, Error>> AddAsync(MediaAsset asset, CancellationToken cancellationToken)
+    public Task<Result<Guid, Error>> AddAsync(MediaAsset asset, CancellationToken cancellationToken)
     {
         try
         {
             dbContext.MediaAssets.Add(asset);
-
-            await dbContext.SaveChangesAsync(cancellationToken);
-
-            return asset.Id;
+            return Task.FromResult<Result<Guid, Error>>(asset.Id);
         }
         catch (OperationCanceledException ex)
         {
             logger.LogError(ex, "Operation was canceled while creating media asset");
-            return GeneralErrors.Canceled("Process create department");
+            return Task.FromResult<Result<Guid, Error>>(GeneralErrors.Canceled("Process create department"));
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Unexpected error while creating media asset");
-            return GeneralErrors.Failure();
+            return Task.FromResult<Result<Guid, Error>>(GeneralErrors.Failure());
         }
     }
 
