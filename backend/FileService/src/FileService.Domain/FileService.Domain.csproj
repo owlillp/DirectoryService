@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Owlip.SharedKernel" Version="0.0.2" />
+    <PackageReference Include="Owlip.SharedKernel" Version="0.0.3" />
   </ItemGroup>
 </Project>

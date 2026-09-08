@@ -1,4 +1,5 @@
-﻿using Messaging.IntegrationEvents.Files;
+﻿using Messaging.IntegrationEvents.Directories;
+using Messaging.IntegrationEvents.Files;
 using Messaging.IntegrationEvents.Files.Events;
 using Wolverine;
 using Wolverine.RabbitMQ;
@@ -7,6 +8,8 @@ namespace FileService.Application.Messaging;
 
 public static class RabbitMqConfiguration
 {
+    private const string FILE_HARD_DELETES_QUEUE = "file.hard-delete";
+
     extension(WolverineOptions options)
     {
         public void ConfigureRabbitMq(string connectionString)
@@ -22,6 +25,14 @@ public static class RabbitMqConfiguration
                 });
 
             options.ConfigureFileEventPublishing();
+        }
+
+        private void ConfigureDirectoryEventsListeners()
+        {
+            options.ListenToRabbitQueue(FILE_HARD_DELETES_QUEUE, queue =>
+            {
+                queue.BindExchange(DirectoryEventRouting.EXCHANGE);
+            });
         }
 
         private void ConfigureFileEventPublishing()

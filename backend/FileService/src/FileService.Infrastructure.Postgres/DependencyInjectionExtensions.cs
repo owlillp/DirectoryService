@@ -1,5 +1,6 @@
 using Core.Abstractions.Database;
 using FileService.Application.Abstractions;
+using FileService.Application.Messaging;
 using FileService.Infrastructure.Postgres.Database;
 using FileService.Infrastructure.Postgres.Initialization;
 using FileService.Infrastructure.Postgres.Repositories;
@@ -20,6 +21,7 @@ public static class DependencyInjectionExtensions
 
         services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
         services.AddScoped<ITransactionManager, TransactionManager>();
+        services.AddScoped<IOutboxService, OutboxService>();
         services.AddScoped<QuartzDbInitializer>();
 
         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;

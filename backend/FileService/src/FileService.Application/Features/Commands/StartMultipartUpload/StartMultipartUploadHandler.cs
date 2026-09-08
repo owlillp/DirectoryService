@@ -3,6 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
+using FileService.Application.Messaging.Publishers;
 using FileService.Contracts.Files.Responses;
 using FileService.Domain;
 using FileService.Domain.Assets;
@@ -17,6 +18,8 @@ public class StartMultipartUploadHandler(
     IValidator<StartMultipartUploadCommand> validator,
     IMediaAssetRepository repository,
     IFileStorageProvider fileStorageProvider,
+    IAssetCreatedEventPublisher assetCreatedEventPublisher,
+    ITransactionManager transactionManager,
     IChunkSizeCalculator chunkSizeCalculator): ICommandHandler<StartMultipartUploadResponse, StartMultipartUploadCommand>
 {
     public async Task<Result<StartMultipartUploadResponse, Errors>> Handle(
@@ -50,6 +53,18 @@ public class StartMultipartUploadHandler(
         if (addResult.IsFailure)
         {
             return addResult.Error.ToErrors();
+        }
+
+        var publishResult = await assetCreatedEventPublisher.PublishAsync(mediaAsset);
+        if (publishResult.IsFailure)
+        {
+            return publishResult.Error.ToErrors();
+        }
+
+        var saveResult = await transactionManager.SaveChangesAsync(cancellationToken);
+        if (saveResult.IsFailure)
+        {
+            return saveResult.Error.ToErrors();
         }
 
         var startMultipartUploadResult = await fileStorageProvider.StartMultipartUploadAsync(mediaAsset.UploadKey, mediaAsset.MediaData.ContentType.Value, cancellationToken);

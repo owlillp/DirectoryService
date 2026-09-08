@@ -3,6 +3,7 @@ using Core.Abstractions.Database;
 using Core.Validation;
 using CSharpFunctionalExtensions;
 using FileService.Application.Abstractions;
+using FileService.Application.Messaging.Publishers;
 using FileService.Application.Models;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ public class DeleteMediaAssetHandler(
     IFileStorageProvider fileStorageProvider,
     ITransactionManager transactionManager,
     MediaAssetCacheInvalidator cacheInvalidator,
+    IAssetDeletedEventPublisher assetDeletedEventPublisher,
     IMediaAssetRepository repository) : ICommandHandler<DeleteMediaAssetCommand>
 {
     public async Task<UnitResult<Errors>> Handle(DeleteMediaAssetCommand command, CancellationToken cancellationToken)
@@ -42,6 +44,12 @@ public class DeleteMediaAssetHandler(
         }
 
         mediaAsset.MarkDeleted();
+
+        var publishResult = await assetDeletedEventPublisher.PublishAsync(mediaAsset);
+        if (publishResult.IsFailure)
+        {
+            return publishResult.Error.ToErrors();
+        }
 
         var saveChangesResult = await transactionManager.SaveChangesAsync(cancellationToken);
         if (saveChangesResult.IsFailure)

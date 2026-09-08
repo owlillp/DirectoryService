@@ -5,7 +5,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CrystalQuartz.AspNetCore" Version="7.3.0" />
-    <PackageReference Include="Owlip.Core" Version="0.0.2" />
+    <PackageReference Include="Owlip.Core" Version="0.0.3" />
     <PackageReference Include="Owlip.Framework" Version="0.0.3" />
     <PackageReference Include="Dapper" Version="2.1.72" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.5" />
