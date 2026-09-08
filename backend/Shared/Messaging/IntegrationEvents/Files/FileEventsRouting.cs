@@ -6,7 +6,9 @@ public static class FileEventsRouting
 
     public static class RoutingKeys
     {
-        public const string ALL_DEPARTMENT_EVENTS = "*.*.department";
+        public const string ALL_DEPARTMENT_EVENTS = "*.department";
+        public const string ALL_LOCATION_EVENTS = "*.location";
+        public const string ALL_POSITION_EVENTS = "*.position";
 
         public static string VideoCreated(string entityType) => $"video.created.{entityType.ToLowerInvariant()}";
 

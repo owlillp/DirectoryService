@@ -6,9 +6,10 @@ public static class DirectoryEventRouting
 
     public static class RoutingKeys
     {
-        public const string ALL_FILE_EVENTS = "*.*.file";
+        public static string DepartmentDeleted() => "deleted.department";
 
-        public static string DepartmentDeleted(string entityType) =>
-            $"department.deleted.{entityType.ToLowerInvariant()}";
+        public static string LocationDeleted() => "deleted.location";
+
+        public static string PositionDeleted() => "deleted.position";
     }
 }

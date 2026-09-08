@@ -18,12 +18,18 @@ public static class RabbitMqConfiguration
                 .AutoProvision()
                 .EnableWolverineControlQueues()
                 .UseQuorumQueues()
+                .DeclareExchange(DirectoryEventRouting.EXCHANGE, exchange =>
+                {
+                    exchange.ExchangeType = ExchangeType.Fanout;
+                    exchange.IsDurable = true;
+                })
                 .DeclareExchange(FileEventsRouting.EXCHANGE, exchange =>
                 {
                     exchange.ExchangeType = ExchangeType.Topic;
                     exchange.IsDurable = true;
                 });
 
+            options.ConfigureDirectoryEventsListeners();
             options.ConfigureFileEventPublishing();
         }
 
